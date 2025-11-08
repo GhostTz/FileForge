@@ -12,5 +12,5 @@ const mainRoutes = require('./modules/main');
 app.use('/', mainRoutes);
 
 app.listen(port, () => {
-    console.log(`Server is running on ${process.env.DOMAIN}`);
+    console.log(`Server is running on ${process.env.DOMAIN}:${port}`);
 });

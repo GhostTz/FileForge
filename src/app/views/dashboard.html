@@ -35,68 +35,78 @@
 
             const handleLogout = () => {
                 fetch('/api/auth/logout', { method: 'POST' })
-                    .then(response => {
-                        if (response.ok) window.location.href = '/login';
-                    })
+                    .then(response => { if (response.ok) window.location.href = '/login'; })
                     .catch(error => console.error('Logout failed:', error));
             };
 
-            const loadPage = async (pageName, isPopState = false) => {
+            const updateNavIndicator = (activeLink) => {
+                const indicator = document.getElementById('nav-active-indicator');
+                if (!indicator || !activeLink) return;
+
+                const linkRect = activeLink.getBoundingClientRect();
+                const navRect = activeLink.closest('.nav-links').getBoundingClientRect();
+
+                indicator.style.width = `${linkRect.width}px`;
+                indicator.style.height = `${linkRect.height}px`;
+                indicator.style.left = `${linkRect.left - navRect.left}px`;
+                indicator.style.top = `${linkRect.top - navRect.top}px`;
+            };
+
+            const loadPage = async (pageName) => {
                 const config = pageConfig[pageName];
                 if (!config) return loadPage('start');
 
                 try {
                     pageContent.classList.add('fade-out');
                     await new Promise(resolve => setTimeout(resolve, 200));
-
                     const response = await fetch(config.url);
                     if (!response.ok) throw new Error('Failed to load page content.');
                     
                     pageContent.innerHTML = await response.text();
-                    
-                    const logoutBtn = pageContent.querySelector('#logoutBtn');
-                    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-                    
                     pageContent.classList.remove('fade-out');
 
                     navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+                    
+                    setTimeout(() => updateNavIndicator(document.querySelector('.nav-link.active')), 50);
 
-                } catch (error) {
-                    console.error('Error loading page:', error);
-                    pageContent.innerHTML = `<h1>Error</h1><p>Could not load page content.</p>`;
-                }
+                } catch (error) { console.error('Error loading page:', error); }
             };
 
             const setupNavigation = () => {
                 navLinks = document.querySelectorAll('.nav-link');
-                const profileBtn = document.getElementById('profile-btn');
                 const profileMenu = document.getElementById('profile-menu');
+                
+                const profileBtns = [
+                    document.getElementById('profile-btn'),
+                    document.getElementById('desktop-profile-btn')
+                ];
 
                 navLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
                         const pageName = link.dataset.page;
-                        if (!link.classList.contains('active')) {
+                        if (pageName && !link.classList.contains('active')) {
                             loadPage(pageName);
                         }
                         profileMenu.classList.remove('show');
                     });
                 });
-
-                if (profileBtn) {
-                    profileBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
+                
+                profileBtns.forEach(btn => {
+                    if(btn) btn.addEventListener('click', (e) => {
+                        e.preventDefault(); e.stopPropagation();
                         profileMenu.classList.toggle('show');
                     });
-                }
+                });
                 
                 document.getElementById('menu-logout-btn')?.addEventListener('click', handleLogout);
 
-                window.addEventListener('click', (e) => {
-                    if (profileMenu && !profileMenu.contains(e.target) && !profileBtn.contains(e.target)) {
-                        profileMenu.classList.remove('show');
-                    }
+                window.addEventListener('click', () => {
+                    profileMenu.classList.remove('show');
+                });
+                
+                window.addEventListener('resize', () => {
+                    updateNavIndicator(document.querySelector('.nav-link.active'));
                 });
             };
 
@@ -104,13 +114,12 @@
                 try {
                     const response = await fetch('/api/user/info');
                     const data = await response.json();
-                    const profileIcon = document.querySelector('.profile-icon');
-                    if (profileIcon && data.username) {
-                        profileIcon.textContent = data.username.charAt(0).toUpperCase();
+                    const profileIcons = document.querySelectorAll('.profile-icon');
+                    if (profileIcons.length && data.username) {
+                        const initial = data.username.charAt(0).toUpperCase();
+                        profileIcons.forEach(icon => icon.textContent = initial);
                     }
-                } catch (error) {
-                    console.error('Failed to fetch user info', error);
-                }
+                } catch (error) { console.error('Failed to fetch user info', error); }
             };
 
             fetch('/app/modules/d_nav.html')

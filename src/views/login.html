@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FileForge</title>
+    <link rel="stylesheet" href="/style/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-gradient"></div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="form-toggle">
+                <button id="show-login" class="active">Login</button>
+                <button id="show-register">Register</button>
+            </div>
+
+            <div id="login-form" class="form-content">
+                <h2>Welcome Back</h2>
+                <form id="login">
+                    <div class="input-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+            </div>
+
+            <div id="register-form" class="form-content" style="display: none;">
+                <h2>Create Account</h2>
+                <form id="register">
+                    <div class="input-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Register</button>
+                </form>
+            </div>
+            <div id="message-area"></div>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal">
+            <h2>Success!</h2>
+            <p>Your account has been created. You can now log in.</p>
+            <button id="go-to-login" class="submit-btn">Go to Login</button>
+        </div>
+    </div>
+
+    <script>
+        const showLoginBtn = document.getElementById('show-login');
+        const showRegisterBtn = document.getElementById('show-register');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const messageArea = document.getElementById('message-area');
+        const successModal = document.getElementById('success-modal');
+        const goToLoginBtn = document.getElementById('go-to-login');
+
+        showLoginBtn.addEventListener('click', () => {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            showLoginBtn.classList.add('active');
+            showRegisterBtn.classList.remove('active');
+            messageArea.innerHTML = '';
+        });
+
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            showRegisterBtn.classList.add('active');
+            showLoginBtn.classList.remove('active');
+            messageArea.innerHTML = '';
+        });
+        
+        const showMessage = (text, isError = false) => {
+            messageArea.textContent = text;
+            messageArea.style.color = isError ? '#ff7b7b' : '#7bff9a';
+        };
+
+        document.getElementById('register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showMessage('');
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const result = await response.json();
+            if (response.ok) {
+                successModal.classList.add('visible');
+            } else {
+                showMessage(result.message, true);
+            }
+        });
+
+        goToLoginBtn.addEventListener('click', () => {
+            successModal.classList.remove('visible');
+            document.getElementById('register').reset();
+            showLoginBtn.click();
+        });
+
+        document.getElementById('login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showMessage('');
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                window.location.href = '/app/dashboard';
+            } else {
+                const result = await response.json();
+                showMessage(result.message, true);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2893 @@
+--- src/app/views/modules/d_nav.html ---
+
+<div class="sidebar-header">
+    <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.1)"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/><path d="M12 18v-6m-3 3h6" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>FileForge</span>
+    </div>
+</div>
+<ul class="nav-links">
+    <li><a href="#" data-page="start" class="nav-link active" title="Start">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Start</span>
+    </a></li>
+    <li><a href="#" data-page="download" class="nav-link" title="Download">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Download</span>
+    </a></li>
+    <li><a href="#" data-page="convert" class="nav-link" title="Convert">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        <span>Convert</span>
+    </a></li>
+    <li><a href="#" data-page="sharing" class="nav-link" title="Share">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        <span>Share</span>
+    </a></li>
+</ul>
+<div class="profile-section">
+    <a href="#" id="profile-btn" title="Profile">
+        <div class="profile-icon"></div>
+        <span>Profile</span>
+    </a>
+    <div id="profile-menu" class="profile-menu">
+        <ul>
+            <li><a href="#" class="nav-link" data-page="settings">Settings</a></li>
+            <li><a href="#" id="menu-logout-btn">Logout</a></li>
+            <li><a href="#" class="delete-link">Delete Account</a></li>
+        </ul>
+    </div>
+</div>
+--- END OF src/app/views/modules/d_nav.html ---
+
+--- src/app/views/start.html ---
+
+<header class="main-header">
+    <h1>Start</h1>
+    <button id="logoutBtn" class="logout-button">Logout</button>
+</header>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Files Downloaded</span>
+        </div>
+        <div class="stat-value">1,402</div>
+    </div>
+    <div class="stat-card">
+        <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <span>Files Converted</span>
+        </div>
+        <div class="stat-value">873</div>
+    </div>
+    <div class="stat-card">
+        <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>Files Shared</span>
+        </div>
+        <div class="stat-value">98</div>
+    </div>
+    <div class="stat-card server-status">
+        <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Server Status</span>
+        </div>
+        <div class="stat-value">
+            <span class="status-indicator"></span>
+            <span>99% Online</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+</section>
+--- END OF src/app/views/start.html ---
+
+--- src/app/views/sharing.html ---
+
+<!-- Sharing Page Content -->
+<header class="main-header">
+    <h1>File Sharing</h1>
+    <button id="logoutBtn" class="logout-button">Logout</button>
+</header>
+--- END OF src/app/views/sharing.html ---
+
+--- src/app/views/settings.html ---
+
+<header class="main-header">
+    <h1>Settings</h1>
+    <button id="logoutBtn" class="logout-button">Logout</button>
+</header>
+<div class="settings-content">
+    <p>User settings will be displayed here.</p>
+</div>
+--- END OF src/app/views/settings.html ---
+
+--- src/app/views/convert.html ---
+
+<!-- Convert Page Content -->
+<header class="main-header">
+    <h1>File Converter</h1>
+    <button id="logoutBtn" class="logout-button">Logout</button>
+</header>
+--- END OF src/app/views/convert.html ---
+
+--- src/app/views/dashboard.html ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FileForge</title>
+    <link rel="stylesheet" href="/app/public/css/dashboard.css">
+    <link rel="stylesheet" href="/app/public/css/start.css">
+    <link rel="stylesheet" href="/app/public/css/download.css">
+    <link rel="stylesheet" href="/app/public/css/convert.css">
+    <link rel="stylesheet" href="/app/public/css/sharing.css">
+    <link rel="stylesheet" href="/app/public/css/settings.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav id="app-sidebar" class="app-sidebar"></nav>
+
+    <div id="page-content" class="main-container">
+        <!-- Content will be loaded here by JavaScript -->
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navContainer = document.getElementById('app-sidebar');
+            const pageContent = document.getElementById('page-content');
+            let navLinks = [];
+
+            const pageConfig = {
+                'start': { url: '/app/page/start.html' },
+                'download': { url: '/app/page/download.html' },
+                'convert': { url: '/app/page/convert.html' },
+                'sharing': { url: '/app/page/sharing.html' },
+                'settings': { url: '/app/page/settings.html' },
+            };
+
+            const handleLogout = () => {
+                fetch('/api/auth/logout', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) window.location.href = '/login';
+                    })
+                    .catch(error => console.error('Logout failed:', error));
+            };
+
+            const loadPage = async (pageName, isPopState = false) => {
+                const config = pageConfig[pageName];
+                if (!config) return loadPage('start');
+
+                try {
+                    pageContent.classList.add('fade-out');
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    const response = await fetch(config.url);
+                    if (!response.ok) throw new Error('Failed to load page content.');
+                    
+                    pageContent.innerHTML = await response.text();
+                    
+                    const logoutBtn = pageContent.querySelector('#logoutBtn');
+                    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+                    
+                    pageContent.classList.remove('fade-out');
+
+                    navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+
+                } catch (error) {
+                    console.error('Error loading page:', error);
+                    pageContent.innerHTML = `<h1>Error</h1><p>Could not load page content.</p>`;
+                }
+            };
+
+            const setupNavigation = () => {
+                navLinks = document.querySelectorAll('.nav-link');
+                const profileBtn = document.getElementById('profile-btn');
+                const profileMenu = document.getElementById('profile-menu');
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const pageName = link.dataset.page;
+                        if (!link.classList.contains('active')) {
+                            loadPage(pageName);
+                        }
+                        profileMenu.classList.remove('show');
+                    });
+                });
+
+                if (profileBtn) {
+                    profileBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        profileMenu.classList.toggle('show');
+                    });
+                }
+                
+                document.getElementById('menu-logout-btn')?.addEventListener('click', handleLogout);
+
+                window.addEventListener('click', (e) => {
+                    if (profileMenu && !profileMenu.contains(e.target) && !profileBtn.contains(e.target)) {
+                        profileMenu.classList.remove('show');
+                    }
+                });
+            };
+
+            const fetchUserInfo = async () => {
+                try {
+                    const response = await fetch('/api/user/info');
+                    const data = await response.json();
+                    const profileIcon = document.querySelector('.profile-icon');
+                    if (profileIcon && data.username) {
+                        profileIcon.textContent = data.username.charAt(0).toUpperCase();
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch user info', error);
+                }
+            };
+
+            fetch('/app/modules/d_nav.html')
+                .then(response => response.text())
+                .then(async data => {
+                    navContainer.innerHTML = data;
+                    setupNavigation();
+                    await fetchUserInfo();
+                    loadPage('start'); 
+                })
+                .catch(error => console.error('Error loading navigation:', error));
+        });
+    </script>
+</body>
+</html>
+--- END OF src/app/views/dashboard.html ---
+
+--- src/app/views/download.html ---
+
+<!-- Download Page Content -->
+<header class="main-header">
+    <h1>Media Downloader</h1>
+    <button id="logoutBtn" class="logout-button">Logout</button>
+</header>
+--- END OF src/app/views/download.html ---
+
+--- src/views/login.html ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FileForge</title>
+    <link rel="stylesheet" href="/style/auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-gradient"></div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="form-toggle">
+                <button id="show-login" class="active">Login</button>
+                <button id="show-register">Register</button>
+            </div>
+
+            <div id="login-form" class="form-content">
+                <h2>Welcome Back</h2>
+                <form id="login">
+                    <div class="input-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
+            </div>
+
+            <div id="register-form" class="form-content" style="display: none;">
+                <h2>Create Account</h2>
+                <form id="register">
+                    <div class="input-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Register</button>
+                </form>
+            </div>
+            <div id="message-area"></div>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal">
+            <h2>Success!</h2>
+            <p>Your account has been created. You can now log in.</p>
+            <button id="go-to-login" class="submit-btn">Go to Login</button>
+        </div>
+    </div>
+
+    <script>
+        const showLoginBtn = document.getElementById('show-login');
+        const showRegisterBtn = document.getElementById('show-register');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const messageArea = document.getElementById('message-area');
+        const successModal = document.getElementById('success-modal');
+        const goToLoginBtn = document.getElementById('go-to-login');
+
+        showLoginBtn.addEventListener('click', () => {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            showLoginBtn.classList.add('active');
+            showRegisterBtn.classList.remove('active');
+            messageArea.innerHTML = '';
+        });
+
+        showRegisterBtn.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            showRegisterBtn.classList.add('active');
+            showLoginBtn.classList.remove('active');
+            messageArea.innerHTML = '';
+        });
+        
+        const showMessage = (text, isError = false) => {
+            messageArea.textContent = text;
+            messageArea.style.color = isError ? '#ff7b7b' : '#7bff9a';
+        };
+
+        document.getElementById('register').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showMessage('');
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const result = await response.json();
+            if (response.ok) {
+                successModal.classList.add('visible');
+            } else {
+                showMessage(result.message, true);
+            }
+        });
+
+        goToLoginBtn.addEventListener('click', () => {
+            successModal.classList.remove('visible');
+            document.getElementById('register').reset();
+            showLoginBtn.click();
+        });
+
+        document.getElementById('login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showMessage('');
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                window.location.href = '/app/dashboard';
+            } else {
+                const result = await response.json();
+                showMessage(result.message, true);
+            }
+        });
+    </script>
+</body>
+</html>
+--- END OF src/views/login.html ---
+
+--- src/views/models/_nav.html ---
+
+<nav>
+    <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.1)"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/><path d="M12 18v-6m-3 3h6" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>FileForge</span>
+    </div>
+    <ul>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#open-source">Open Source</a></li>
+        <li><a href="/#faq">FAQ</a></li>
+    </ul>
+    <a href="/login" class="cta-button">Launch App</a>
+</nav>
+--- END OF src/views/models/_nav.html ---
+
+--- src/views/models/_footer.html ---
+
+<div class="footer-content">
+    <div class="footer-logo">
+        <h3>FileForge</h3>
+        <p>An open source toolkit for modern file management.</p>
+    </div>
+    <div class="footer-links">
+        <h4>Navigate</h4>
+        <ul>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#open-source">Open Source</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+            <li><a href="#">Terms of Service</a></li>
+        </ul>
+    </div>
+    <div class="footer-socials">
+        <h4>Follow this Project</h4>
+        <div class="social-icons">
+            <a href="https://github.com/GhostTz/FileForge" target="_blank" aria-label="Github" id="icon-github"></a>
+        </div>
+    </div>
+</div>
+<div class="footer-bottom">
+    <p>&copy; 2025 FileForge Project. Code licensed under GPL-3.0.</p>
+</div>
+--- END OF src/views/models/_footer.html ---
+
+--- src/views/index.html ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileForge - The Open Source File Toolkit</title>
+    <link rel="stylesheet" href="/style/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@splinetool/runtime@1.0.96/build/runtime.js"></script>
+</head>
+<body>
+    <div id="skeleton-loader">
+        <div class="skeleton-nav"></div>
+        <div class="skeleton-hero">
+            <div class="skeleton-box" style="width: 300px; height: 30px; margin-bottom: 20px;"></div>
+            <div class="skeleton-box" style="width: 600px; height: 60px; margin-bottom: 30px;"></div>
+            <div class="skeleton-box" style="width: 500px; height: 20px; margin-bottom: 40px;"></div>
+            <div class="skeleton-buttons">
+                <div class="skeleton-box" style="width: 150px; height: 50px;"></div>
+                <div class="skeleton-box" style="width: 180px; height: 50px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="spotlight"></div>
+    <div class="background-gradient"></div>
+    <div class="background-orb-container"></div>
+    
+    <div id="content-wrapper">
+        <header id="main-header"></header>
+        <main>
+            <section class="hero">
+                <div id="spline-container">
+                    <spline-viewer url="https://prod.spline.design/5VNJ2Gg-IUhQhE5g/scene.splinecode"></spline-viewer>
+                </div>
+                <div class="hero-content">
+                    <div class="tagline">Free. Fast. Open Source.</div>
+                    <h1>Your Central Hub for Digital Content</h1>
+                    <p>An open source toolkit to download media from the web, convert any file format, and share your files securely. No ads, no tracking, no nonsense.</p>
+                    <div class="action-buttons">
+                        <a href="/login" class="btn-primary">Launch App</a>
+                        <a href="https://github.com/GhostTz/FileForge" target="_blank" class="btn-secondary" id="github-hero-btn"></a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="features">
+                <h2 class="section-title anim-element">An All-in-One File Toolkit</h2>
+                <div class="features-grid">
+                    <div class="feature-card anim-element" data-delay="0"><div class="feature-icon" id="icon-download"></div><h3>Download Content</h3><p>Save videos or music from any platform directly to your device. Choose your preferred format like MP4 or MP3.</p></div>
+                    <div class="feature-card anim-element" data-delay="100"><div class="feature-icon" id="icon-convert"></div><h3>Convert Files</h3><p>Effortlessly change file types. Turn a PNG into a JPG, a DOCX into a PDF, or a WAV into an MP3 with my powerful engine.</p></div>
+                    <div class="feature-card anim-element" data-delay="200"><div class="feature-icon" id="icon-share"></div><h3>Share Securely</h3><p>Upload your files and get a temporary, shareable link. Perfect for sending large files to friends or colleagues quickly.</p></div>
+                </div>
+            </section>
+            
+            <section id="open-source" class="open-source-section"><div class="open-source-content anim-element"><div id="icon-github-large"></div><h2>Transparent & Open Source</h2><p>FileForge is 100% open source. This means anyone can view, audit, and contribute to the code. I believe in transparency and the power of open development to build trustworthy software.</p><a href="https://github.com/GhostTz/FileForge" target="_blank" class="btn-primary">View the Code on GitHub</a></div></section>
+            <section id="faq" class="faq-section"><h2 class="section-title anim-element">Frequently Asked Questions</h2><div class="faq-container"><div class="faq-item anim-element" data-delay="0"><button class="faq-question"><span>Is FileForge truly free?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Yes. This project is developed and maintained as a free, open source tool for everyone. There are no plans to charge for its core features.</p></div></div><div class="faq-item anim-element" data-delay="100"><button class="faq-question"><span>How long are shared files stored?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Files uploaded for sharing are stored for 24 hours, after which they are permanently deleted from the servers to protect your privacy.</p></div></div><div class="faq-item anim-element" data-delay="200"><button class="faq-question"><span>Can I contribute to the project?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Absolutely! As an open source project, contributions are always welcome. You can report bugs, suggest features, or submit pull requests on the GitHub repository. I appreciate any support!</p></div></div></div></section>
+            <section class="final-cta-section"><div class="final-cta-content anim-element"><h2>Ready to Forge Your Files?</h2><p>Experience the future of file management. Fast, free, and private.</p><a href="/login" class="btn-primary">Launch The App</a></div></section>
+        </main>
+        <footer id="main-footer"></footer>
+    </div>
+    
+    <div id="toast-container"></div>
+    <div id="live-notification-container"></div>
+
+    <script src="/script/landing.js"></script>
+</body>
+</html>
+--- END OF src/views/index.html ---
+
+--- src/app/public/css/start.css ---
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.main-header h1 {
+    font-size: 2.2rem;
+}
+
+.logout-button {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.logout-button:hover {
+    background: var(--active-bg);
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.stat-card {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.2s; }
+.stat-card:nth-child(4) { animation-delay: 0.3s; }
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.card-header svg {
+    width: 20px;
+    height: 20px;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.stat-card.server-status .stat-value {
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.7);
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--active-bg);
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 99%;
+    height: 100%;
+    background: linear-gradient(90deg, #28a745, #55dd72);
+    border-radius: 4px;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header h1 { font-size: 1.8rem; }
+    .stat-value { font-size: 2rem; }
+}
+--- END OF src/app/public/css/start.css ---
+
+--- src/app/public/css/sharing.css ---
+
+
+--- END OF src/app/public/css/sharing.css ---
+
+--- src/app/public/css/convert.css ---
+
+
+--- END OF src/app/public/css/convert.css ---
+
+--- src/app/public/css/dashboard.css ---
+
+:root {
+    --primary-color: #A020F0;
+    --primary-glow: rgba(160, 32, 240, 0.4);
+    --background-dark: #0D0B12;
+    --background-main: #120F1A;
+    --background-sidebar: rgba(13, 11, 18, 0.7);
+    --text-color: #EAEAEA;
+    --text-muted: #8A8794;
+    --card-bg: #1A1622;
+    --card-border: rgba(255, 255, 255, 0.05);
+    --active-bg: #24202C;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-main);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    display: flex;
+}
+
+.app-sidebar {
+    width: 260px;
+    background: var(--background-sidebar);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid var(--card-border);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: width 0.3s ease, left 0.3s ease;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 40px;
+    flex-shrink: 0;
+    transition: opacity 0.3s ease;
+}
+
+.logo svg {
+    color: var(--primary-color);
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.nav-links {
+    list-style: none;
+    flex-grow: 1;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 10px;
+    transition: background 0.2s ease, color 0.2s ease;
+    position: relative;
+}
+
+.nav-links a:hover {
+    background: var(--active-bg);
+    color: var(--text-color);
+}
+
+.nav-links a.active {
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 15px var(--primary-glow);
+}
+
+.nav-links a svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+
+.profile-section {
+    position: relative;
+}
+
+.profile-section a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+    border-top: 1px solid var(--card-border);
+    padding-top: 20px;
+}
+
+.profile-section > a:hover {
+    color: var(--text-color);
+}
+
+.profile-section .profile-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.profile-menu {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: 100%;
+    background: var(--active-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 8px;
+    transform: translateY(10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+
+.profile-menu.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-menu ul {
+    list-style: none;
+}
+
+.profile-menu ul li a {
+    color: var(--text-muted);
+    text-decoration: none;
+    display: block;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.profile-menu ul li a:hover {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.profile-menu .delete-link {
+    color: #ff5c5c;
+}
+
+.main-container {
+    flex-grow: 1;
+    margin-left: 260px;
+    padding: 40px;
+    transition: margin-left 0.3s ease;
+}
+
+#page-content {
+    animation: fadeIn 0.5s ease-in-out;
+    transition: opacity 0.3s ease-out;
+}
+
+#page-content.fade-out {
+    opacity: 0;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 992px) {
+    body { padding-bottom: 70px; }
+    .main-container { margin-left: 0; padding: 20px; }
+
+    .app-sidebar {
+        width: 100%;
+        height: 70px;
+        bottom: 0;
+        top: auto;
+        flex-direction: row;
+        border-right: none;
+        border-top: 1px solid var(--card-border);
+        padding: 0;
+        align-items: center;
+        background: rgba(13, 11, 18, 0.8);
+        backdrop-filter: blur(10px);
+    }
+    .logo { display: none; }
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        align-items: center;
+        height: 100%;
+        flex-grow: 1;
+    }
+    .nav-links a {
+        margin-bottom: 0;
+        flex: 1;
+        justify-content: center;
+        padding: 10px 0;
+        flex-direction: column;
+        gap: 4px;
+        height: 100%;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        position: relative;
+    }
+    .nav-links a:hover {
+        background: transparent;
+        color: var(--primary-color);
+    }
+    .nav-links a.active {
+        background: transparent;
+        color: var(--text-color);
+    }
+    .nav-links a.active::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50px;
+        height: 50px;
+        background: var(--primary-color);
+        border-radius: 14px;
+        z-index: -1;
+        box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .nav-links span {
+        display: block;
+        font-size: 0.7rem;
+    }
+    .profile-section {
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+    }
+    .profile-section > a {
+        padding: 0;
+        border: none;
+        width: auto;
+        height: auto;
+    }
+    .profile-section > a span {
+        display: none;
+    }
+    .profile-menu {
+        right: 10px;
+        width: 200px;
+    }
+}
+--- END OF src/app/public/css/dashboard.css ---
+
+--- src/app/public/css/download.css ---
+
+
+--- END OF src/app/public/css/download.css ---
+
+--- src/app/public/css/settings.css ---
+
+.settings-content {
+    background-color: var(--card-bg);
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+}
+--- END OF src/app/public/css/settings.css ---
+
+--- src/views/style/auth.css ---
+
+:root {
+    --primary-color: #A020F0;
+    --background-dark: #0D0B12;
+    --text-color: #FFFFFF;
+    --text-muted: #c1c1c1;
+    --glass-bg: rgba(22, 19, 30, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(0, 0, 0, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-dark);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(320deg, #3c1268, #1e1242, #0d0b12);
+}
+
+.auth-container {
+    perspective: 1000px;
+}
+
+.auth-box {
+    width: 400px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease-in-out;
+}
+
+.form-toggle {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.form-toggle button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+}
+
+.form-toggle button.active {
+    background: var(--primary-color);
+    color: var(--text-color);
+    box-shadow: 0 0 15px rgba(160, 32, 240, 0.5);
+}
+
+.form-content h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(160, 32, 240, 0.5);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background: var(--primary-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+    box-shadow: 0 0 20px rgba(160, 32, 240, 0.6);
+    transform: translateY(-2px);
+}
+
+#message-area {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visible {
+    display: flex;
+    opacity: 1;
+}
+
+.modal {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal {
+    transform: scale(1);
+}
+
+.modal h2 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.modal p {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+}
+--- END OF src/views/style/auth.css ---
+
+--- src/views/style/style.css ---
+
+:root {
+    --primary-color: #A020F0;
+    --primary-glow: rgba(160, 32, 240, 0.6);
+    --background-dark: #0D0B12;
+    --text-color: #FFFFFF;
+    --text-muted: #c1c1c1;
+    --glass-bg: rgba(22, 19, 30, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(22, 19, 30, 0.6);
+    --spotlight-color: rgba(160, 32, 240, 0.15);
+}
+
+body.secret-theme { --primary-color: #00ff7f; --primary-glow: rgba(0, 255, 127, 0.6); --spotlight-color: rgba(0, 255, 127, 0.15); }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background-color: var(--background-dark); color: var(--text-color); font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+
+#skeleton-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; transition: opacity 0.5s ease-out; }
+.skeleton-nav { width: calc(100% - 40px); max-width: 1200px; height: 60px; margin: 20px auto 0 auto; background: #1a1a1a; border-radius: 12px; animation: skeleton-pulse 1.5s infinite ease-in-out; }
+.skeleton-hero { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+.skeleton-box { background: #1a1a1a; border-radius: 8px; animation: skeleton-pulse 1.5s infinite ease-in-out; max-width: 100%; }
+.skeleton-buttons { display: flex; gap: 20px; }
+#content-wrapper { opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in; }
+#content-wrapper.loaded { opacity: 1; visibility: visible; }
+
+.spotlight { pointer-events: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color) 0%, transparent 40%); transition: background 0.2s ease-out; }
+.background-gradient { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(320deg, #3c1268, #1e1242, #0d0b12); animation: background-pan 25s ease-in-out infinite; }
+.background-orb-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; animation: orb-pulse 15s ease-in-out infinite alternate; }
+.background-orb-container::before { content: ''; position: absolute; top: 50%; left: 50%; width: 800px; height: 800px; background: radial-gradient(circle, var(--primary-color), transparent 60%); transform: translate(-50%, -50%); opacity: 0.15; filter: blur(120px); transition: background 0.5s ease; }
+
+header { width: calc(100% - 40px); max-width: 1200px; margin: 20px auto 0 auto; position: fixed; top: 0; left: 0; right: 0; z-index: 10; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+nav { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 700; transition: color 0.3s ease; cursor: pointer; }
+.logo svg { color: var(--primary-color); transition: transform 0.4s ease-out, color 0.5s ease; }
+.logo:hover { color: var(--text-color); }
+.logo:hover svg { transform: rotate(-15deg); }
+nav ul { list-style: none; display: flex; align-items: center; gap: 40px; }
+nav ul li a { color: var(--text-muted); text-decoration: none; font-size: 1rem; font-weight: 500; transition: color 0.3s ease; }
+nav ul li a:hover { color: var(--text-color); }
+.cta-button { background: var(--text-color); color: var(--background-dark); padding: 10px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; }
+.cta-button:hover { transform: translateY(-2px); box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
+
+.hero { display: flex; position: relative; justify-content: center; align-items: center; min-height: 100vh; text-align: center; padding: 0 20px; }
+#spline-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.hero-content { max-width: 900px; z-index: 1; }
+.tagline { display: inline-block; background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 8px 16px; border-radius: 20px; font-weight: 500; margin-bottom: 20px; }
+.hero h1 { font-size: 4.5rem; font-weight: 700; line-height: 1.2; }
+.hero p { font-size: 1.2rem; color: var(--text-muted); margin: 30px auto; max-width: 700px; }
+.action-buttons { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 20px; }
+.btn-primary { padding: 15px 35px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; background: var(--primary-color); color: var(--text-color); box-shadow: 0 0 20px var(--primary-glow); }
+.btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 35px var(--primary-glow); }
+.btn-secondary { padding: 15px 35px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-color); display: flex; align-items: center; gap: 8px; }
+.btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+.btn-secondary svg { width: 20px; height: 20px; }
+
+.section-title { font-size: 2.8rem; margin-bottom: 60px; text-align: center; }
+.features, .open-source-section, .faq-section, .final-cta-section { padding: 120px 20px; }
+
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; }
+.feature-card { background: var(--card-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; text-align: left; transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; }
+.feature-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 16px; padding: 1px; background: radial-gradient(300px circle at var(--mouse-x-local) var(--mouse-y-local), var(--primary-color), transparent 80%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: destination-out; mask-composite: exclude; opacity: 0; transition: opacity 0.3s ease; }
+.feature-card:hover::before { opacity: 1; }
+.feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
+.feature-icon { width: 50px; height: 50px; border-radius: 12px; background-color: rgba(160, 32, 240, 0.1); display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+.secret-theme .feature-icon { background-color: rgba(0, 255, 127, 0.1); }
+.feature-icon svg { color: var(--primary-color); width: 28px; height: 28px; transition: color 0.5s ease; }
+.feature-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+.feature-card p { color: var(--text-muted); line-height: 1.6; }
+
+.open-source-section { background: rgba(0,0,0,0.1); }
+.open-source-content { max-width: 800px; margin: 0 auto; text-align: center; }
+#icon-github-large { display: inline-flex; color: var(--text-color); margin-bottom: 30px; }
+#icon-github-large svg { width: 60px; height: 60px; }
+.open-source-content h2 { font-size: 2.8rem; margin-bottom: 20px; }
+.open-source-content p { color: var(--text-muted); font-size: 1.2rem; line-height: 1.7; max-width: 600px; margin: 0 auto 40px auto; }
+
+.faq-container { max-width: 800px; margin: 0 auto; }
+.faq-item { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
+.faq-question { width: 100%; background: transparent; border: none; padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; color: var(--text-color); font-size: 1.1rem; font-weight: 500; }
+.faq-icon { width: 14px; height: 14px; transition: transform 0.3s ease; position: relative; }
+.faq-icon::before, .faq-icon::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 2px; background-color: var(--text-muted); transform: translate(-50%, -50%); transition: transform 0.3s ease; }
+.faq-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
+.faq-item.active .faq-icon::after { transform: translate(-50%, -50%) rotate(0deg); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+.faq-answer p { padding: 0 20px 20px; color: var(--text-muted); line-height: 1.7; }
+
+.final-cta-section { text-align: center; }
+.final-cta-content h2 { font-size: 2.8rem; margin-bottom: 15px; }
+.final-cta-content p { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 30px; }
+
+footer { padding: 60px 20px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); }
+.footer-content { max-width: 1200px; margin: 0 auto 40px auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; }
+.footer-logo { flex: 2; min-width: 250px; cursor: pointer; }
+.footer-logo h3 { font-size: 1.8rem; margin-bottom: 10px; }
+.footer-logo p, .footer-links ul li a { color: var(--text-muted); }
+.footer-links, .footer-socials { flex: 1; min-width: 150px; }
+.footer-links h4, .footer-socials h4 { font-size: 1.1rem; margin-bottom: 15px; }
+.footer-links ul { list-style: none; }
+.footer-links ul li { margin-bottom: 10px; }
+.footer-links ul li a { text-decoration: none; transition: color 0.3s ease; }
+.footer-links ul li a:hover { color: var(--text-color); }
+.social-icons { display: flex; gap: 15px; }
+.social-icons a { color: var(--text-muted); display: flex; transition: color 0.3s ease; }
+.social-icons a:hover { color: var(--text-color); }
+.social-icons svg { width: 24px; height: 24px; }
+.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 20px; border-top: 1px solid var(--glass-border); text-align: center; color: var(--text-muted); }
+
+#toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+.toast { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); color: var(--text-color); padding: 12px 24px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInUp 0.5s ease-out; }
+.toast.success { animation: slideInUp 0.5s ease-out, pulse-glow 2s infinite ease-in-out; }
+
+#live-notification-container { position: fixed; bottom: 20px; left: 20px; z-index: 1999; }
+.live-notification { display: flex; align-items: center; gap: 10px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); padding: 12px 16px; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: slideInUp 0.5s ease-out forwards; transition: opacity 0.5s ease-out; }
+.live-notification.fade-out { opacity: 0; }
+.live-notification-icon svg { width: 20px; height: 20px; color: var(--primary-color); transition: color 0.5s ease; }
+.live-notification-text { font-size: 0.9rem; color: var(--text-muted); }
+
+.anim-element { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.anim-element.visible { opacity: 1; transform: translateY(0); }
+
+@keyframes skeleton-pulse { 50% { opacity: 0.6; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
+@keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 25px var(--primary-glow); } 50% { box-shadow: 0 0 40px var(--primary-glow); } }
+@keyframes background-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes orb-pulse { from { transform: scale(0.8); } to { transform: scale(1.2); } }
+@keyframes slideInUp { from { transform: translateY(100px) scale(0.8); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+@media (max-width: 768px) {
+    header { padding: 10px 20px; }
+    .logo { font-size: 1.3rem; }
+    .cta-button { padding: 8px 18px; font-size: 0.9rem; }
+    .hero-content { padding-top: 80px; }
+    .hero h1 { font-size: 2.5rem; }
+    .action-buttons { flex-direction: column; }
+    .section-title { font-size: 2.2rem; }
+    .features, .open-source-section, .faq-section, .final-cta-section { padding: 80px 20px; }
+    nav ul { display: none; }
+    .footer-content { flex-direction: column; text-align: center; }
+    .social-icons { justify-content: center; }
+    #live-notification-container { left: 50%; transform: translateX(-50%); width: calc(100% - 40px); }
+}
+--- END OF src/views/style/style.css ---
+
+--- src/server/modules/user.js ---
+
+const express = require('express');
+const router = express.Router();
+
+router.get('/info', (req, res) => {
+    if (req.user && req.user.username) {
+        res.json({ username: req.user.username });
+    } else {
+        res.status(401).json({ message: 'Not authenticated' });
+    }
+});
+
+module.exports = router;
+--- END OF src/server/modules/user.js ---
+
+--- src/server/modules/auth.js ---
+
+const express = require('express');
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const db = require('../config/database');
+
+router.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const [users] = await db.query('SELECT username FROM users WHERE username = ?', [username]);
+        if (users.length > 0) {
+            return res.status(409).json({ message: 'Username is already taken.' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+
+        res.status(201).json({ message: 'User registered successfully.' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during registration.' });
+    }
+});
+
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Please fill in all fields.' });
+    }
+
+    try {
+        const [users] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+        if (users.length === 0) {
+            return res.status(401).json({ message: 'Incorrect username or password.' });
+        }
+
+        const user = users[0];
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Incorrect username or password.' });
+        }
+
+        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000 // 1 hour
+        });
+        
+        res.status(200).json({ message: 'Login successful.' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during login.' });
+    }
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.status(200).json({ message: 'Logout successful.' });
+});
+
+module.exports = router;
+--- END OF src/server/modules/auth.js ---
+
+--- src/server/modules/main.js ---
+
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+
+router.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../views/index.html'));
+});
+
+router.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../views/login.html'));
+});
+
+router.get('/models/:modelName', (req, res) => {
+    const modelName = req.params.modelName;
+    res.sendFile(path.join(__dirname, `../../views/models/${modelName}`));
+});
+
+module.exports = router;
+--- END OF src/server/modules/main.js ---
+
+--- src/server/server.js ---
+
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+const initializeDatabase = require('./config/db_init');
+const authMiddleware = require('./middleware/authMiddleware');
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(express.static(path.join(__dirname, '../views')));
+app.use('/style', express.static(path.join(__dirname, '../views/style')));
+app.use('/script', express.static(path.join(__dirname, '../script')));
+app.use('/app/public', express.static(path.join(__dirname, '../app/public')));
+
+const mainRoutes = require('./modules/main');
+const authRoutes = require('./modules/auth');
+const appRoutes = require('../app/routes/app');
+const userRoutes = require('./modules/user');
+
+app.use('/', mainRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/app', appRoutes);
+app.use('/api/user', authMiddleware, userRoutes);
+
+const startServer = async () => {
+    try {
+        await initializeDatabase();
+        app.listen(port, () => {
+            console.log(`Server is running on ${process.env.DOMAIN}:${port}`);
+        });
+    } catch (error) {
+        console.error("Server konnte nicht gestartet werden:", error);
+    }
+};
+
+startServer();
+--- END OF src/server/server.js ---
+
+--- src/server/middleware/authMiddleware.js ---
+
+const jwt = require('jsonwebtoken');
+
+const authMiddleware = (req, res, next) => {
+    const token = req.cookies.token;
+
+    if (!token) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.clearCookie('token');
+        return res.redirect('/login');
+    }
+};
+
+module.exports = authMiddleware;
+--- END OF src/server/middleware/authMiddleware.js ---
+
+--- src/server/config/database.js ---
+
+const mysql = require('mysql2/promise');
+
+const pool = mysql.createPool({
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.name,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+module.exports = pool;
+--- END OF src/server/config/database.js ---
+
+--- src/server/config/db_init.js ---
+
+const db = require('./database');
+
+const requiredTables = {
+    users: {
+        columns: {
+            username: 'VARCHAR(255) NOT NULL PRIMARY KEY',
+            password: 'VARCHAR(255) NOT NULL',
+            rank: "VARCHAR(50) NOT NULL DEFAULT 'user'"
+        }
+    }
+};
+
+const initializeDatabase = async () => {
+    console.log('Überprüfe Datenbank-Integrität...');
+    try {
+        for (const tableName in requiredTables) {
+            const [rows] = await db.query('SHOW TABLES LIKE ?', [tableName]);
+
+            if (rows.length === 0) {
+                console.log(`Tabelle '${tableName}' nicht gefunden. Erstelle sie...`);
+                const columns = requiredTables[tableName].columns;
+                const columnDefinitions = Object.entries(columns)
+                    .map(([colName, colDef]) => `${colName} ${colDef}`)
+                    .join(', ');
+                
+                await db.query(`CREATE TABLE ${tableName} (${columnDefinitions})`);
+                console.log(`Tabelle '${tableName}' erfolgreich erstellt.`);
+            } else {
+                console.log(`Tabelle '${tableName}' existiert.`);
+                const requiredColumns = Object.keys(requiredTables[tableName].columns);
+                const [dbColumns] = await db.query(`SHOW COLUMNS FROM ${tableName}`);
+                const existingColumns = dbColumns.map(col => col.Field);
+
+                const missingColumns = requiredColumns.filter(col => !existingColumns.includes(col));
+
+                if (missingColumns.length > 0) {
+                    console.error(`FEHLER: In der Tabelle '${tableName}' fehlen die folgenden Spalten: ${missingColumns.join(', ')}.`);
+                    console.error('Bitte füge die Spalten manuell hinzu oder leere die Datenbank, um eine Neuerstellung zu ermöglichen.');
+                    process.exit(1); 
+                }
+            }
+        }
+        console.log('Datenbank-Integritätsprüfung erfolgreich abgeschlossen.');
+    } catch (error) {
+        console.error('Fehler bei der Datenbank-Initialisierung:', error);
+        process.exit(1);
+    }
+};
+
+module.exports = initializeDatabase;
+--- END OF src/server/config/db_init.js ---
+
+--- src/script/landing.js ---
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const ICONS = {
+        'icon-download': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`,
+        'icon-convert': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+        'icon-share': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
+        'github-hero-btn': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.3.8 1 .8 1.9v2.8c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg> Star on GitHub`,
+        'icon-github': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.3.8 1 .8 1.9v2.8c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>`
+    };
+
+    const injectContent = (id, content) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = content;
+    };
+    
+    const loadHTML = (elementId, url) => {
+        return fetch(url).then(response => response.text()).then(data => injectContent(elementId, data)).catch(error => console.error('Error loading HTML:', error));
+    };
+
+    const setupIntersectionObserver = () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const delay = entry.target.dataset.delay || 0;
+                    setTimeout(() => { entry.target.classList.add('visible'); }, delay);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+        document.querySelectorAll('.anim-element').forEach(el => observer.observe(el));
+    };
+
+    const setupMouseEffects = () => {
+        const spotlight = document.querySelector('.spotlight');
+        document.addEventListener('mousemove', (e) => {
+            spotlight.style.setProperty('--mouse-x', e.clientX + 'px');
+            spotlight.style.setProperty('--mouse-y', e.clientY + 'px');
+        });
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x-local', (e.clientX - rect.left) + 'px');
+                card.style.setProperty('--mouse-y-local', (e.clientY - rect.top) + 'px');
+            });
+        });
+    };
+
+    const showToast = (message, type = 'default') => {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 4000);
+    };
+
+    const setupLiveNotifications = () => {
+        const scenarios = [
+            { type: 'download', text: 'Jemand aus Deutschland hat gerade ein Video heruntergeladen' },
+            { type: 'convert', text: 'Jemand aus den USA hat gerade PNG zu JPG konvertiert' },
+            { type: 'share', text: 'Jemand hat gerade eine 2GB große Datei geteilt' },
+            { type: 'download', text: 'Jemand aus Frankreich hat gerade eine Playlist heruntergeladen' },
+            { type: 'convert', text: 'Jemand aus Japan hat gerade MOV zu MP4 konvertiert' },
+            { type: 'share', text: 'Jemand hat gerade einen Projektordner geteilt' },
+            { type: 'download', text: 'Jemand aus Brasilien hat gerade einen Podcast als MP3 gespeichert' },
+            { type: 'convert', text: 'Jemand aus Kanada hat gerade WAV zu MP3 konvertiert' },
+            { type: 'share', text: 'Jemand hat gerade Urlaubsfotos geteilt' },
+            { type: 'download', text: 'Jemand aus Australien hat gerade eine Doku gespeichert' }
+        ];
+
+        const icons = {
+            download: ICONS['icon-download'],
+            convert: ICONS['icon-convert'],
+            share: ICONS['icon-share']
+        };
+
+        const showRandomNotification = () => {
+            const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
+            const container = document.getElementById('live-notification-container');
+            
+            const notification = document.createElement('div');
+            notification.className = 'live-notification';
+            notification.innerHTML = `
+                <div class="live-notification-icon">${icons[scenario.type]}</div>
+                <div class="live-notification-text">${scenario.text}</div>
+            `;
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        };
+
+        const startNotifications = () => {
+            setTimeout(() => {
+                showRandomNotification();
+                startNotifications();
+            }, (30 + Math.random() * 30) * 1000);
+        };
+        
+        setTimeout(startNotifications, 10000);
+    };
+
+    const setupSecretsAndEvents = () => {
+        console.log("%c                 _ _       \n ___ ___ ___ _| | |_ ___ \n|  _| . | -_| . | . | -_|\n|___|___|___|___|___|___|\n\n%cLooking under the hood? You're in the right place.\nFileForge is proudly open source (GPL-3.0).", "color: var(--primary-color); font-weight: bold;", "color: #c1c1c1;");
+        
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;1
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiSequence[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiSequence.length) {
+                    konamiIndex = 0;
+                    showToast('You found an easter egg :D', 'success');
+                }
+            } else { konamiIndex = 0; }
+        });
+
+        document.body.addEventListener('click', (e) => {
+            const navLogo = e.target.closest('#main-header .logo');
+            if (navLogo) {
+                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            const logoText = e.target.closest('.logo span');
+            if (logoText && !logoText.isScrambling) {
+                const originalText = logoText.textContent;
+                const chars = '#!%&?*@£$§';
+                let iterations = 0;
+                logoText.isScrambling = true;
+                const interval = setInterval(() => {
+                    logoText.textContent = originalText.split('').map((char, index) => {
+                        if (index < iterations) return originalText[index];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    if (iterations >= originalText.length) {
+                        clearInterval(interval);
+                        logoText.isScrambling = false;
+                    }
+                    iterations += 1 / 3;
+                }, 30);
+            }
+
+            const footerLogo = e.target.closest('#main-footer .footer-logo');
+            if(footerLogo) {
+                const now = new Date().getTime();
+                const lastClick = parseInt(footerLogo.dataset.lastClick) || 0;
+                let clicks = parseInt(footerLogo.dataset.clicks) || 0;
+                clicks = (now - lastClick < 400) ? clicks + 1 : 1;
+                footerLogo.dataset.clicks = clicks;
+                footerLogo.dataset.lastClick = now;
+                if (clicks >= 5) {
+                    document.body.classList.toggle('secret-theme');
+                    footerLogo.dataset.clicks = 0;
+                }
+            }
+        });
+    };
+
+    window.addEventListener('load', () => {
+        const skeleton = document.getElementById('skeleton-loader');
+        const content = document.getElementById('content-wrapper');
+        skeleton.style.opacity = '0';
+        setTimeout(() => skeleton.remove(), 500);
+        content.classList.add('loaded');
+
+        Promise.all([
+            loadHTML('main-header', '/models/_nav.html'),
+            loadHTML('main-footer', '/models/_footer.html')
+        ]).then(() => {
+            for (const id in ICONS) injectContent(id, ICONS[id]);
+            setupIntersectionObserver();
+            setupMouseEffects();
+            setupLiveNotifications();
+            setupSecretsAndEvents();
+        });
+    });
+});
+--- END OF src/script/landing.js ---
+
+--- src/app/routes/app.js ---
+
+const express = require('express');
+const router = express.Router();
+const path = require('path');
+const fs = require('fs');
+const authMiddleware = require('../../server/middleware/authMiddleware');
+
+router.use(authMiddleware);
+
+router.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views/dashboard.html'));
+});
+
+router.get('/modules/:moduleName', (req, res) => {
+    const moduleName = req.params.moduleName;
+    res.sendFile(path.join(__dirname, `../views/modules/${moduleName}`));
+});
+
+const pages = ['start', 'download', 'convert', 'sharing', 'settings'];
+pages.forEach(page => {
+    const filePath = path.join(__dirname, `../views/${page}.html`);
+    if (fs.existsSync(filePath)) {
+        router.get(`/page/${page}.html`, (req, res) => {
+            res.sendFile(filePath);
+        });
+    }
+});
+
+module.exports = router;
+--- END OF src/app/routes/app.js ---
+
+--- package-lock.json ---
+
+{
+  "name": "FileForge",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.2.3",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mysql2": "^3.15.3"
+      }
+    },
+    "node_modules/accepts": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/accepts/-/accepts-2.0.0.tgz",
+      "integrity": "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-types": "^3.0.0",
+        "negotiator": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/aws-ssl-profiles": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/aws-ssl-profiles/-/aws-ssl-profiles-1.1.2.tgz",
+      "integrity": "sha512-NZKeq9AfyQvEeNlN0zSYAaWrmBffJh3IELMZfRpJVWgrpEbtEpnjvzqBPf+mxoI287JohRDoa+/nsfqqiZmF6g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 6.0.0"
+      }
+    },
+    "node_modules/bcryptjs": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/bcryptjs/-/bcryptjs-3.0.3.tgz",
+      "integrity": "sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==",
+      "license": "BSD-3-Clause",
+      "bin": {
+        "bcrypt": "bin/bcrypt"
+      }
+    },
+    "node_modules/body-parser": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-2.2.0.tgz",
+      "integrity": "sha512-02qvAaxv8tp7fBa/mw1ga98OGm+eCbqzJOKoRt70sLmfEEi+jyBYVTDGfCL/k06/4EMk/z01gCe7HoCH/f2LTg==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "^3.1.2",
+        "content-type": "^1.0.5",
+        "debug": "^4.4.0",
+        "http-errors": "^2.0.0",
+        "iconv-lite": "^0.6.3",
+        "on-finished": "^2.4.1",
+        "qs": "^6.14.0",
+        "raw-body": "^3.0.0",
+        "type-is": "^2.0.0"
+      },
+      "engines": {
+        "node": ">=18"
+      }
+    },
+    "node_modules/buffer-equal-constant-time": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz",
+      "integrity": "sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==",
+      "license": "BSD-3-Clause"
+    },
+    "node_modules/bytes": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
+      "integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/call-bind-apply-helpers": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
+      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/call-bound": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
+      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "get-intrinsic": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/content-disposition": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/content-disposition/-/content-disposition-1.0.0.tgz",
+      "integrity": "sha512-Au9nRL8VNUut/XSzbQA38+M78dzP4D+eqg3gfJHMIHHYa3bg067xj1KxMUWj+VULbiZMowKngFFbKczUrNJ1mg==",
+      "license": "MIT",
+      "dependencies": {
+        "safe-buffer": "5.2.1"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/content-type": {
+      "version": "1.0.5",
+      "resolved": "https://registry.npmjs.org/content-type/-/content-type-1.0.5.tgz",
+      "integrity": "sha512-nTjqfcBFEipKdXCv4YDQWCfmcLZKm81ldF0pAopTvyrFGVbcR6P/VAAd5G7N+0tTr8QqiU0tFadD6FK4NtJwOA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie": {
+      "version": "0.7.2",
+      "resolved": "https://registry.npmjs.org/cookie/-/cookie-0.7.2.tgz",
+      "integrity": "sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/cookie-parser": {
+      "version": "1.4.7",
+      "resolved": "https://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.7.tgz",
+      "integrity": "sha512-nGUvgXnotP3BsjiLX2ypbQnWoGUPIIfHQNZkkC668ntrzGWEZVW70HDEB1qnNGMicPje6EttlIgzo51YSwNQGw==",
+      "license": "MIT",
+      "dependencies": {
+        "cookie": "0.7.2",
+        "cookie-signature": "1.0.6"
+      },
+      "engines": {
+        "node": ">= 0.8.0"
+      }
+    },
+    "node_modules/cookie-parser/node_modules/cookie-signature": {
+      "version": "1.0.6",
+      "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz",
+      "integrity": "sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==",
+      "license": "MIT"
+    },
+    "node_modules/cookie-signature": {
+      "version": "1.2.2",
+      "resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.2.2.tgz",
+      "integrity": "sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=6.6.0"
+      }
+    },
+    "node_modules/debug": {
+      "version": "4.4.3",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+      "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+      "license": "MIT",
+      "dependencies": {
+        "ms": "^2.1.3"
+      },
+      "engines": {
+        "node": ">=6.0"
+      },
+      "peerDependenciesMeta": {
+        "supports-color": {
+          "optional": true
+        }
+      }
+    },
+    "node_modules/denque": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/denque/-/denque-2.1.0.tgz",
+      "integrity": "sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==",
+      "license": "Apache-2.0",
+      "engines": {
+        "node": ">=0.10"
+      }
+    },
+    "node_modules/depd": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+      "integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/dotenv": {
+      "version": "17.2.3",
+      "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-17.2.3.tgz",
+      "integrity": "sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==",
+      "license": "BSD-2-Clause",
+      "engines": {
+        "node": ">=12"
+      },
+      "funding": {
+        "url": "https://dotenvx.com"
+      }
+    },
+    "node_modules/dunder-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/dunder-proto/-/dunder-proto-1.0.1.tgz",
+      "integrity": "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "gopd": "^1.2.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/ecdsa-sig-formatter": {
+      "version": "1.0.11",
+      "resolved": "https://registry.npmjs.org/ecdsa-sig-formatter/-/ecdsa-sig-formatter-1.0.11.tgz",
+      "integrity": "sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==",
+      "license": "Apache-2.0",
+      "dependencies": {
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/ee-first": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+      "integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+      "license": "MIT"
+    },
+    "node_modules/encodeurl": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/encodeurl/-/encodeurl-2.0.0.tgz",
+      "integrity": "sha512-Q0n9HRi4m6JuGIV1eFlmvJB7ZEVxu93IrMyiMsGC0lrMJMWzRgx6WGquyfQgZVb31vhGgXnfmPNNXmxnOkRBrg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/es-define-property": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/es-define-property/-/es-define-property-1.0.1.tgz",
+      "integrity": "sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-errors": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/es-errors/-/es-errors-1.3.0.tgz",
+      "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/es-object-atoms": {
+      "version": "1.1.1",
+      "resolved": "https://registry.npmjs.org/es-object-atoms/-/es-object-atoms-1.1.1.tgz",
+      "integrity": "sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/escape-html": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+      "integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+      "license": "MIT"
+    },
+    "node_modules/etag": {
+      "version": "1.8.1",
+      "resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
+      "integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/express": {
+      "version": "5.1.0",
+      "resolved": "https://registry.npmjs.org/express/-/express-5.1.0.tgz",
+      "integrity": "sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==",
+      "license": "MIT",
+      "dependencies": {
+        "accepts": "^2.0.0",
+        "body-parser": "^2.2.0",
+        "content-disposition": "^1.0.0",
+        "content-type": "^1.0.5",
+        "cookie": "^0.7.1",
+        "cookie-signature": "^1.2.1",
+        "debug": "^4.4.0",
+        "encodeurl": "^2.0.0",
+        "escape-html": "^1.0.3",
+        "etag": "^1.8.1",
+        "finalhandler": "^2.1.0",
+        "fresh": "^2.0.0",
+        "http-errors": "^2.0.0",
+        "merge-descriptors": "^2.0.0",
+        "mime-types": "^3.0.0",
+        "on-finished": "^2.4.1",
+        "once": "^1.4.0",
+        "parseurl": "^1.3.3",
+        "proxy-addr": "^2.0.7",
+        "qs": "^6.14.0",
+        "range-parser": "^1.2.1",
+        "router": "^2.2.0",
+        "send": "^1.1.0",
+        "serve-static": "^2.2.0",
+        "statuses": "^2.0.1",
+        "type-is": "^2.0.1",
+        "vary": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 18"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/finalhandler": {
+      "version": "2.1.0",
+      "resolved": "https://registry.npmjs.org/finalhandler/-/finalhandler-2.1.0.tgz",
+      "integrity": "sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL6h0lEiUAMPM8o8qKGO01YIkOHzka2up08wvgYD0mDiI+q3Q==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^4.4.0",
+        "encodeurl": "^2.0.0",
+        "escape-html": "^1.0.3",
+        "on-finished": "^2.4.1",
+        "parseurl": "^1.3.3",
+        "statuses": "^2.0.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/forwarded": {
+      "version": "0.2.0",
+      "resolved": "https://registry.npmjs.org/forwarded/-/forwarded-0.2.0.tgz",
+      "integrity": "sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/fresh": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/fresh/-/fresh-2.0.0.tgz",
+      "integrity": "sha512-Rx/WycZ60HOaqLKAi6cHRKKI7zxWbJ31MhntmtwMoaTeF7XFH9hhBp8vITaMidfljRQ6eYWCKkaTK+ykVJHP2A==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/function-bind": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz",
+      "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
+      "license": "MIT",
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/generate-function": {
+      "version": "2.3.1",
+      "resolved": "https://registry.npmjs.org/generate-function/-/generate-function-2.3.1.tgz",
+      "integrity": "sha512-eeB5GfMNeevm/GRYq20ShmsaGcmI81kIX2K9XQx5miC8KdHaC6Jm0qQ8ZNeGOi7wYB8OsdxKs+Y2oVuTFuVwKQ==",
+      "license": "MIT",
+      "dependencies": {
+        "is-property": "^1.0.2"
+      }
+    },
+    "node_modules/get-intrinsic": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.3.0.tgz",
+      "integrity": "sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "es-define-property": "^1.0.1",
+        "es-errors": "^1.3.0",
+        "es-object-atoms": "^1.1.1",
+        "function-bind": "^1.1.2",
+        "get-proto": "^1.0.1",
+        "gopd": "^1.2.0",
+        "has-symbols": "^1.1.0",
+        "hasown": "^2.0.2",
+        "math-intrinsics": "^1.1.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/get-proto": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/get-proto/-/get-proto-1.0.1.tgz",
+      "integrity": "sha512-sTSfBjoXBp89JvIKIefqw7U2CCebsc74kiY6awiGogKtoSGbgjYE/G/+l9sF3MWFPNc9IcoOC4ODfKHfxFmp0g==",
+      "license": "MIT",
+      "dependencies": {
+        "dunder-proto": "^1.0.1",
+        "es-object-atoms": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/gopd": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/gopd/-/gopd-1.2.0.tgz",
+      "integrity": "sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/has-symbols": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/has-symbols/-/has-symbols-1.1.0.tgz",
+      "integrity": "sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/hasown": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/hasown/-/hasown-2.0.2.tgz",
+      "integrity": "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/http-errors": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.0.tgz",
+      "integrity": "sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==",
+      "license": "MIT",
+      "dependencies": {
+        "depd": "2.0.0",
+        "inherits": "2.0.4",
+        "setprototypeof": "1.2.0",
+        "statuses": "2.0.1",
+        "toidentifier": "1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/http-errors/node_modules/statuses": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz",
+      "integrity": "sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/iconv-lite": {
+      "version": "0.6.3",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz",
+      "integrity": "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==",
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3.0.0"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      }
+    },
+    "node_modules/inherits": {
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
+      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
+      "license": "ISC"
+    },
+    "node_modules/ipaddr.js": {
+      "version": "1.9.1",
+      "resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz",
+      "integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/is-promise": {
+      "version": "4.0.0",
+      "resolved": "https://registry.npmjs.org/is-promise/-/is-promise-4.0.0.tgz",
+      "integrity": "sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==",
+      "license": "MIT"
+    },
+    "node_modules/is-property": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz",
+      "integrity": "sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g==",
+      "license": "MIT"
+    },
+    "node_modules/jsonwebtoken": {
+      "version": "9.0.2",
+      "resolved": "https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz",
+      "integrity": "sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==",
+      "license": "MIT",
+      "dependencies": {
+        "jws": "^3.2.2",
+        "lodash.includes": "^4.3.0",
+        "lodash.isboolean": "^3.0.3",
+        "lodash.isinteger": "^4.0.4",
+        "lodash.isnumber": "^3.0.3",
+        "lodash.isplainobject": "^4.0.6",
+        "lodash.isstring": "^4.0.1",
+        "lodash.once": "^4.0.0",
+        "ms": "^2.1.1",
+        "semver": "^7.5.4"
+      },
+      "engines": {
+        "node": ">=12",
+        "npm": ">=6"
+      }
+    },
+    "node_modules/jwa": {
+      "version": "1.4.2",
+      "resolved": "https://registry.npmjs.org/jwa/-/jwa-1.4.2.tgz",
+      "integrity": "sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==",
+      "license": "MIT",
+      "dependencies": {
+        "buffer-equal-constant-time": "^1.0.1",
+        "ecdsa-sig-formatter": "1.0.11",
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/jws": {
+      "version": "3.2.2",
+      "resolved": "https://registry.npmjs.org/jws/-/jws-3.2.2.tgz",
+      "integrity": "sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==",
+      "license": "MIT",
+      "dependencies": {
+        "jwa": "^1.4.1",
+        "safe-buffer": "^5.0.1"
+      }
+    },
+    "node_modules/lodash.includes": {
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/lodash.includes/-/lodash.includes-4.3.0.tgz",
+      "integrity": "sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.isboolean": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz",
+      "integrity": "sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.isinteger": {
+      "version": "4.0.4",
+      "resolved": "https://registry.npmjs.org/lodash.isinteger/-/lodash.isinteger-4.0.4.tgz",
+      "integrity": "sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.isnumber": {
+      "version": "3.0.3",
+      "resolved": "https://registry.npmjs.org/lodash.isnumber/-/lodash.isnumber-3.0.3.tgz",
+      "integrity": "sha512-QYqzpfwO3/CWf3XP+Z+tkQsfaLL/EnUlXWVkIk5FUPc4sBdTehEqZONuyRt2P67PXAk+NXmTBcc97zw9t1FQrw==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.isplainobject": {
+      "version": "4.0.6",
+      "resolved": "https://registry.npmjs.org/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz",
+      "integrity": "sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.isstring": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/lodash.isstring/-/lodash.isstring-4.0.1.tgz",
+      "integrity": "sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==",
+      "license": "MIT"
+    },
+    "node_modules/lodash.once": {
+      "version": "4.1.1",
+      "resolved": "https://registry.npmjs.org/lodash.once/-/lodash.once-4.1.1.tgz",
+      "integrity": "sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==",
+      "license": "MIT"
+    },
+    "node_modules/long": {
+      "version": "5.3.2",
+      "resolved": "https://registry.npmjs.org/long/-/long-5.3.2.tgz",
+      "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==",
+      "license": "Apache-2.0"
+    },
+    "node_modules/lru-cache": {
+      "version": "7.18.3",
+      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-7.18.3.tgz",
+      "integrity": "sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==",
+      "license": "ISC",
+      "engines": {
+        "node": ">=12"
+      }
+    },
+    "node_modules/lru.min": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/lru.min/-/lru.min-1.1.2.tgz",
+      "integrity": "sha512-Nv9KddBcQSlQopmBHXSsZVY5xsdlZkdH/Iey0BlcBYggMd4two7cZnKOK9vmy3nY0O5RGH99z1PCeTpPqszUYg==",
+      "license": "MIT",
+      "engines": {
+        "bun": ">=1.0.0",
+        "deno": ">=1.30.0",
+        "node": ">=8.0.0"
+      },
+      "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/wellwelwel"
+      }
+    },
+    "node_modules/math-intrinsics": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz",
+      "integrity": "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/media-typer": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/media-typer/-/media-typer-1.1.0.tgz",
+      "integrity": "sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/merge-descriptors": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/merge-descriptors/-/merge-descriptors-2.0.0.tgz",
+      "integrity": "sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/sindresorhus"
+      }
+    },
+    "node_modules/mime-db": {
+      "version": "1.54.0",
+      "resolved": "https://registry.npmjs.org/mime-db/-/mime-db-1.54.0.tgz",
+      "integrity": "sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/mime-types": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/mime-types/-/mime-types-3.0.1.tgz",
+      "integrity": "sha512-xRc4oEhT6eaBpU1XF7AjpOFD+xQmXNB5OVKwp4tqCuBpHLS/ZbBDrc07mYTDqVMg6PfxUjjNp85O6Cd2Z/5HWA==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-db": "^1.54.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/ms": {
+      "version": "2.1.3",
+      "resolved": "https://registry.npmjs.org/ms/-/ms-2.1.3.tgz",
+      "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+      "license": "MIT"
+    },
+    "node_modules/mysql2": {
+      "version": "3.15.3",
+      "resolved": "https://registry.npmjs.org/mysql2/-/mysql2-3.15.3.tgz",
+      "integrity": "sha512-FBrGau0IXmuqg4haEZRBfHNWB5mUARw6hNwPDXXGg0XzVJ50mr/9hb267lvpVMnhZ1FON3qNd4Xfcez1rbFwSg==",
+      "license": "MIT",
+      "dependencies": {
+        "aws-ssl-profiles": "^1.1.1",
+        "denque": "^2.1.0",
+        "generate-function": "^2.3.1",
+        "iconv-lite": "^0.7.0",
+        "long": "^5.2.1",
+        "lru.min": "^1.0.0",
+        "named-placeholders": "^1.1.3",
+        "seq-queue": "^0.0.5",
+        "sqlstring": "^2.3.2"
+      },
+      "engines": {
+        "node": ">= 8.0"
+      }
+    },
+    "node_modules/mysql2/node_modules/iconv-lite": {
+      "version": "0.7.0",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.7.0.tgz",
+      "integrity": "sha512-cf6L2Ds3h57VVmkZe+Pn+5APsT7FpqJtEhhieDCvrE2MK5Qk9MyffgQyuxQTm6BChfeZNtcOLHp9IcWRVcIcBQ==",
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3.0.0"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/named-placeholders": {
+      "version": "1.1.3",
+      "resolved": "https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.3.tgz",
+      "integrity": "sha512-eLoBxg6wE/rZkJPhU/xRX1WTpkFEwDJEN96oxFrTsqBdbT5ec295Q+CoHrL9IT0DipqKhmGcaZmwOt8OON5x1w==",
+      "license": "MIT",
+      "dependencies": {
+        "lru-cache": "^7.14.1"
+      },
+      "engines": {
+        "node": ">=12.0.0"
+      }
+    },
+    "node_modules/negotiator": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-1.0.0.tgz",
+      "integrity": "sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/object-inspect": {
+      "version": "1.13.4",
+      "resolved": "https://registry.npmjs.org/object-inspect/-/object-inspect-1.13.4.tgz",
+      "integrity": "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/on-finished": {
+      "version": "2.4.1",
+      "resolved": "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz",
+      "integrity": "sha512-oVlzkg3ENAhCk2zdv7IJwd/QUD4z2RxRwpkcGY8psCVcCYZNq4wYnVWALHM+brtuJjePWiYF/ClmuDr8Ch5+kg==",
+      "license": "MIT",
+      "dependencies": {
+        "ee-first": "1.1.1"
+      },
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/once": {
+      "version": "1.4.0",
+      "resolved": "https://registry.npmjs.org/once/-/once-1.4.0.tgz",
+      "integrity": "sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==",
+      "license": "ISC",
+      "dependencies": {
+        "wrappy": "1"
+      }
+    },
+    "node_modules/parseurl": {
+      "version": "1.3.3",
+      "resolved": "https://registry.npmjs.org/parseurl/-/parseurl-1.3.3.tgz",
+      "integrity": "sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/path-to-regexp": {
+      "version": "8.3.0",
+      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-8.3.0.tgz",
+      "integrity": "sha512-7jdwVIRtsP8MYpdXSwOS0YdD0Du+qOoF/AEPIt88PcCFrZCzx41oxku1jD88hZBwbNUIEfpqvuhjFaMAqMTWnA==",
+      "license": "MIT",
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/proxy-addr": {
+      "version": "2.0.7",
+      "resolved": "https://registry.npmjs.org/proxy-addr/-/proxy-addr-2.0.7.tgz",
+      "integrity": "sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==",
+      "license": "MIT",
+      "dependencies": {
+        "forwarded": "0.2.0",
+        "ipaddr.js": "1.9.1"
+      },
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/qs": {
+      "version": "6.14.0",
+      "resolved": "https://registry.npmjs.org/qs/-/qs-6.14.0.tgz",
+      "integrity": "sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==",
+      "license": "BSD-3-Clause",
+      "dependencies": {
+        "side-channel": "^1.1.0"
+      },
+      "engines": {
+        "node": ">=0.6"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/range-parser": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/range-parser/-/range-parser-1.2.1.tgz",
+      "integrity": "sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/raw-body": {
+      "version": "3.0.1",
+      "resolved": "https://registry.npmjs.org/raw-body/-/raw-body-3.0.1.tgz",
+      "integrity": "sha512-9G8cA+tuMS75+6G/TzW8OtLzmBDMo8p1JRxN5AZ+LAp8uxGA8V8GZm4GQ4/N5QNQEnLmg6SS7wyuSmbKepiKqA==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "3.1.2",
+        "http-errors": "2.0.0",
+        "iconv-lite": "0.7.0",
+        "unpipe": "1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.10"
+      }
+    },
+    "node_modules/raw-body/node_modules/iconv-lite": {
+      "version": "0.7.0",
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.7.0.tgz",
+      "integrity": "sha512-cf6L2Ds3h57VVmkZe+Pn+5APsT7FpqJtEhhieDCvrE2MK5Qk9MyffgQyuxQTm6BChfeZNtcOLHp9IcWRVcIcBQ==",
+      "license": "MIT",
+      "dependencies": {
+        "safer-buffer": ">= 2.1.2 < 3.0.0"
+      },
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/router": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/router/-/router-2.2.0.tgz",
+      "integrity": "sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^4.4.0",
+        "depd": "^2.0.0",
+        "is-promise": "^4.0.0",
+        "parseurl": "^1.3.3",
+        "path-to-regexp": "^8.0.0"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/safe-buffer": {
+      "version": "5.2.1",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz",
+      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+      "funding": [
+        {
+          "type": "github",
+          "url": "https://github.com/sponsors/feross"
+        },
+        {
+          "type": "patreon",
+          "url": "https://www.patreon.com/feross"
+        },
+        {
+          "type": "consulting",
+          "url": "https://feross.org/support"
+        }
+      ],
+      "license": "MIT"
+    },
+    "node_modules/safer-buffer": {
+      "version": "2.1.2",
+      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
+      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
+      "license": "MIT"
+    },
+    "node_modules/semver": {
+      "version": "7.7.3",
+      "resolved": "https://registry.npmjs.org/semver/-/semver-7.7.3.tgz",
+      "integrity": "sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==",
+      "license": "ISC",
+      "bin": {
+        "semver": "bin/semver.js"
+      },
+      "engines": {
+        "node": ">=10"
+      }
+    },
+    "node_modules/send": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/send/-/send-1.2.0.tgz",
+      "integrity": "sha512-uaW0WwXKpL9blXE2o0bRhoL2EGXIrZxQ2ZQ4mgcfoBxdFmQold+qWsD2jLrfZ0trjKL6vOw0j//eAwcALFjKSw==",
+      "license": "MIT",
+      "dependencies": {
+        "debug": "^4.3.5",
+        "encodeurl": "^2.0.0",
+        "escape-html": "^1.0.3",
+        "etag": "^1.8.1",
+        "fresh": "^2.0.0",
+        "http-errors": "^2.0.0",
+        "mime-types": "^3.0.1",
+        "ms": "^2.1.3",
+        "on-finished": "^2.4.1",
+        "range-parser": "^1.2.1",
+        "statuses": "^2.0.1"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/seq-queue": {
+      "version": "0.0.5",
+      "resolved": "https://registry.npmjs.org/seq-queue/-/seq-queue-0.0.5.tgz",
+      "integrity": "sha512-hr3Wtp/GZIc/6DAGPDcV4/9WoZhjrkXsi5B/07QgX8tsdc6ilr7BFM6PM6rbdAX1kFSDYeZGLipIZZKyQP0O5Q=="
+    },
+    "node_modules/serve-static": {
+      "version": "2.2.0",
+      "resolved": "https://registry.npmjs.org/serve-static/-/serve-static-2.2.0.tgz",
+      "integrity": "sha512-61g9pCh0Vnh7IutZjtLGGpTA355+OPn2TyDv/6ivP2h/AdAVX9azsoxmg2/M6nZeQZNYBEwIcsne1mJd9oQItQ==",
+      "license": "MIT",
+      "dependencies": {
+        "encodeurl": "^2.0.0",
+        "escape-html": "^1.0.3",
+        "parseurl": "^1.3.3",
+        "send": "^1.2.0"
+      },
+      "engines": {
+        "node": ">= 18"
+      }
+    },
+    "node_modules/setprototypeof": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/setprototypeof/-/setprototypeof-1.2.0.tgz",
+      "integrity": "sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==",
+      "license": "ISC"
+    },
+    "node_modules/side-channel": {
+      "version": "1.1.0",
+      "resolved": "https://registry.npmjs.org/side-channel/-/side-channel-1.1.0.tgz",
+      "integrity": "sha512-ZX99e6tRweoUXqR+VBrslhda51Nh5MTQwou5tnUDgbtyM0dBgmhEDtWGP/xbKn6hqfPRHujUNwz5fy/wbbhnpw==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3",
+        "side-channel-list": "^1.0.0",
+        "side-channel-map": "^1.0.1",
+        "side-channel-weakmap": "^1.0.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-list": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/side-channel-list/-/side-channel-list-1.0.0.tgz",
+      "integrity": "sha512-FCLHtRD/gnpCiCHEiJLOwdmFP+wzCmDEkc9y7NsYxeF4u7Btsn1ZuwgwJGxImImHicJArLP4R0yX4c2KCrMrTA==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-map": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/side-channel-map/-/side-channel-map-1.0.1.tgz",
+      "integrity": "sha512-VCjCNfgMsby3tTdo02nbjtM/ewra6jPHmpThenkTYh8pG9ucZ/1P8So4u4FGBek/BjpOVsDCMoLA/iuBKIFXRA==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/side-channel-weakmap": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/side-channel-weakmap/-/side-channel-weakmap-1.0.2.tgz",
+      "integrity": "sha512-WPS/HvHQTYnHisLo9McqBHOJk2FkHO/tlpvldyrnem4aeQp4hai3gythswg6p01oSoTl58rcpiFAjF2br2Ak2A==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bound": "^1.0.2",
+        "es-errors": "^1.3.0",
+        "get-intrinsic": "^1.2.5",
+        "object-inspect": "^1.13.3",
+        "side-channel-map": "^1.0.1"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      },
+      "funding": {
+        "url": "https://github.com/sponsors/ljharb"
+      }
+    },
+    "node_modules/sqlstring": {
+      "version": "2.3.3",
+      "resolved": "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.3.tgz",
+      "integrity": "sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/statuses": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/statuses/-/statuses-2.0.2.tgz",
+      "integrity": "sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/toidentifier": {
+      "version": "1.0.1",
+      "resolved": "https://registry.npmjs.org/toidentifier/-/toidentifier-1.0.1.tgz",
+      "integrity": "sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">=0.6"
+      }
+    },
+    "node_modules/type-is": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/type-is/-/type-is-2.0.1.tgz",
+      "integrity": "sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==",
+      "license": "MIT",
+      "dependencies": {
+        "content-type": "^1.0.5",
+        "media-typer": "^1.1.0",
+        "mime-types": "^3.0.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/unpipe": {
+      "version": "1.0.0",
+      "resolved": "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz",
+      "integrity": "sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/vary": {
+      "version": "1.1.2",
+      "resolved": "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz",
+      "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/wrappy": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz",
+      "integrity": "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==",
+      "license": "ISC"
+    }
+  }
+}
+
+--- END OF package-lock.json ---
+
+--- package.json ---
+
+{
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.15.3"
+  }
+}
+
+--- END OF package.json ---
+
+--- README.md ---
+
+# FileForge
+FileForge is a web-based platform for fast file conversion, sharing, and downloading. Whether video, audio, image, or document – everything can be transformed or temporarily hosted right in your browser. A sleek, user-friendly tool built for anyone who needs flexible format changes or quick file exchanges.
+
+--- END OF README.md ---
+

@@ -1,119 +1,67 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FileForge - The Open Source File Toolkit</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@splinetool/runtime@1.0.96/build/runtime.js"></script>
 </head>
 <body>
-    <div id="preloader">
-        <div class="preloader-logo">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.1)"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/><path d="M12 18v-6m-3 3h6" stroke="currentColor" stroke-width="1.5"/></svg>
+    <div id="skeleton-loader">
+        <div class="skeleton-nav"></div>
+        <div class="skeleton-hero">
+            <div class="skeleton-box" style="width: 300px; height: 30px; margin-bottom: 20px;"></div>
+            <div class="skeleton-box" style="width: 600px; height: 60px; margin-bottom: 30px;"></div>
+            <div class="skeleton-box" style="width: 500px; height: 20px; margin-bottom: 40px;"></div>
+            <div class="skeleton-buttons">
+                <div class="skeleton-box" style="width: 150px; height: 50px;"></div>
+                <div class="skeleton-box" style="width: 180px; height: 50px;"></div>
+            </div>
         </div>
     </div>
 
     <div class="spotlight"></div>
     <div class="background-gradient"></div>
     <div class="background-orb-container"></div>
+    
+    <div id="content-wrapper">
+        <header id="main-header"></header>
+        <main>
+            <section class="hero">
+                <div id="spline-container">
+                    <spline-viewer url="https://prod.spline.design/5VNJ2Gg-IUhQhE5g/scene.splinecode"></spline-viewer>
+                </div>
+                <div class="hero-content">
+                    <div class="tagline">Free. Fast. Open Source.</div>
+                    <h1>Your Central Hub for Digital Content</h1>
+                    <p>An open source toolkit to download media from the web, convert any file format, and share your files securely. No ads, no tracking, no nonsense.</p>
+                    <div class="action-buttons">
+                        <a href="/login" class="btn-primary">Launch App</a>
+                        <a href="https://github.com/GhostTz/FileForge" target="_blank" class="btn-secondary" id="github-hero-btn"></a>
+                    </div>
+                </div>
+            </section>
 
-    <header id="main-header"></header>
-
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <div class="tagline">Free. Fast. Open Source.</div>
-                <h1>Your Central Hub for Digital Content</h1>
-                <p>An open source toolkit to download media from the web, convert any file format, and share your files securely. No ads, no tracking, no nonsense.</p>
-                <div class="action-buttons">
-                    <a href="#" class="btn-primary">Launch App</a>
-                    <a href="https://github.com" target="_blank" class="btn-secondary" id="github-hero-btn"></a>
+            <section id="features" class="features">
+                <h2 class="section-title anim-element">An All-in-One File Toolkit</h2>
+                <div class="features-grid">
+                    <div class="feature-card anim-element" data-delay="0"><div class="feature-icon" id="icon-download"></div><h3>Download Content</h3><p>Save videos or music from any platform directly to your device. Choose your preferred format like MP4 or MP3.</p></div>
+                    <div class="feature-card anim-element" data-delay="100"><div class="feature-icon" id="icon-convert"></div><h3>Convert Files</h3><p>Effortlessly change file types. Turn a PNG into a JPG, a DOCX into a PDF, or a WAV into an MP3 with my powerful engine.</p></div>
+                    <div class="feature-card anim-element" data-delay="200"><div class="feature-icon" id="icon-share"></div><h3>Share Securely</h3><p>Upload your files and get a temporary, shareable link. Perfect for sending large files to friends or colleagues quickly.</p></div>
                 </div>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <h2 class="section-title anim-element">An All-in-One File Toolkit</h2>
-            <div class="features-grid">
-                <div class="feature-card anim-element" data-delay="0">
-                    <div class="feature-icon" id="icon-download"></div>
-                    <h3>Download Content</h3>
-                    <p>Save videos or music from any platform directly to your device. Choose your preferred format like MP4 or MP3.</p>
-                </div>
-                <div class="feature-card anim-element" data-delay="100">
-                    <div class="feature-icon" id="icon-convert"></div>
-                    <h3>Convert Files</h3>
-                    <p>Effortlessly change file types. Turn a PNG into a JPG, a DOCX into a PDF, or a WAV into an MP3 with my powerful engine.</p>
-                </div>
-                <div class="feature-card anim-element" data-delay="200">
-                    <div class="feature-icon" id="icon-share"></div>
-                    <h3>Share Securely</h3>
-                    <p>Upload your files and get a temporary, shareable link. Perfect for sending large files to friends or colleagues quickly.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="why-us" class="why-us-section">
-             <h2 class="section-title anim-element">Built for Privacy, Speed, and Freedom</h2>
-             <div class="pillars-grid">
-                <div class="pillar-card anim-element" data-delay="0">
-                    <div class="pillar-icon" id="icon-privacy"></div>
-                    <h3>Absolute Privacy</h3>
-                    <p>Your files are never stored longer than necessary. Everything is automatically deleted after processing or link expiration. No accounts, no logs.</p>
-                </div>
-                 <div class="pillar-card anim-element" data-delay="100">
-                    <div class="pillar-icon" id="icon-speed"></div>
-                    <h3>Blazing Fast</h3>
-                    <p>The optimized backend processes your files in seconds, not minutes. Get what you need and get back to your work without waiting.</p>
-                </div>
-                 <div class="pillar-card anim-element" data-delay="200">
-                    <div class="pillar-icon" id="icon-limitless"></div>
-                    <h3>Completely Free</h3>
-                    <p>FileForge is a passion project. All core features are free, forever. No hidden fees, no premium paywalls, no intrusive ads.</p>
-                </div>
-             </div>
-        </section>
-
-        <section id="open-source" class="open-source-section">
-            <div class="open-source-content anim-element">
-                <div id="icon-github-large"></div>
-                <h2>Transparent & Open Source</h2>
-                <p>FileForge is 100% open source. This means anyone can view, audit, and contribute to the code. I believe in transparency and the power of open development to build trustworthy software.</p>
-                <a href="https://github.com" target="_blank" class="btn-primary">View the Code on GitHub</a>
-            </div>
-        </section>
-
-        <section id="faq" class="faq-section">
-            <h2 class="section-title anim-element">Frequently Asked Questions</h2>
-            <div class="faq-container">
-                <div class="faq-item anim-element" data-delay="0">
-                    <button class="faq-question"><span>Is FileForge truly free?</span><div class="faq-icon"></div></button>
-                    <div class="faq-answer"><p>Yes. This project is developed and maintained as a free, open source tool for everyone. There are no plans to charge for its core features.</p></div>
-                </div>
-                <div class="faq-item anim-element" data-delay="100">
-                    <button class="faq-question"><span>How long are shared files stored?</span><div class="faq-icon"></div></button>
-                    <div class="faq-answer"><p>Files uploaded for sharing are stored for 24 hours, after which they are permanently deleted from the servers to protect your privacy.</p></div>
-                </div>
-                 <div class="faq-item anim-element" data-delay="200">
-                    <button class="faq-question"><span>Can I contribute to the project?</span><div class="faq-icon"></div></button>
-                    <div class="faq-answer"><p>Absolutely! As an open source project, contributions are always welcome. You can report bugs, suggest features, or submit pull requests on the GitHub repository. I appreciate any support!</p></div>
-                </div>
-            </div>
-        </section>
-
-        <section class="final-cta-section">
-            <div class="final-cta-content anim-element">
-                <h2>Ready to Forge Your Files?</h2>
-                <p>Experience the future of file management. Fast, free, and private.</p>
-                 <a href="#" class="btn-primary">Launch The App</a>
-            </div>
-        </section>
-    </main>
-
-    <footer id="main-footer"></footer>
+            </section>
+            
+            <section id="open-source" class="open-source-section"><div class="open-source-content anim-element"><div id="icon-github-large"></div><h2>Transparent & Open Source</h2><p>FileForge is 100% open source. This means anyone can view, audit, and contribute to the code. I believe in transparency and the power of open development to build trustworthy software.</p><a href="https://github.com/GhostTz/FileForge" target="_blank" class="btn-primary">View the Code on GitHub</a></div></section>
+            <section id="faq" class="faq-section"><h2 class="section-title anim-element">Frequently Asked Questions</h2><div class="faq-container"><div class="faq-item anim-element" data-delay="0"><button class="faq-question"><span>Is FileForge truly free?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Yes. This project is developed and maintained as a free, open source tool for everyone. There are no plans to charge for its core features.</p></div></div><div class="faq-item anim-element" data-delay="100"><button class="faq-question"><span>How long are shared files stored?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Files uploaded for sharing are stored for 24 hours, after which they are permanently deleted from the servers to protect your privacy.</p></div></div><div class="faq-item anim-element" data-delay="200"><button class="faq-question"><span>Can I contribute to the project?</span><div class="faq-icon"></div></button><div class="faq-answer"><p>Absolutely! As an open source project, contributions are always welcome. You can report bugs, suggest features, or submit pull requests on the GitHub repository. I appreciate any support!</p></div></div></div></section>
+            <section class="final-cta-section"><div class="final-cta-content anim-element"><h2>Ready to Forge Your Files?</h2><p>Experience the future of file management. Fast, free, and private.</p><a href="/login" class="btn-primary">Launch The App</a></div></section>
+        </main>
+        <footer id="main-footer"></footer>
+    </div>
     
     <div id="toast-container"></div>
+    <div id="live-notification-container"></div>
 
     <script src="/script/landing.js"></script>
 </body>

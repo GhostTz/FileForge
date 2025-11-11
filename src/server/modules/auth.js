@@ -20,9 +20,23 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        await db.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+        // Transaktion starten
+        const connection = await db.getConnection();
+        await connection.beginTransaction();
 
-        res.status(201).json({ message: 'User registered successfully.' });
+        try {
+            await connection.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+            await connection.query('INSERT INTO settings (username) VALUES (?)', [username]);
+            
+            await connection.commit();
+            res.status(201).json({ message: 'User registered successfully.' });
+
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
 
     } catch (error) {
         console.error(error);

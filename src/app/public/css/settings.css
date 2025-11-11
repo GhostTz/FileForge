@@ -1,6 +1,161 @@
-.settings-content {
+.settings-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
+}
+
+.settings-card {
     background-color: var(--card-bg);
     padding: 25px;
     border-radius: 16px;
     border: 1px solid var(--card-border);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.settings-card h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: var(--text-muted);
+}
+
+.pfp-preview-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 20px auto;
+}
+
+.profile-icon-large {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 5rem;
+    color: white;
+    box-shadow: 0 0 30px var(--primary-glow);
+}
+
+.upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--active-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.pfp-preview-wrapper:hover .upload-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.upload-btn:hover {
+    background: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.upload-btn span { display: none; }
+.upload-btn svg { width: 22px; height: 22px; }
+
+.remove-pfp-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-pfp-btn:hover {
+    background: #ff5c5c20;
+    color: #ff5c5c;
+    border-color: #ff5c5c80;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.save-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+.save-btn {
+    padding: 12px 30px;
+    background: var(--active-bg);
+    border: none;
+    color: var(--text-muted);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.save-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.save-btn.active {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.save-btn.active:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 992px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
 }

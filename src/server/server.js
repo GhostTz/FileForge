@@ -16,6 +16,8 @@ app.use(express.static(path.join(__dirname, '../views')));
 app.use('/style', express.static(path.join(__dirname, '../views/style')));
 app.use('/script', express.static(path.join(__dirname, '../script')));
 app.use('/app/public', express.static(path.join(__dirname, '../app/public')));
+app.use('/app/public/js', express.static(path.join(__dirname, '../app/public/js')));
+
 
 const mainRoutes = require('./modules/main');
 const authRoutes = require('./modules/auth');

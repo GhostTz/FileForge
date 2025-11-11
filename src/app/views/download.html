@@ -1,3 +1,113 @@
-<header class="main-header">
-    <h1>Media Downloader</h1>
-</header>
+<div class="download-page-wrapper">
+
+    <!-- Input Card -->
+    <div class="io-card">
+        <div class="io-card-header">
+            <div class="io-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" fill="rgba(255,255,255,0.1)"></path><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"></path><path d="M12 18v-6m-3 3h6" stroke="currentColor" stroke-width="1.5"></path></svg>
+                <span>FileForge</span>
+            </div>
+            <div class="io-badge">Fast & Clean</div>
+        </div>
+        <div class="io-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
+            <input type="url" id="url-input" placeholder="https://www.youtube.com/watch?v=...">
+            <button id="start-download-btn" class="start-download-btn" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <span>Download</span>
+            </button>
+        </div>
+        <p class="input-example">Example: https://youtu.be/dQw4w9WgXcQ</p>
+    </div>
+
+    <!-- Options Card -->
+    <div class="options-card">
+        <h4>Choose Format</h4>
+        <div class="format-selector" id="format-selector">
+            <div class="format-btn"><input type="radio" id="fmt-mp3" name="format" value="mp3"> <label for="fmt-mp3">🎵 MP3</label></div>
+            <div class="format-btn"><input type="radio" id="fmt-mp4" name="format" value="mp4"> <label for="fmt-mp4">📺 MP4</label></div>
+            <div class="format-btn"><input type="radio" id="fmt-mov" name="format" value="mov"> <label for="fmt-mov">🎬 MOV</label></div>
+            <div class="format-btn"><input type="radio" id="fmt-webm" name="format" value="webm"> <label for="fmt-webm">🌐 WEBM</label></div>
+            <div class="format-btn"><input type="radio" id="fmt-wav" name="format" value="wav"> <label for="fmt-wav">🔊 WAV</label></div>
+        </div>
+
+        <div class="quality-selector" id="mp3-quality-selector">
+            <h5>Bitrate</h5>
+            <div class="quality-options">
+                 <div class="quality-btn"><input type="radio" id="br-64" name="bitrate" value="64"> <label for="br-64">64 kbps</label></div>
+                 <div class="quality-btn"><input type="radio" id="br-128" name="bitrate" value="128" checked> <label for="br-128">128 kbps</label></div>
+                 <div class="quality-btn"><input type="radio" id="br-192" name="bitrate" value="192"> <label for="br-192">192 kbps</label></div>
+                 <div class="quality-btn"><input type="radio" id="br-256" name="bitrate" value="256"> <label for="br-256">256 kbps</label></div>
+                 <div class="quality-btn"><input type="radio" id="br-320" name="bitrate" value="320"> <label for="br-320">320 kbps</label></div>
+            </div>
+        </div>
+        
+        <div class="quality-selector" id="mp4-quality-selector">
+            <h5>Video Quality</h5>
+            <div class="quality-options">
+                 <div class="quality-btn"><input type="radio" id="q-144" name="quality" value="144"> <label for="q-144">144p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-240" name="quality" value="240"> <label for="q-240">240p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-360" name="quality" value="360"> <label for="q-360">360p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-480" name="quality" value="480"> <label for="q-480">480p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-720" name="quality" value="720" checked> <label for="q-720">720p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-1080" name="quality" value="1080"> <label for="q-1080">1080p</label></div>
+                 <div class="quality-btn"><input type="radio" id="q-1440" name="quality" value="1440"> <label for="q-1440">1440p</label></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Card -->
+    <div class="status-card" id="status-card">
+        <h4>Download Status</h4>
+        <div class="progress-bar-container">
+            <div class="progress-spinner"></div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar-fill"></div>
+            </div>
+            <span class="progress-text" id="progress-text">Processing...</span>
+        </div>
+    </div>
+
+    <!-- History Card -->
+    <div class="history-container">
+        <div class="history-header">
+            <h4>Download History</h4>
+            <span>Last 7 downloads</span>
+        </div>
+        <ul class="history-list-new">
+            <li class="history-item">
+                <img src="https://source.unsplash.com/random/120x90?city,night" alt="video thumbnail" class="history-thumb-new">
+                <div class="history-info">
+                    <h5>Time-lapse City Lights</h5>
+                    <p>https://youtu.be/aqz-KE-bpKQ</p>
+                </div>
+                <div class="history-meta">
+                    <span class="history-badge">MP4 • 1080p</span>
+                    <button class="re-download-btn">Re-download</button>
+                </div>
+            </li>
+            <li class="history-item">
+                <img src="https://source.unsplash.com/random/120x90?music,event" alt="video thumbnail" class="history-thumb-new">
+                <div class="history-info">
+                    <h5>Never Gonna Give You Up</h5>
+                    <p>https://youtu.be/dQw4w9WgXcQ</p>
+                </div>
+                <div class="history-meta">
+                    <span class="history-badge">MP3</span>
+                    <button class="re-download-btn">Re-download</button>
+                </div>
+            </li>
+            <li class="history-item">
+                <img src="https://source.unsplash.com/random/120x90?nature,scenery" alt="video thumbnail" class="history-thumb-new">
+                <div class="history-info">
+                    <h5>Epic Nature Scenery</h5>
+                    <p>https://youtu.be/SJZ_D3ELwOQ</p>
+                </div>
+                 <div class="history-meta">
+                    <span class="history-badge">WEBM • 720p</span>
+                    <button class="re-download-btn">Re-download</button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

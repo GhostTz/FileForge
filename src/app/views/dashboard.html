@@ -18,16 +18,49 @@
     <div id="page-content" class="main-container">
         <!-- Content will be loaded here by JavaScript -->
     </div>
+
+    <div id="delete-confirm-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="warning-icon"></div>
+            <h3>Delete Account</h3>
+            <p>This action is permanent and cannot be reverted. Are you absolutely sure?</p>
+            <div class="confirm-delete-group">
+                <label for="confirm-delete-checkbox">
+                    <input type="checkbox" id="confirm-delete-checkbox">
+                    <span class="checkbox"></span>
+                    <span>I'm sure I want to delete the account <strong id="delete-username"></strong>.</span>
+                </label>
+            </div>
+            <button id="delete-account-btn" class="danger-btn" disabled>Delete Account</button>
+        </div>
+    </div>
+
+    <div id="other-platform-modal" class="modal-overlay">
+        <div class="modal">
+             <h3>Unsupported Platform</h3>
+             <p>Downloads from "Other" platforms may not work as expected. Please proceed only if you know what you are doing.</p>
+             <button id="other-platform-ok" class="wizard-btn btn-next">I understand, continue</button>
+        </div>
+    </div>
+
+    <div id="format-required-modal" class="modal-overlay">
+        <div class="modal">
+             <h3>Format Required</h3>
+             <p>Please choose a format like MP3 or MP4 before starting the download.</p>
+             <button id="format-required-ok" class="modal-ok-btn">OK</button>
+        </div>
+    </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navContainer = document.getElementById('app-sidebar');
             const pageContent = document.getElementById('page-content');
             let navLinks = [];
+            let currentUsername = '';
 
             const pageConfig = {
                 'start': { url: '/app/page/start.html' },
-                'download': { url: '/app/page/download.html' },
+                'download': { url: '/app/page/download.html', js: '/app/public/js/download.js' },
                 'convert': { url: '/app/page/convert.html' },
                 'sharing': { url: '/app/page/sharing.html' },
                 'settings': { url: '/app/page/settings.html' },
@@ -65,8 +98,15 @@
                     pageContent.innerHTML = await response.text();
                     pageContent.classList.remove('fade-out');
 
+                    // If there's a script associated with the page, load it
+                    if (config.js) {
+                        const script = document.createElement('script');
+                        script.src = config.js;
+                        script.onload = () => script.remove(); // Clean up script tag after execution
+                        document.body.appendChild(script);
+                    }
+
                     navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
-                    
                     setTimeout(() => updateNavIndicator(document.querySelector('.nav-link.active')), 50);
 
                 } catch (error) { console.error('Error loading page:', error); }
@@ -100,23 +140,61 @@
                 });
                 
                 document.getElementById('menu-logout-btn')?.addEventListener('click', handleLogout);
-
-                window.addEventListener('click', () => {
+                document.querySelector('.delete-link')?.addEventListener('click', (e) => {
+                    e.preventDefault();
                     profileMenu.classList.remove('show');
+                    openDeleteModal();
                 });
-                
-                window.addEventListener('resize', () => {
-                    updateNavIndicator(document.querySelector('.nav-link.active'));
+
+                window.addEventListener('click', () => profileMenu.classList.remove('show'));
+                window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-link.active')));
+            };
+            
+            const setupModals = () => {
+                const deleteModal = document.getElementById('delete-confirm-modal');
+                const checkbox = document.getElementById('confirm-delete-checkbox');
+                const deleteBtn = document.getElementById('delete-account-btn');
+
+                checkbox.addEventListener('change', () => { deleteBtn.disabled = !checkbox.checked; });
+                deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('visible'); });
+                deleteBtn.addEventListener('click', async () => {
+                    try {
+                        const response = await fetch('/api/user/delete', { method: 'DELETE' });
+                        if(response.ok) { window.location.href = '/'; }
+                    } catch (error) { console.error('Error during account deletion:', error); }
                 });
+
+                const otherPlatformModal = document.getElementById('other-platform-modal');
+                otherPlatformModal.addEventListener('click', (e) => {
+                    if (e.target === otherPlatformModal || e.target.id === 'other-platform-ok') {
+                        otherPlatformModal.classList.remove('visible');
+                    }
+                });
+
+                const formatModal = document.getElementById('format-required-modal');
+                formatModal.addEventListener('click', (e) => {
+                    if (e.target === formatModal || e.target.id === 'format-required-ok') {
+                        formatModal.classList.remove('visible');
+                    }
+                });
+            };
+
+            const openDeleteModal = () => {
+                const modal = document.getElementById('delete-confirm-modal');
+                document.getElementById('delete-username').textContent = currentUsername;
+                document.getElementById('confirm-delete-checkbox').checked = false;
+                document.getElementById('delete-account-btn').disabled = true;
+                modal.classList.add('visible');
             };
 
             const fetchUserInfo = async () => {
                 try {
                     const response = await fetch('/api/user/info');
                     const data = await response.json();
+                    currentUsername = data.username;
                     const profileIcons = document.querySelectorAll('.profile-icon');
-                    if (profileIcons.length && data.username) {
-                        const initial = data.username.charAt(0).toUpperCase();
+                    if (profileIcons.length && currentUsername) {
+                        const initial = currentUsername.charAt(0).toUpperCase();
                         profileIcons.forEach(icon => icon.textContent = initial);
                     }
                 } catch (error) { console.error('Failed to fetch user info', error); }
@@ -127,6 +205,7 @@
                 .then(async data => {
                     navContainer.innerHTML = data;
                     setupNavigation();
+                    setupModals();
                     await fetchUserInfo();
                     loadPage('start'); 
                 })

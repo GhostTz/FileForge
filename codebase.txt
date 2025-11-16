@@ -199,13 +199,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fileforge/">
     <title>Dashboard - FileForge</title>
-    <link rel="stylesheet" href="/app/public/css/dashboard.css">
-    <link rel="stylesheet" href="/app/public/css/start.css">
-    <link rel="stylesheet" href="/app/public/css/download.css">
-    <link rel="stylesheet" href="/app/public/css/convert.css">
-    <link rel="stylesheet" href="/app/public/css/cloud.css">
-    <link rel="stylesheet" href="/app/public/css/settings.css">
+    <link rel="stylesheet" href="app/public/css/dashboard.css">
+    <link rel="stylesheet" href="app/public/css/start.css">
+    <link rel="stylesheet" href="app/public/css/download.css">
+    <link rel="stylesheet" href="app/public/css/convert.css">
+    <!-- Modularized Cloud CSS -->
+    <link rel="stylesheet" href="app/public/css/cloud/layout.css">
+    <link rel="stylesheet" href="app/public/css/cloud/explorer.css">
+    <link rel="stylesheet" href="app/public/css/cloud/modals.css">
+    <link rel="stylesheet" href="app/public/css/cloud/upload.css">
+    <!-- End of Modularized Cloud CSS -->
+    <link rel="stylesheet" href="app/public/css/settings.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -255,16 +261,16 @@
             let currentUsername = '';
 
             const pageConfig = {
-                'start': { url: '/app/page/start.html' },
-                'download': { url: '/app/page/download.html', js: '/app/public/js/download.js' },
-                'convert': { url: '/app/page/convert.html' },
-                'cloud': { url: '/app/page/cloud.html', js: '/app/public/js/cloud.js' },
-                'settings': { url: '/app/page/settings.html', js: '/app/public/js/settings.js' },
+                'start': { url: 'app/page/start.html' },
+                'download': { url: 'app/page/download.html', js: 'app/public/js/download.js' },
+                'convert': { url: 'app/page/convert.html' },
+                'cloud': { url: 'app/page/cloud.html', js: 'app/public/js/cloud/cloud.js', type: 'module' },
+                'settings': { url: 'app/page/settings.html', js: 'app/public/js/settings.js' },
             };
 
             const handleLogout = () => {
-                fetch('/api/auth/logout', { method: 'POST' })
-                    .then(response => { if (response.ok) window.location.href = '/login'; })
+                fetch('api/auth/logout', { method: 'POST' })
+                    .then(response => { if (response.ok) window.location.href = 'login'; })
                     .catch(error => console.error('Logout failed:', error));
             };
 
@@ -301,6 +307,9 @@
                     if (config.js) {
                         const script = document.createElement('script');
                         script.src = config.js;
+                        if (config.type) {
+                            script.type = config.type;
+                        }
                         script.dataset.pageScript = 'true';
                         document.body.appendChild(script);
                     }
@@ -358,8 +367,9 @@
                 deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('visible'); });
                 deleteBtn.addEventListener('click', async () => {
                     try {
-                        const response = await fetch('/api/user/delete', { method: 'DELETE' });
-                        if(response.ok) { window.location.href = '/'; }
+                        const response = await fetch('api/user/delete', { method: 'DELETE' });
+                        // --- HIER IST DIE FINALE KORREKTUR ---
+                        if(response.ok) { window.location.href = '.'; }
                     } catch (error) { console.error('Error during account deletion:', error); }
                 });
 
@@ -388,7 +398,7 @@
 
             const fetchUserInfo = async () => {
                 try {
-                    const response = await fetch('/api/user/info');
+                    const response = await fetch('api/user/info');
                     const data = await response.json();
                     currentUsername = data.username;
                     const profileIcons = document.querySelectorAll('.profile-icon');
@@ -399,7 +409,7 @@
                 } catch (error) { console.error('Failed to fetch user info', error); }
             };
 
-            fetch('/app/modules/d_nav.html')
+            fetch('app/modules/d_nav.html')
                 .then(response => response.text())
                 .then(async data => {
                     navContainer.innerHTML = data;
@@ -558,7 +568,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <main class="drive-main-content">
+    <main id="drive-main-content" class="drive-main-content">
 
         <!-- Explorer View -->
         <div id="explorer-view">
@@ -570,12 +580,17 @@
                 </div>
             </header>
             <div class="explorer-toolbar">
-                <div class="view-toggles">
-                    <button id="grid-view-btn" class="toggle-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Grid</button>
-                    <button id="list-view-btn" class="toggle-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> List</button>
+                <div id="default-toolbar-items" class="view-toggles">
+                    <button id="grid-view-btn" class="toggle-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Grid</button>
+                    <button id="list-view-btn" class="toggle-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> List</button>
+                </div>
+                <div id="selection-toolbar" class="selection-toolbar hidden">
+                    <span id="selection-count"></span>
+                    <button id="selection-move-btn" class="toolbar-action-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 9 22 12 19 15"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg> Move</button>
+                    <button id="selection-delete-btn" class="toolbar-action-btn danger"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Delete</button>
                 </div>
                 <div class="search-bar">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     <input type="text" id="file-search-input" placeholder="Search files...">
                 </div>
             </div>
@@ -610,9 +625,10 @@
                     </div>
                 </div>
                 <div id="upload-queue" class="upload-queue"></div>
-                <button id="upload-complete-btn" class="upload-complete-btn hidden">Upload complete: 3 files added</button>
             </div>
         </div>
+        <div id="marquee-selection-box" class="marquee-selection-box"></div>
+        <div id="cloud-toast-container"></div>
     </main>
 
     <!-- Custom Modals -->
@@ -637,6 +653,18 @@
             </div>
         </div>
     </div>
+
+    <div id="move-item-modal" class="cloud-modal-overlay hidden">
+        <div class="cloud-modal-content">
+            <h3>Move Items</h3>
+            <p>Select a destination folder for the selected items.</p>
+            <div id="move-folder-tree" class="move-folder-tree"></div>
+            <div class="cloud-modal-actions">
+                <button id="cancel-move-item" class="cloud-modal-btn">Cancel</button>
+                <button id="confirm-move-item" class="cloud-modal-btn primary" disabled>Move Here</button>
+            </div>
+        </div>
+    </div>
     
     <div id="file-preview-modal" class="file-preview-overlay hidden">
         <div class="file-preview-content">
@@ -657,8 +685,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fileforge/">
     <title>Login - FileForge</title>
-    <link rel="stylesheet" href="/style/auth.css">
+    <link rel="stylesheet" href="style/auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -747,7 +776,7 @@
             const username = document.getElementById('register-username').value;
             const password = document.getElementById('register-password').value;
             
-            const response = await fetch('/api/auth/register', {
+            const response = await fetch('api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -773,14 +802,14 @@
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
             
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
             });
 
             if (response.ok) {
-                window.location.href = '/app/dashboard';
+                window.location.href = 'app/dashboard';
             } else {
                 const result = await response.json();
                 showMessage(result.message, true);
@@ -799,11 +828,11 @@
         <span>FileForge</span>
     </div>
     <ul>
-        <li><a href="/#features">Features</a></li>
-        <li><a href="/#open-source">Open Source</a></li>
-        <li><a href="/#faq">FAQ</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#open-source">Open Source</a></li>
+        <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a href="/login" class="cta-button">Launch App</a>
+    <a href="login" class="cta-button">Launch App</a>
 </nav>
 --- END OF src/views/models/_nav.html ---
 
@@ -817,9 +846,9 @@
     <div class="footer-links">
         <h4>Navigate</h4>
         <ul>
-            <li><a href="/#features">Features</a></li>
-            <li><a href="/#open-source">Open Source</a></li>
-            <li><a href="/#faq">FAQ</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#open-source">Open Source</a></li>
+            <li><a href="#faq">FAQ</a></li>
             <li><a href="#">Terms of Service</a></li>
         </ul>
     </div>
@@ -842,8 +871,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fileforge/">
     <title>FileForge - The Open Source File Toolkit</title>
-    <link rel="stylesheet" href="/style/style.css">
+    <!-- KORREKTUR: Führender Schrägstrich entfernt -->
+    <link rel="stylesheet" href="style/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="module" src="https://unpkg.com/@splinetool/runtime@1.0.96/build/runtime.js"></script>
 </head>
@@ -877,7 +908,7 @@
                     <h1>Your Central Hub for Digital Content</h1>
                     <p>An open source toolkit to download media from the web, convert any file format, and share your files securely. No ads, no tracking, no nonsense.</p>
                     <div class="action-buttons">
-                        <a href="/login" class="btn-primary">Launch App</a>
+                        <a href="login" class="btn-primary">Launch App</a>
                         <a href="https://github.com/GhostTz/FileForge" target="_blank" class="btn-secondary" id="github-hero-btn"></a>
                     </div>
                 </div>
@@ -902,708 +933,10 @@
     <div id="toast-container"></div>
     <div id="live-notification-container"></div>
 
-    <script src="/script/landing.js"></script>
+    <script src="script/landing.js"></script>
 </body>
 </html>
 --- END OF src/views/index.html ---
-
---- src/app/public/css/cloud.css ---
-
-/* General Cloud Drive Styles */
-.cloud-drive-wrapper {
-    display: flex;
-    height: calc(100vh - 80px); /* Full viewport height minus dashboard padding */
-    width: 100%;
-    background-color: var(--background-main);
-    color: var(--text-color);
-    position: relative;
-}
-
-/* --- Sidebar --- */
-.drive-sidebar {
-    width: 260px;
-    background-color: var(--card-bg);
-    border-right: 1px solid var(--card-border);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-}
-
-.drive-sidebar .sidebar-header h4 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    padding: 10px 0;
-}
-
-.sidebar-nav {
-    margin-top: 20px;
-    flex-grow: 1;
-}
-
-.sidebar-nav .nav-category {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin: 25px 0 10px 10px;
-}
-
-.sidebar-nav ul {
-    list-style: none;
-}
-
-.sidebar-nav ul li a {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    border-radius: 8px;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 5px;
-    transition: all 0.2s ease;
-}
-
-.sidebar-nav ul li a:hover {
-    background-color: var(--active-bg);
-    color: var(--text-color);
-}
-
-.sidebar-nav ul li a.active {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 0 15px var(--primary-glow);
-}
-
-.sidebar-nav ul li a svg {
-    width: 20px;
-    height: 20px;
-}
-
-.sidebar-storage {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid var(--card-border);
-}
-
-.sidebar-storage p {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.storage-bar {
-    width: 100%;
-    height: 8px;
-    background-color: var(--active-bg);
-    border-radius: 4px;
-    margin: 10px 0;
-    overflow: hidden;
-}
-
-.storage-fill {
-    height: 100%;
-    background-color: var(--primary-color);
-    border-radius: 4px;
-    transition: width 0.3s ease;
-}
-
-.storage-info {
-    font-size: 0.8rem;
-}
-
-/* --- Main Content --- */
-.drive-main-content {
-    flex-grow: 1;
-    padding: 0 30px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-/* --- Drive Header --- */
-.drive-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px 0;
-    border-bottom: 1px solid var(--card-border);
-    flex-shrink: 0;
-}
-
-.breadcrumbs {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.breadcrumbs a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: color 0.2s ease;
-    cursor: pointer;
-}
-.breadcrumbs a:hover {
-    color: var(--text-color);
-}
-.breadcrumbs a.active {
-    color: var(--text-color);
-    cursor: default;
-}
-.breadcrumbs span {
-    color: var(--text-muted);
-}
-
-.header-actions {
-    display: flex;
-    gap: 15px;
-}
-
-.header-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: 8px;
-    border: 1px solid var(--card-border);
-    background-color: var(--active-bg);
-    color: var(--text-color);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.header-btn:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
-.header-btn.primary {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 15px var(--primary-glow);
-}
-.header-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px var(--primary-glow);
-}
-.header-btn svg {
-    width: 18px;
-    height: 18px;
-}
-
-/* --- Explorer Toolbar --- */
-.explorer-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0;
-}
-
-.view-toggles {
-    display: flex;
-    background-color: var(--active-bg);
-    padding: 5px;
-    border-radius: 8px;
-}
-.toggle-btn {
-    padding: 8px 15px;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.toggle-btn.active {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-}
-
-.search-bar {
-    position: relative;
-}
-.search-bar svg {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-}
-.search-bar input {
-    width: 300px;
-    padding: 12px 15px 12px 45px;
-    background-color: var(--active-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    color: var(--text-color);
-    outline: none;
-    transition: all 0.2s ease;
-}
-.search-bar input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-
-/* --- File Grid / List --- */
-#explorer-view.hidden,
-#upload-view.hidden, 
-#empty-folder-view.hidden {
-    display: none;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.file-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-    padding-bottom: 30px;
-}
-
-.file-item {
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    animation: fadeIn 0.5s ease forwards;
-    cursor: pointer;
-}
-
-.file-item.is-folder {
-    cursor: pointer;
-}
-
-.file-item:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary-color);
-}
-
-.file-item .file-icon {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-}
-.file-item .file-icon svg {
-    color: var(--primary-color);
-}
-.file-item .file-details {
-    flex-grow: 1;
-}
-.file-item .file-info {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--text-color);
-    word-break: break-all;
-}
-.file-item .file-meta {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 5px;
-}
-
-.file-actions {
-    display: flex;
-    gap: 8px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-.file-item:hover .file-actions {
-    opacity: 1;
-}
-
-.file-action-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 2px;
-}
-.file-action-btn:hover {
-    color: var(--text-color);
-}
-.file-action-btn.favorite.is-favorite svg {
-    fill: #f0a020;
-    stroke: #f0a020;
-}
-
-/* List View */
-.file-grid.list-view {
-    grid-template-columns: 1fr;
-}
-.file-grid.list-view .file-item {
-    flex-direction: row;
-    align-items: center;
-    padding: 15px 20px;
-}
-.file-grid.list-view .file-icon {
-    margin: 0;
-    margin-right: 15px;
-}
-.file-grid.list-view .file-details {
-    flex-grow: 1;
-}
-.file-grid.list-view .file-actions {
-    opacity: 1; /* Always visible in list view */
-}
-
-/* Empty Folder View */
-.empty-folder-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-muted);
-}
-
-.empty-folder-view svg {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 20px;
-}
-.empty-folder-view h3 {
-    font-size: 1.5rem;
-    color: var(--text-color);
-}
-.empty-folder-view p {
-    margin-top: 10px;
-}
-
-/* --- Upload View --- */
-.upload-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px 0;
-    border-bottom: 1px solid var(--card-border);
-    flex-shrink: 0;
-}
-.upload-header h4 {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-.upload-area {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-}
-.upload-area h2 {
-    font-size: 2rem;
-}
-.upload-area > p {
-    color: var(--text-muted);
-    margin-top: 10px;
-    max-width: 400px;
-}
-.drop-zone {
-    width: 100%;
-    max-width: 600px;
-    border: 2px dashed var(--card-border);
-    border-radius: 16px;
-    padding: 40px;
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    background-color: rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-}
-.drop-zone.drag-over {
-    border-color: var(--primary-color);
-    background-color: var(--active-bg);
-}
-.drop-zone svg {
-    color: var(--text-muted);
-}
-.drop-zone h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-.upload-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.upload-queue {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.upload-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-    text-align: left;
-    width: 100%;
-}
-.upload-item p {
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 1;
-}
-.upload-item p span {
-    display: block;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
-.upload-progress {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.upload-progress-bar {
-    width: 100%;
-    height: 6px;
-    background-color: var(--active-bg);
-    border-radius: 3px;
-}
-.upload-progress-fill {
-    height: 100%;
-    width: 0%;
-    background-color: var(--primary-color);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-}
-.upload-percentage {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-muted);
-}
-
-.upload-complete-btn {
-    margin-top: 30px;
-    padding: 12px 30px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: default;
-    opacity: 0;
-    animation: fadeIn 0.5s ease forwards;
-}
-
-/* --- Custom Cloud Modals --- */
-.cloud-modal-overlay {
-    position: absolute; /* Changed to stay within the wrapper */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
-}
-.cloud-modal-overlay:not(.hidden) {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.cloud-modal-content {
-    background-color: var(--card-bg);
-    padding: 30px;
-    border-radius: 16px;
-    border: 1px solid var(--card-border);
-    width: 90%;
-    max-width: 400px;
-    transform: scale(0.95);
-    transition: transform 0.2s ease-in-out;
-}
-.cloud-modal-overlay:not(.hidden) .cloud-modal-content {
-    transform: scale(1);
-}
-
-.cloud-modal-content h3 {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-}
-.cloud-modal-content p {
-    color: var(--text-muted);
-    margin-bottom: 25px;
-    line-height: 1.6;
-}
-.cloud-modal-content p strong {
-    color: var(--text-color);
-    font-weight: 600;
-}
-.cloud-modal-content input {
-    width: 100%;
-    padding: 12px 15px;
-    background: var(--background-main);
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    color: var(--text-color);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-.cloud-modal-content input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-.cloud-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 25px;
-}
-.cloud-modal-btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: 1px solid var(--card-border);
-    background-color: var(--active-bg);
-    color: var(--text-color);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.cloud-modal-btn.primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-}
-.cloud-modal-btn.danger {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
-    color: white;
-}
-
-/* File Preview Modal */
-.file-preview-overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 101;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
-}
-.file-preview-overlay:not(.hidden) {
-    opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.3s ease;
-}
-.file-preview-content {
-    width: 90%;
-    height: 90%;
-    max-width: 1200px;
-    background: var(--background-main);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-}
-.file-preview-overlay:not(.hidden) .file-preview-content {
-    transform: scale(1);
-}
-.preview-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-bottom: 1px solid var(--card-border);
-}
-.preview-header h3 {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-#close-preview-btn {
-    background: none; border: none; font-size: 2rem; color: var(--text-muted); cursor: pointer; line-height: 1; transition: color 0.2s ease;
-}
-#close-preview-btn:hover {
-    color: var(--text-color);
-}
-.preview-container {
-    flex-grow: 1;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: auto;
-}
-.preview-container img, .preview-container iframe, .preview-container video {
-    max-width: 100%;
-    max-height: 100%;
-    border: none;
-    border-radius: 8px;
-}
-.preview-container pre {
-    background: var(--card-bg);
-    padding: 20px;
-    border-radius: 8px;
-    color: var(--text-color);
-    white-space: pre-wrap;
-    word-break: break-all;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-}
-.preview-no-preview {
-    text-align: center;
-    color: var(--text-muted);
-}
-.preview-no-preview svg { width: 64px; height: 64px; margin-bottom: 20px; }
-.preview-no-preview a { color: var(--primary-color); text-decoration: none; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; transform: scale(1); }
-    to { opacity: 0; transform: scale(0.9); }
-}
---- END OF src/app/public/css/cloud.css ---
 
 --- src/app/public/css/start.css ---
 
@@ -2111,6 +1444,934 @@ body {
     }
 }
 --- END OF src/app/public/css/dashboard.css ---
+
+--- src/app/public/css/cloud/upload.css ---
+
+/* --- Upload View --- */
+.upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 0;
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+.upload-header h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.upload-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+.upload-area h2 {
+    font-size: 2rem;
+}
+.upload-area > p {
+    color: var(--text-muted);
+    margin-top: 10px;
+    max-width: 400px;
+}
+.drop-zone {
+    width: 100%;
+    max-width: 600px;
+    border: 2px dashed var(--card-border);
+    border-radius: 16px;
+    padding: 40px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+.drop-zone.drag-over {
+    border-color: var(--primary-color);
+    background-color: var(--active-bg);
+}
+.drop-zone svg {
+    color: var(--text-muted);
+}
+.drop-zone h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+.upload-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.upload-queue {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.upload-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    gap: 15px;
+}
+.upload-item-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+.upload-item-info .file-name {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+.upload-item-info .upload-status-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.upload-progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: var(--active-bg);
+    border-radius: 3px;
+    margin-top: 5px;
+}
+.upload-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+.upload-percentage {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    width: 50px;
+    text-align: right;
+}
+
+/* --- Toast Notifications --- */
+#cloud-toast-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 110;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.cloud-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    animation: slideInUp 0.3s ease-out forwards, fadeOut 0.3s ease-in 3.7s forwards;
+}
+
+.cloud-toast.success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.cloud-toast.error {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(50px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+--- END OF src/app/public/css/cloud/upload.css ---
+
+--- src/app/public/css/cloud/explorer.css ---
+
+/* --- Drive Header --- */
+.drive-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 0;
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.breadcrumbs a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+.breadcrumbs a:hover {
+    color: var(--text-color);
+}
+.breadcrumbs a.active {
+    color: var(--text-color);
+    cursor: default;
+}
+.breadcrumbs span {
+    color: var(--text-muted);
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.header-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background-color: var(--active-bg);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.header-btn.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+.header-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px var(--primary-glow);
+}
+.header-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- Explorer Toolbar --- */
+.explorer-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.view-toggles {
+    display: flex;
+    background-color: var(--active-bg);
+    padding: 5px;
+    border-radius: 8px;
+}
+.toggle-btn {
+    padding: 8px 15px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toggle-btn.active {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* --- Selection Toolbar --- */
+.selection-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--active-bg);
+    padding: 5px;
+    border-radius: 8px;
+}
+.selection-toolbar span {
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0 10px;
+    color: var(--text-muted);
+}
+.toolbar-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.toolbar-action-btn:hover {
+    background-color: var(--card-bg);
+}
+.toolbar-action-btn.danger:hover {
+    color: var(--danger-color);
+}
+
+.search-bar {
+    position: relative;
+}
+.search-bar svg {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+.search-bar input {
+    width: 300px;
+    padding: 12px 15px 12px 45px;
+    background-color: var(--active-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    outline: none;
+    transition: all 0.2s ease;
+}
+.search-bar input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* --- File Grid / List --- */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding-bottom: 30px;
+    user-select: none; /* Prevent text selection during drag */
+}
+
+.file-item {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    cursor: pointer;
+    position: relative;
+}
+
+.file-item.is-folder {
+    cursor: pointer;
+}
+
+.file-item:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary-color);
+}
+
+.file-item.selected {
+    border-color: var(--primary-color);
+    background-color: var(--active-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+.file-item.selected .selection-checkbox {
+    opacity: 1;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.file-item.selected .selection-checkbox svg {
+    transform: scale(1);
+}
+
+.selection-checkbox {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    background-color: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    opacity: 0.5;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.selection-checkbox svg {
+    width: 16px;
+    height: 16px;
+    stroke: white;
+    stroke-width: 2.5;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+}
+.file-item:hover .selection-checkbox {
+    opacity: 1;
+}
+
+.file-item .file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.file-item .file-icon svg {
+    color: var(--primary-color);
+}
+.file-item .file-details {
+    flex-grow: 1;
+}
+.file-item .file-info {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    word-break: break-all;
+}
+.file-item .file-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.file-item:hover .file-actions {
+    opacity: 1;
+}
+.file-item.selected .file-actions {
+    opacity: 0; /* Hide individual actions when selected */
+}
+
+
+.file-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+}
+.file-action-btn:hover {
+    color: var(--text-color);
+}
+.file-action-btn.favorite.is-favorite svg {
+    fill: #f0a020;
+    stroke: #f0a020;
+}
+
+/* List View */
+.file-grid.list-view {
+    grid-template-columns: 1fr;
+}
+.file-grid.list-view .file-item {
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
+    padding-right: 45px; /* space for checkbox */
+}
+.file-grid.list-view .selection-checkbox {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 15px;
+}
+.file-grid.list-view .file-icon {
+    margin: 0;
+    margin-right: 15px;
+}
+.file-grid.list-view .file-details {
+    flex-grow: 1;
+}
+.file-grid.list-view .file-actions {
+    opacity: 1; /* Always visible in list view */
+}
+.file-grid.list-view .file-item.selected .file-actions {
+    opacity: 0;
+}
+
+/* Empty Folder View */
+.empty-folder-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+}
+
+.empty-folder-view svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+}
+.empty-folder-view h3 {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+.empty-folder-view p {
+    margin-top: 10px;
+}
+
+/* --- Marquee Selection Box --- */
+.marquee-selection-box {
+    position: absolute;
+    border: 1px solid var(--primary-color);
+    background-color: var(--primary-glow);
+    pointer-events: none;
+    z-index: 99;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .drive-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .explorer-toolbar {
+        flex-direction: column-reverse;
+        gap: 15px;
+        align-items: stretch;
+    }
+    .search-bar input {
+        width: 100%;
+    }
+    .selection-toolbar {
+        justify-content: space-between;
+    }
+    .file-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+}
+--- END OF src/app/public/css/cloud/explorer.css ---
+
+--- src/app/public/css/cloud/layout.css ---
+
+/* General Cloud Drive Styles */
+.cloud-drive-wrapper {
+    display: flex;
+    height: calc(100vh - 80px); /* Full viewport height minus dashboard padding */
+    width: 100%;
+    background-color: var(--background-main);
+    color: var(--text-color);
+    position: relative;
+}
+
+/* --- Sidebar --- */
+.drive-sidebar {
+    width: 260px;
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--card-border);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.drive-sidebar .sidebar-header h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 10px 0;
+}
+
+.sidebar-nav {
+    margin-top: 20px;
+    flex-grow: 1;
+}
+
+.sidebar-nav .nav-category {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 25px 0 10px 10px;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav ul li a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 5px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav ul li a:hover {
+    background-color: var(--active-bg);
+    color: var(--text-color);
+}
+
+.sidebar-nav ul li a.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.sidebar-nav ul li a svg {
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar-storage {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--card-border);
+}
+
+.sidebar-storage p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.storage-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--active-bg);
+    border-radius: 4px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.storage-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.storage-info {
+    font-size: 0.8rem;
+}
+
+/* --- Main Content --- */
+.drive-main-content {
+    flex-grow: 1;
+    padding: 0 30px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden; /* Prevents horizontal scrollbar */
+    position: relative; /* For marquee selection */
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.9); }
+}
+
+@media (max-width: 992px) {
+    .cloud-drive-wrapper {
+        height: auto;
+    }
+    .drive-sidebar {
+        display: none; /* Handled by main dashboard CSS */
+    }
+    .drive-main-content {
+        padding: 0 15px;
+    }
+}
+--- END OF src/app/public/css/cloud/layout.css ---
+
+--- src/app/public/css/cloud/modals.css ---
+
+/* --- Custom Cloud Modals --- */
+.cloud-modal-overlay {
+    position: absolute; /* Changed to stay within the wrapper */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
+}
+.cloud-modal-overlay:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.cloud-modal-content {
+    background-color: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid var(--card-border);
+    width: 90%;
+    max-width: 450px;
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+}
+.cloud-modal-overlay:not(.hidden) .cloud-modal-content {
+    transform: scale(1);
+}
+
+.cloud-modal-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+.cloud-modal-content p {
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+.cloud-modal-content p strong {
+    color: var(--text-color);
+    font-weight: 600;
+}
+.cloud-modal-content input {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+.cloud-modal-content input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+.cloud-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+.cloud-modal-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+    background-color: var(--active-bg);
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cloud-modal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.cloud-modal-btn.primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+.cloud-modal-btn.danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+}
+
+/* --- Move Item Modal Specifics --- */
+.move-folder-tree {
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 10px;
+}
+.move-folder-tree ul {
+    list-style: none;
+}
+.move-folder-tree li {
+    padding-left: 20px;
+}
+.folder-tree-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.folder-tree-item:hover {
+    background-color: var(--active-bg);
+}
+.folder-tree-item.selected {
+    background-color: var(--primary-color);
+    color: white;
+}
+.folder-tree-item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+
+/* File Preview Modal */
+.file-preview-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 101;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+.file-preview-overlay:not(.hidden) {
+    opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.3s ease;
+}
+.file-preview-content {
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    background: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+.file-preview-overlay:not(.hidden) .file-preview-content {
+    transform: scale(1);
+}
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--card-border);
+}
+.preview-header h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#close-preview-btn {
+    background: none; border: none; font-size: 2rem; color: var(--text-muted); cursor: pointer; line-height: 1; transition: color 0.2s ease;
+}
+#close-preview-btn:hover {
+    color: var(--text-color);
+}
+.preview-container {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+.preview-container img, .preview-container iframe, .preview-container video {
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+.preview-container pre {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    color: var(--text-color);
+    white-space: pre-wrap;
+    word-break: break-all;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+.preview-no-preview {
+    text-align: center;
+    color: var(--text-muted);
+}
+.preview-no-preview svg { width: 64px; height: 64px; margin-bottom: 20px; }
+.preview-no-preview a { color: var(--primary-color); text-decoration: none; }
+--- END OF src/app/public/css/cloud/modals.css ---
 
 --- src/app/public/css/download.css ---
 
@@ -3036,8 +3297,6 @@ router.get('/download/:id', async (req, res) => {
     }
 });
 
-
-// Other routes remain unchanged...
 router.get('/items', async (req, res) => {
     try {
         const owner = req.user.username;
@@ -3109,6 +3368,31 @@ router.post('/folder', async (req, res) => {
     }
 });
 
+router.get('/folders', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const [folders] = await db.query(
+            "SELECT id, name, parent_id FROM cloud_items WHERE owner_username = ? AND type = 'folder' AND is_trashed = false ORDER BY name ASC",
+            [owner]
+        );
+
+        const buildTree = (items, parentId = null) => {
+            return items
+                .filter(item => item.parent_id === parentId)
+                .map(item => ({
+                    ...item,
+                    children: buildTree(items, item.id)
+                }));
+        };
+        
+        const folderTree = buildTree(folders);
+        res.json(folderTree);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching folder structure.' });
+    }
+});
+
 router.patch('/item/:id/favorite', async (req, res) => {
     try {
         const owner = req.user.username;
@@ -3118,6 +3402,49 @@ router.patch('/item/:id/favorite', async (req, res) => {
         res.status(200).json({ message: 'Favorite status updated.' });
     } catch (error) {
         res.status(500).json({ message: 'Error updating favorite status.' });
+    }
+});
+
+router.post('/items/trash', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const { itemIds } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ message: 'No item IDs provided.' });
+        }
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET is_trashed = true, is_favorite = false WHERE id IN (?) AND owner_username = ?',
+            [itemIds, owner]
+        );
+
+        res.status(200).json({ message: `${result.affectedRows} items moved to trash.` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error moving items to trash.' });
+    }
+});
+
+router.patch('/items/move', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        let { itemIds, destinationId } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ message: 'No item IDs provided.' });
+        }
+        if (destinationId === 'root') {
+            destinationId = null;
+        }
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET parent_id = ? WHERE id IN (?) AND owner_username = ?',
+            [destinationId, itemIds, owner]
+        );
+
+        res.status(200).json({ message: `${result.affectedRows} items moved.` });
+    } catch(error) {
+        res.status(500).json({ message: 'Error moving items.' });
     }
 });
 
@@ -3219,7 +3546,7 @@ const initializeDatabase = require('./config/db_init');
 const authMiddleware = require('./middleware/authMiddleware');
 const cleanupService = require('./modules/cleanup');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3010;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -3246,7 +3573,7 @@ const startServer = async () => {
         await initializeDatabase();
         cleanupService.start();
         app.listen(port, () => {
-            console.log("Server is running on ${process.env.DOMAIN}:${port}");
+            console.log(`Server is running on ${process.env.DOMAIN}:${port}`);
         });
     } catch (error) {
         console.error("Server konnte nicht gestartet werden:", error);
@@ -3263,7 +3590,7 @@ const authMiddleware = (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.redirect('/login');
+        return res.redirect('login');
     }
 
     try {
@@ -3272,7 +3599,7 @@ const authMiddleware = (req, res, next) => {
         next();
     } catch (error) {
         res.clearCookie('token');
-        return res.redirect('/login');
+        return res.redirect('login');
     }
 };
 
@@ -3401,7 +3728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = content;
     };
-    
+
     const loadHTML = (elementId, url) => {
         return fetch(url).then(response => response.text()).then(data => injectContent(elementId, data)).catch(error => console.error('Error loading HTML:', error));
     };
@@ -3466,7 +3793,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const showRandomNotification = () => {
             const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
             const container = document.getElementById('live-notification-container');
-            
+
             const notification = document.createElement('div');
             notification.className = 'live-notification';
             notification.innerHTML = `
@@ -3487,15 +3814,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 startNotifications();
             }, (30 + Math.random() * 30) * 1000);
         };
-        
+
         setTimeout(startNotifications, 10000);
     };
 
     const setupSecretsAndEvents = () => {
         console.log("%c                 _ _       \n ___ ___ ___ _| | |_ ___ \n|  _| . | -_| . | . | -_|\n|___|___|___|___|___|___|\n\n%cLooking under the hood? You're in the right place.\nFileForge is proudly open source (GPL-3.0).", "color: var(--primary-color); font-weight: bold;", "color: #c1c1c1;");
-        
+
         const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        let konamiIndex = 0;1
+        let konamiIndex = 0; 1
         document.addEventListener('keydown', (e) => {
             if (e.key === konamiSequence[konamiIndex]) {
                 konamiIndex++;
@@ -3509,7 +3836,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('click', (e) => {
             const navLogo = e.target.closest('#main-header .logo');
             if (navLogo) {
-                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             const logoText = e.target.closest('.logo span');
@@ -3532,7 +3859,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const footerLogo = e.target.closest('#main-footer .footer-logo');
-            if(footerLogo) {
+            if (footerLogo) {
                 const now = new Date().getTime();
                 const lastClick = parseInt(footerLogo.dataset.lastClick) || 0;
                 let clicks = parseInt(footerLogo.dataset.clicks) || 0;
@@ -3555,8 +3882,8 @@ document.addEventListener('DOMContentLoaded', () => {
         content.classList.add('loaded');
 
         Promise.all([
-            loadHTML('main-header', '/models/_nav.html'),
-            loadHTML('main-footer', '/models/_footer.html')
+            loadHTML('main-header', 'models/_nav.html'),
+            loadHTML('main-footer', 'models/_footer.html')
         ]).then(() => {
             for (const id in ICONS) injectContent(id, ICONS[id]);
             setupIntersectionObserver();
@@ -3640,7 +3967,7 @@ module.exports = router;
 
     const loadSettings = async () => {
         try {
-            const response = await fetch('/api/user/settings');
+            const response = await fetch('api/user/settings');
             if (response.ok) {
                 const settings = await response.json();
                 
@@ -3679,14 +4006,14 @@ module.exports = router;
         };
 
         try {
-            const response = await fetch('/api/user/settings', {
+            const response = await fetch('api/user/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settingsData)
             });
 
             if(response.ok) {
-                initialSettings = await (await fetch('/api/user/settings')).json();
+                initialSettings = await (await fetch('api/user/settings')).json();
                 
                 checkForChanges();
                 
@@ -3703,457 +4030,6 @@ module.exports = router;
     });
 })();
 --- END OF src/app/public/js/settings.js ---
-
---- src/app/public/js/cloud.js ---
-
-(() => {
-    // --- DOM ELEMENTS ---
-    const explorerView = document.getElementById('explorer-view');
-    const uploadView = document.getElementById('upload-view');
-    const explorerUploadBtn = document.getElementById('explorer-upload-btn');
-    const explorerBtn = document.getElementById('explorer-btn');
-    const gridViewBtn = document.getElementById('grid-view-btn');
-    const listViewBtn = document.getElementById('list-view-btn');
-    const fileGrid = document.getElementById('file-grid');
-    const searchInput = document.getElementById('file-search-input');
-    const newBtn = document.getElementById('new-btn');
-    const dropZone = document.getElementById('drop-zone');
-    const uploadQueueContainer = document.getElementById('upload-queue');
-    const uploadCompleteBtn = document.getElementById('upload-complete-btn');
-    const breadcrumbsContainer = document.getElementById('breadcrumbs');
-    const emptyFolderView = document.getElementById('empty-folder-view');
-    const emptyFolderTitle = document.getElementById('empty-folder-title');
-    const emptyFolderText = document.getElementById('empty-folder-text');
-    
-    // Modals
-    const createFolderModal = document.getElementById('create-folder-modal');
-    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
-    const newFolderNameInput = document.getElementById('new-folder-name-input');
-    const confirmCreateFolderBtn = document.getElementById('confirm-create-folder');
-    const cancelCreateFolderBtn = document.getElementById('cancel-create-folder');
-    const confirmDeleteBtn = document.getElementById('confirm-delete');
-    const cancelDeleteBtn = document.getElementById('cancel-delete');
-    const deleteModalText = document.getElementById('delete-modal-text');
-
-    // Preview Modal
-    const previewModal = document.getElementById('file-preview-modal');
-    const previewContainer = document.getElementById('preview-container');
-    const previewFileName = document.getElementById('preview-file-name');
-    const closePreviewBtn = document.getElementById('close-preview-btn');
-
-    const navLinks = {
-        myFiles: document.getElementById('nav-my-files'),
-        favorites: document.getElementById('nav-favorites'),
-        trash: document.getElementById('nav-trash')
-    };
-
-    // --- ICONS ---
-    const ICONS = {
-        folder: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
-        file: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
-        favorite: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
-        delete: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`
-    };
-    
-    // --- STATE MANAGEMENT ---
-    let state = {
-        currentView: 'myFiles',
-        currentParentId: null,
-        currentPath: [{ id: null, name: 'Home' }],
-        items: [],
-        itemToDelete: null
-    };
-
-    // --- API FUNCTIONS ---
-    const fetchItems = async (parentId = null) => {
-        try {
-            const url = parentId ? `/api/cloud/items?parentId=${parentId}` : '/api/cloud/items';
-            const response = await fetch(url);
-            state.items = await response.json();
-            updateUI();
-        } catch (error) {
-            console.error("Failed to fetch items:", error);
-        }
-    };
-    
-    const fetchPath = async (itemId) => {
-        if (!itemId) {
-            state.currentPath = [{ id: null, name: 'Home' }];
-            return;
-        }
-        try {
-            const response = await fetch(`/api/cloud/path/${itemId}`);
-            state.currentPath = await response.json();
-        } catch (error) {
-            console.error("Failed to fetch path:", error);
-        }
-    }
-
-    const fetchView = async (viewName) => {
-        try {
-            const response = await fetch(`/api/cloud/${viewName}`);
-            state.items = await response.json();
-            updateUI();
-        } catch (error) {
-            console.error(`Failed to fetch ${viewName}:`, error);
-        }
-    }
-
-    // --- RENDER FUNCTIONS ---
-    const setActiveSidebarLink = () => {
-        Object.values(navLinks).forEach(link => link.classList.remove('active'));
-        if (navLinks[state.currentView]) {
-            navLinks[state.currentView].classList.add('active');
-        } else {
-             navLinks.myFiles.classList.add('active');
-        }
-    };
-
-    const renderBreadcrumbs = () => {
-        breadcrumbsContainer.innerHTML = '';
-        if (state.currentView !== 'myFiles') {
-            const viewName = state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1);
-            breadcrumbsContainer.innerHTML = `<a class="active">${viewName}</a>`;
-            return;
-        }
-        state.currentPath.forEach((part, index) => {
-            if (index > 0) {
-                breadcrumbsContainer.innerHTML += `<span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`;
-            }
-            const isLast = index === state.currentPath.length - 1;
-            breadcrumbsContainer.innerHTML += `<a class="${isLast ? 'active' : ''}" data-id="${part.id}">${part.name}</a>`;
-        });
-    };
-    
-    const renderFiles = () => {
-        fileGrid.innerHTML = '';
-        const itemsToRender = state.items;
-        
-        if (itemsToRender.length === 0) {
-            emptyFolderView.classList.remove('hidden');
-            fileGrid.classList.add('hidden');
-             if (state.currentView === 'favorites') {
-                emptyFolderTitle.textContent = 'No favorites yet';
-                emptyFolderText.textContent = 'Click the star icon on any file or folder to add it here.';
-            } else if (state.currentView === 'trash') {
-                emptyFolderTitle.textContent = 'Trash is empty';
-                emptyFolderText.textContent = 'Deleted items will appear here.';
-            } else {
-                emptyFolderTitle.textContent = 'This folder is empty';
-                emptyFolderText.textContent = 'Drag and drop files here or use the "Upload" button.';
-            }
-        } else {
-            emptyFolderView.classList.add('hidden');
-            fileGrid.classList.remove('hidden');
-        }
-
-        itemsToRender.sort((a,b) => (a.type === 'folder' && b.type !== 'file') ? -1 : 1).forEach(item => {
-            const meta = item.file_meta ? JSON.parse(item.file_meta) : {};
-            const fileMeta = item.type === 'folder' ? '' : `${(meta.fileType || 'file').toUpperCase()} • ${meta.size || '0 KB'}`;
-            
-            const fileElementHTML = `<div class="file-item ${item.type === 'folder' ? 'is-folder' : ''}" data-id="${item.id}" data-name="${item.name}"><div class="file-icon">${ICONS[item.type]}</div><div class="file-details"><p class="file-info">${item.name}</p><p class="file-meta">${fileMeta}</p></div><div class="file-actions"><button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button><button class="file-action-btn" data-action="delete">${ICONS.delete}</button></div></div>`;
-            fileGrid.insertAdjacentHTML('beforeend', fileElementHTML);
-        });
-    };
-
-    const updateUI = () => {
-        setActiveSidebarLink();
-        renderBreadcrumbs();
-        renderFiles();
-        newBtn.style.display = state.currentView === 'myFiles' ? 'flex' : 'none';
-        searchInput.style.display = 'none';
-    };
-
-    // --- ACTION HANDLERS ---
-    const switchToExplorer = () => {
-        explorerView.classList.remove('hidden');
-        uploadView.classList.add('hidden');
-    };
-
-    const switchToUpload = () => {
-        explorerView.classList.add('hidden');
-        uploadView.classList.remove('hidden');
-    };
-    
-    const navigateToFolder = async (folderId) => {
-        state.currentParentId = folderId;
-        await fetchPath(folderId);
-        await fetchItems(folderId);
-    };
-
-    const navigateToBreadcrumb = async (element) => {
-        const id = element.dataset.id === 'null' ? null : parseInt(element.dataset.id);
-        state.currentParentId = id;
-        await fetchPath(id);
-        await fetchItems(id);
-    };
-
-    const openCreateFolderModal = () => {
-        createFolderModal.classList.remove('hidden');
-        newFolderNameInput.value = '';
-        newFolderNameInput.focus();
-    };
-
-    const closeCreateFolderModal = () => createFolderModal.classList.add('hidden');
-    
-    const handleCreateFolder = async () => {
-        const folderName = newFolderNameInput.value.trim();
-        if (folderName) {
-            await fetch('/api/cloud/folder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: folderName, parentId: state.currentParentId })
-            });
-            await fetchItems(state.currentParentId);
-            closeCreateFolderModal();
-        }
-    };
-
-    const openDeleteModal = (itemElement) => {
-        state.itemToDelete = { id: itemElement.dataset.id, name: itemElement.dataset.name };
-        deleteModalText.innerHTML = `Are you sure you want to move "<strong>${state.itemToDelete.name}</strong>" to the Trash?`;
-        confirmDeleteModal.classList.remove('hidden');
-    };
-    
-    const closeDeleteModal = () => {
-        confirmDeleteModal.classList.add('hidden');
-        state.itemToDelete = null;
-    };
-    
-    const handleDeleteItem = async () => {
-        if (!state.itemToDelete) return;
-        await fetch(`/api/cloud/item/${state.itemToDelete.id}`, { method: 'DELETE' });
-        
-        if (state.currentView === 'myFiles') await fetchItems(state.currentParentId);
-        else await fetchView(state.currentView);
-        
-        closeDeleteModal();
-    };
-    
-    const toggleFavorite = async (itemId, currentStatus) => {
-        await fetch(`/api/cloud/item/${itemId}/favorite`, {
-            method: 'PATCH',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ isFavorite: !currentStatus })
-        });
-        
-        if (state.currentView === 'myFiles') await fetchItems(state.currentParentId);
-        else await fetchView(state.currentView);
-    };
-
-    const openFilePreview = async (itemId, itemName) => {
-        previewFileName.textContent = itemName;
-        previewContainer.innerHTML = '<h4>Loading preview...</h4>';
-        previewModal.classList.remove('hidden');
-
-        try {
-            const response = await fetch(`/api/cloud/download/${itemId}`);
-            const data = await response.json();
-
-            if (!response.ok) throw new Error(data.message);
-
-            const { tempPath } = data;
-            const fileType = itemName.split('.').pop().toLowerCase();
-            const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-            const videoTypes = ['mp4', 'webm', 'ogg'];
-            const textTypes = ['txt', 'md', 'js', 'css', 'html', 'json', 'log'];
-
-            if (imageTypes.includes(fileType)) {
-                previewContainer.innerHTML = `<img src="${tempPath}" alt="${itemName}">`;
-            } else if (fileType === 'pdf') {
-                previewContainer.innerHTML = `<iframe src="${tempPath}"></iframe>`;
-            } else if (videoTypes.includes(fileType)) {
-                previewContainer.innerHTML = `<video controls src="${tempPath}"></video>`;
-            } else if (textTypes.includes(fileType)) {
-                const textContent = await (await fetch(tempPath)).text();
-                previewContainer.innerHTML = `<pre>${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
-            } else {
-                previewContainer.innerHTML = `<div class="preview-no-preview">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <h3>No preview available for this file type.</h3>
-                    <p><a href="${tempPath}" download="${itemName}">Download the file directly</a> to view it.</p>
-                </div>`;
-            }
-        } catch (error) {
-            previewContainer.innerHTML = `<h4>Error loading preview: ${error.message}</h4>`;
-        }
-    };
-
-    const closeFilePreview = () => {
-        previewModal.classList.add('hidden');
-        previewContainer.innerHTML = '';
-        previewFileName.textContent = '';
-    };
-
-    // --- EVENT LISTENERS ---
-    explorerUploadBtn.addEventListener('click', switchToUpload);
-    explorerBtn.addEventListener('click', async () => {
-        switchToExplorer();
-        if(state.currentView === 'myFiles') await fetchItems(state.currentParentId);
-    });
-
-    gridViewBtn.addEventListener('click', () => {
-        fileGrid.classList.remove('list-view');
-        gridViewBtn.classList.add('active');
-        listViewBtn.classList.remove('active');
-    });
-
-    listViewBtn.addEventListener('click', () => {
-        fileGrid.classList.add('list-view');
-        listViewBtn.classList.add('active');
-        gridViewBtn.classList.remove('active');
-    });
-
-    newBtn.addEventListener('click', openCreateFolderModal);
-    
-    breadcrumbsContainer.addEventListener('click', (e) => {
-        const target = e.target.closest('a');
-        if (target && !target.classList.contains('active')) {
-            navigateToBreadcrumb(target);
-        }
-    });
-
-    fileGrid.addEventListener('click', (e) => {
-        const fileItem = e.target.closest('.file-item');
-        if (!fileItem) return;
-        const actionBtn = e.target.closest('.file-action-btn');
-        if (actionBtn) {
-            e.stopPropagation();
-            const action = actionBtn.dataset.action;
-            const itemId = fileItem.dataset.id;
-            if (action === 'favorite') {
-                const currentStatus = actionBtn.classList.contains('is-favorite');
-                toggleFavorite(itemId, currentStatus);
-            }
-            if (action === 'delete') openDeleteModal(fileItem);
-        } else if (fileItem.classList.contains('is-folder')) {
-            navigateToFolder(parseInt(fileItem.dataset.id));
-        } else {
-            openFilePreview(fileItem.dataset.id, fileItem.dataset.name);
-        }
-    });
-    
-    const setupSidebarNav = async (viewName) => {
-        state.currentView = viewName;
-        state.currentParentId = null;
-        
-        if(viewName === 'myFiles') {
-            state.currentPath = [{id: null, name: 'Home'}];
-            await fetchItems();
-        } else {
-            state.currentPath = [];
-            await fetchView(viewName);
-        }
-    };
-
-    navLinks.myFiles.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('myFiles'); });
-    navLinks.favorites.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('favorites'); });
-    navLinks.trash.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('trash'); });
-
-    // Modal Event Listeners
-    confirmCreateFolderBtn.addEventListener('click', handleCreateFolder);
-    cancelCreateFolderBtn.addEventListener('click', closeCreateFolderModal);
-    createFolderModal.addEventListener('click', (e) => { if(e.target === createFolderModal) closeCreateFolderModal(); });
-    newFolderNameInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') handleCreateFolder(); });
-
-    confirmDeleteBtn.addEventListener('click', handleDeleteItem);
-    cancelDeleteBtn.addEventListener('click', closeDeleteModal);
-    confirmDeleteModal.addEventListener('click', (e) => { if(e.target === confirmDeleteModal) closeDeleteModal(); });
-
-    closePreviewBtn.addEventListener('click', closeFilePreview);
-    previewModal.addEventListener('click', (e) => {
-       if (e.target === previewModal) closeFilePreview();
-    });
-
-    // Upload Logic with Real Progress
-    const uploadFile = (file, parentId) => {
-        return new Promise((resolve, reject) => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('parentId', parentId === null ? 'null' : parentId);
-
-            const xhr = new XMLHttpRequest();
-            const elId = `upload-item-${Date.now()}-${Math.random()}`;
-            const uploadItemHTML = `<div class="upload-item" id="${elId}"><p>${file.name}<span>Uploading...</span></p><div class="upload-progress"><div class="upload-progress-bar"><div class="upload-progress-fill"></div></div><span class="upload-percentage">0%</span></div></div>`;
-            uploadQueueContainer.insertAdjacentHTML('beforeend', uploadItemHTML);
-            
-            const itemElement = document.getElementById(elId);
-            const fill = itemElement.querySelector('.upload-progress-fill');
-            const percent = itemElement.querySelector('.upload-percentage');
-
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percentage = Math.round((e.loaded / e.total) * 100);
-                    fill.style.width = percentage + '%';
-                    percent.textContent = percentage + '%';
-                }
-            });
-            
-            xhr.addEventListener('load', () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    resolve(JSON.parse(xhr.responseText));
-                } else {
-                    const errorResponse = JSON.parse(xhr.responseText);
-                    itemElement.querySelector('span').textContent = `Error: ${errorResponse.message}`;
-                    itemElement.querySelector('.upload-progress-bar').style.backgroundColor = 'var(--danger-color)';
-                    reject(new Error(errorResponse.message));
-                }
-            });
-            xhr.addEventListener('error', () => reject(new Error('Network error')));
-
-            xhr.open('POST', '/api/cloud/upload');
-            xhr.send(formData);
-        });
-    };
-
-    const handleFiles = async (files) => {
-        uploadQueueContainer.innerHTML = '';
-        uploadCompleteBtn.classList.add('hidden');
-        uploadCompleteBtn.style.backgroundColor = ''; // Reset color
-        
-        let fileList = Array.from(files);
-        if (fileList.length === 0) return;
-
-        let completed = 0;
-        
-        for(const file of fileList) {
-            try {
-                await uploadFile(file, state.currentParentId);
-                completed++;
-            } catch (error) {
-                console.error(`Failed to upload ${file.name}:`, error);
-            }
-        }
-
-        if(completed > 0) {
-            uploadCompleteBtn.textContent = `Upload complete: ${completed} file(s) added`;
-            uploadCompleteBtn.classList.remove('hidden');
-        } else if (fileList.length > 0) {
-            uploadCompleteBtn.textContent = `Upload failed. Please check settings.`;
-            uploadCompleteBtn.style.backgroundColor = 'var(--danger-color)';
-            uploadCompleteBtn.classList.remove('hidden');
-        }
-    };
-    
-    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('drag-over');
-        if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
-    });
-    document.getElementById('browse-files-btn').addEventListener('click', () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.multiple = true;
-        input.onchange = e => handleFiles(e.target.files);
-        input.click();
-    });
-
-    // --- INITIALIZATION ---
-    fetchItems();
-})();
---- END OF src/app/public/js/cloud.js ---
 
 --- src/app/public/js/download.js ---
 
@@ -4238,6 +4114,781 @@ module.exports = router;
 
 })();
 --- END OF src/app/public/js/download.js ---
+
+--- src/app/public/js/cloud/upload.js ---
+
+import { DOM } from './constants.js';
+import { state } from './state.js';
+
+function formatTime(seconds) {
+    if (seconds < 60) return `${Math.round(seconds)}s remaining`;
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m remaining`;
+}
+
+function formatSpeed(bytesPerSecond) {
+    if (bytesPerSecond < 1024) return `${bytesPerSecond.toFixed(0)} B/s`;
+    if (bytesPerSecond < 1024 * 1024) return `${(bytesPerSecond / 1024).toFixed(1)} KB/s`;
+    return `${(bytesPerSecond / (1024 * 1024)).toFixed(1)} MB/s`;
+}
+
+function uploadFile(file, parentId, onProgress) {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('parentId', parentId === null ? 'null' : parentId);
+
+        const xhr = new XMLHttpRequest();
+        const elId = `upload-item-${Date.now()}-${Math.random()}`;
+        const uploadItemHTML = `
+            <div class="upload-item" id="${elId}">
+                <div class="upload-item-info">
+                    <p class="file-name">${file.name}</p>
+                    <p class="upload-status-text">Starting...</p>
+                    <div class="upload-progress-bar"><div class="upload-progress-fill"></div></div>
+                </div>
+                <span class="upload-percentage">0%</span>
+            </div>`;
+        DOM.uploadQueueContainer.insertAdjacentHTML('beforeend', uploadItemHTML);
+        
+        const itemElement = document.getElementById(elId);
+        const fill = itemElement.querySelector('.upload-progress-fill');
+        const percent = itemElement.querySelector('.upload-percentage');
+        const statusText = itemElement.querySelector('.upload-status-text');
+        
+        const startTime = Date.now();
+
+        xhr.upload.addEventListener('progress', (e) => {
+            if (e.lengthComputable) {
+                const percentage = Math.round((e.loaded / e.total) * 100);
+                const elapsedSeconds = (Date.now() - startTime) / 1000;
+                const speed = e.loaded / elapsedSeconds;
+                const remainingBytes = e.total - e.loaded;
+                const timeRemaining = remainingBytes / speed;
+                
+                onProgress({ el: itemElement, percentage, speed, timeRemaining });
+            }
+        });
+        
+        xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                statusText.textContent = 'Completed';
+                resolve(JSON.parse(xhr.responseText));
+            } else {
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    statusText.textContent = `Error: ${errorResponse.message}`;
+                    reject(new Error(errorResponse.message));
+                } catch (jsonError) {
+                    statusText.textContent = `Error: Server returned an invalid response.`;
+                    reject(new Error(`Server error: ${xhr.status}`));
+                }
+                itemElement.querySelector('.upload-progress-bar').style.backgroundColor = 'var(--danger-color)';
+            }
+        });
+        xhr.addEventListener('error', () => reject(new Error('Network error')));
+
+        xhr.open('POST', 'api/cloud/upload');
+        xhr.send(formData);
+    });
+}
+
+async function handleFiles(files, showToast) {
+    DOM.uploadQueueContainer.innerHTML = '';
+    
+    let fileList = Array.from(files);
+    if (fileList.length === 0) return;
+
+    let completed = 0;
+    let failed = 0;
+
+    const onProgress = ({ el, percentage, speed, timeRemaining }) => {
+        el.querySelector('.upload-progress-fill').style.width = percentage + '%';
+        el.querySelector('.upload-percentage').textContent = percentage + '%';
+        const statusEl = el.querySelector('.upload-status-text');
+        statusEl.textContent = `${formatSpeed(speed)} • ${isFinite(timeRemaining) ? formatTime(timeRemaining) : '...'}`;
+    };
+
+    const MAX_FILE_SIZE = 49 * 1024 * 1024; // 49 MB (Sicherheitsmarge für Telegrams 50MB Limit)
+    
+    for(const file of fileList) {
+        // --- HIER IST DIE NEUE PRÜFUNG ---
+        if (file.size > MAX_FILE_SIZE) {
+            failed++;
+            console.error(`Failed to upload ${file.name}: File exceeds 50 MB limit.`);
+            showToast(`${file.name} is too large (max 50 MB).`, 'error');
+            continue; // Überspringt diese Datei und macht mit der nächsten weiter
+        }
+        
+        try {
+            await uploadFile(file, state.currentParentId, onProgress);
+            completed++;
+        } catch (error) {
+            failed++;
+            console.error(`Failed to upload ${file.name}:`, error);
+        }
+    }
+
+    if (completed > 0) {
+        showToast(`${completed} file(s) uploaded successfully`, 'success');
+    }
+    if (failed > 0 && completed === 0) { // Zeigt die allgemeine Fehlermeldung nur an, wenn keine andere spezifische Meldung angezeigt wurde
+        showToast(`${failed} upload(s) failed.`, 'error');
+    }
+}
+
+export function initializeUpload(showToast) {
+    DOM.dropZone.addEventListener('dragover', (e) => { e.preventDefault(); DOM.dropZone.classList.add('drag-over'); });
+    DOM.dropZone.addEventListener('dragleave', () => DOM.dropZone.classList.remove('drag-over'));
+    DOM.dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        DOM.dropZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files, showToast);
+    });
+    DOM.browseFilesBtn.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = true;
+        input.onchange = e => handleFiles(e.target.files, showToast);
+        input.click();
+    });
+}
+--- END OF src/app/public/js/cloud/upload.js ---
+
+--- src/app/public/js/cloud/cloud.js ---
+
+import { DOM } from './constants.js';
+import { state, clearSelection } from './state.js';
+import * as api from './api.js';
+import { updateUI, switchToExplorer, switchToUpload, renderFolderTree } from './ui.js';
+import * as modals from './modals.js';
+import { toggleSelection, initializeMarqueeSelection } from './selection.js';
+import { initializeUpload } from './upload.js';
+
+function showToast(message, type = 'default') {
+    // --- HIER IST DIE KORREKTUR ---
+    // Wir suchen den Container jedes Mal, wenn die Funktion aufgerufen wird.
+    // Das verhindert den "appendChild of undefined" Fehler.
+    const container = document.getElementById('cloud-toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `cloud-toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+
+async function refreshCurrentView() {
+    try {
+        if (state.currentView === 'myFiles') {
+            state.items = await api.fetchItems(state.currentParentId);
+        } else {
+            state.items = await api.fetchView(state.currentView);
+        }
+        updateUI();
+    } catch (error) {
+        console.error("Failed to refresh view:", error);
+    }
+}
+
+async function navigateToFolder(folderId) {
+    clearSelection();
+    state.currentParentId = folderId;
+    state.currentPath = await api.fetchPath(folderId);
+    await refreshCurrentView();
+}
+
+async function setupSidebarNav(viewName) {
+    clearSelection();
+    state.currentView = viewName;
+    state.currentParentId = null;
+    
+    if (viewName === 'myFiles') {
+        state.currentPath = [{ id: null, name: 'Home' }];
+    } else {
+        state.currentPath = [];
+    }
+    await refreshCurrentView();
+}
+
+function setupEventListeners() {
+    // Main navigation
+    DOM.explorerUploadBtn.addEventListener('click', switchToUpload);
+    DOM.explorerBtn.addEventListener('click', () => {
+        switchToExplorer();
+        refreshCurrentView();
+    });
+
+    // View toggles
+    DOM.gridViewBtn.addEventListener('click', () => {
+        DOM.fileGrid.classList.remove('list-view');
+        DOM.gridViewBtn.classList.add('active');
+        DOM.listViewBtn.classList.remove('active');
+    });
+    DOM.listViewBtn.addEventListener('click', () => {
+        DOM.fileGrid.classList.add('list-view');
+        DOM.listViewBtn.classList.add('active');
+        DOM.gridViewBtn.classList.remove('active');
+    });
+
+    // Breadcrumbs
+    DOM.breadcrumbsContainer.addEventListener('click', (e) => {
+        const target = e.target.closest('a');
+        if (target && !target.classList.contains('active')) {
+            const id = target.dataset.id === 'null' ? null : parseInt(target.dataset.id);
+            navigateToFolder(id);
+        }
+    });
+
+    // File Grid Interactions
+    DOM.fileGrid.addEventListener('click', (e) => {
+        const fileItem = e.target.closest('.file-item');
+        if (!fileItem) return;
+
+        const actionBtn = e.target.closest('.file-action-btn');
+        const checkbox = e.target.closest('.selection-checkbox');
+
+        if (checkbox) {
+            e.stopPropagation();
+            toggleSelection(fileItem.dataset.id, fileItem);
+        } else if (actionBtn) {
+            e.stopPropagation();
+            const action = actionBtn.dataset.action;
+            const itemId = fileItem.dataset.id;
+            if (action === 'favorite') {
+                const isFavorite = actionBtn.classList.contains('is-favorite');
+                api.toggleFavorite(itemId, !isFavorite).then(refreshCurrentView);
+            }
+            if (action === 'delete') modals.openDeleteModal(fileItem);
+        } else {
+             if (fileItem.classList.contains('is-folder')) {
+                navigateToFolder(parseInt(fileItem.dataset.id));
+            } else {
+                modals.openFilePreview(fileItem.dataset.id, fileItem.dataset.name);
+            }
+        }
+    });
+
+    // Sidebar navigation
+    DOM.navLinks.myFiles.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('myFiles'); });
+    DOM.navLinks.favorites.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('favorites'); });
+    DOM.navLinks.trash.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('trash'); });
+
+    // Toolbar actions
+    DOM.newBtn.addEventListener('click', modals.openCreateFolderModal);
+    DOM.selectionDeleteBtn.addEventListener('click', modals.openBulkDeleteModal);
+    DOM.selectionMoveBtn.addEventListener('click', modals.openMoveModal);
+
+    // Modal Handlers
+    DOM.confirmCreateFolderBtn.addEventListener('click', async () => {
+        const folderName = DOM.newFolderNameInput.value.trim();
+        if (folderName) {
+            await api.createFolder(folderName, state.currentParentId);
+            await refreshCurrentView();
+            modals.closeCreateFolderModal();
+        }
+    });
+    DOM.confirmDeleteBtn.addEventListener('click', async () => {
+        if (state.selectedItems.size > 0) {
+            await api.moveItemsToTrash(Array.from(state.selectedItems));
+            clearSelection();
+        } else if (state.itemToDelete) {
+            await api.deleteSingleItem(state.itemToDelete.id);
+        }
+        await refreshCurrentView();
+        modals.closeDeleteModal();
+    });
+    DOM.confirmMoveBtn.addEventListener('click', async () => {
+        if (state.destinationFolderId !== null && state.selectedItems.size > 0) {
+            await api.moveItems(Array.from(state.selectedItems), state.destinationFolderId);
+            clearSelection();
+            await refreshCurrentView();
+            modals.closeMoveModal();
+        }
+    });
+    
+    // Generic modal close buttons
+    [DOM.cancelCreateFolderBtn, DOM.createFolderModal].forEach(el => el.addEventListener('click', (e) => { if(e.target === el) modals.closeCreateFolderModal() }));
+    [DOM.cancelDeleteBtn, DOM.confirmDeleteModal].forEach(el => el.addEventListener('click', (e) => { if(e.target === el) modals.closeDeleteModal() }));
+    [DOM.cancelMoveBtn, DOM.moveItemModal].forEach(el => el.addEventListener('click', (e) => { if(e.target === el) modals.closeMoveModal() }));
+    [DOM.closePreviewBtn, DOM.previewModal].forEach(el => el.addEventListener('click', (e) => { if(e.target === el) modals.closeFilePreview() }));
+
+    // Move modal folder tree selection
+    DOM.moveFolderTreeContainer.addEventListener('click', (e) => {
+        const target = e.target.closest('.folder-tree-item');
+        if (target) {
+            DOM.moveFolderTreeContainer.querySelectorAll('.folder-tree-item').forEach(el => el.classList.remove('selected'));
+            target.classList.add('selected');
+            state.destinationFolderId = target.dataset.id;
+            DOM.confirmMoveBtn.disabled = false;
+        }
+    });
+}
+
+// --- INITIALIZATION ---
+function initialize() {
+    setupEventListeners();
+    initializeUpload(showToast);
+    initializeMarqueeSelection();
+    setupSidebarNav('myFiles'); // Initial load
+}
+
+initialize();
+--- END OF src/app/public/js/cloud/cloud.js ---
+
+--- src/app/public/js/cloud/selection.js ---
+
+import { DOM } from './constants.js';
+import { state } from './state.js';
+import { updateSelectionToolbar } from './ui.js';
+
+export function toggleSelection(itemId, element) {
+    const id = itemId.toString();
+    if (state.selectedItems.has(id)) {
+        state.selectedItems.delete(id);
+        element.classList.remove('selected');
+    } else {
+        state.selectedItems.add(id);
+        element.classList.add('selected');
+    }
+    updateSelectionToolbar();
+}
+
+function checkIntersection(rect1, rect2) {
+    return !(rect2.left > rect1.right || rect2.right < rect1.left || rect2.top > rect1.bottom || rect2.bottom < rect1.top);
+}
+
+export function initializeMarqueeSelection() {
+    DOM.mainContent.addEventListener('mousedown', (e) => {
+        if (e.target !== DOM.mainContent && e.target !== DOM.fileGrid) return;
+        
+        state.isMarqueeSelecting = true;
+        const rect = DOM.mainContent.getBoundingClientRect();
+        state.marqueeStart.x = e.clientX - rect.left;
+        state.marqueeStart.y = e.clientY - rect.top;
+
+        DOM.marqueeBox.style.left = `${state.marqueeStart.x}px`;
+        DOM.marqueeBox.style.top = `${state.marqueeStart.y}px`;
+        DOM.marqueeBox.style.width = '0px';
+        DOM.marqueeBox.style.height = '0px';
+        DOM.marqueeBox.style.display = 'block';
+    });
+
+    DOM.mainContent.addEventListener('mousemove', (e) => {
+        if (!state.isMarqueeSelecting) return;
+        e.preventDefault();
+
+        const rect = DOM.mainContent.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+
+        const width = currentX - state.marqueeStart.x;
+        const height = currentY - state.marqueeStart.y;
+
+        DOM.marqueeBox.style.width = `${Math.abs(width)}px`;
+        DOM.marqueeBox.style.height = `${Math.abs(height)}px`;
+        DOM.marqueeBox.style.left = `${width > 0 ? state.marqueeStart.x : currentX}px`;
+        DOM.marqueeBox.style.top = `${height > 0 ? state.marqueeStart.y : currentY}px`;
+
+        const marqueeRect = DOM.marqueeBox.getBoundingClientRect();
+
+        document.querySelectorAll('.file-item').forEach(item => {
+            const itemRect = item.getBoundingClientRect();
+            const id = item.dataset.id;
+            if (checkIntersection(marqueeRect, itemRect)) {
+                if (!state.selectedItems.has(id)) {
+                    item.classList.add('selected');
+                    state.selectedItems.add(id);
+                }
+            } else {
+                if (state.selectedItems.has(id)) {
+                    item.classList.remove('selected');
+                    state.selectedItems.delete(id);
+                }
+            }
+        });
+        updateSelectionToolbar();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (state.isMarqueeSelecting) {
+            state.isMarqueeSelecting = false;
+            DOM.marqueeBox.style.display = 'none';
+        }
+    });
+}
+--- END OF src/app/public/js/cloud/selection.js ---
+
+--- src/app/public/js/cloud/ui.js ---
+
+import { DOM, ICONS } from './constants.js';
+import { state } from './state.js';
+
+export function updateUI() {
+    setActiveSidebarLink();
+    renderBreadcrumbs();
+    renderFiles();
+    updateSelectionToolbar();
+    DOM.newBtn.style.display = state.currentView === 'myFiles' ? 'flex' : 'none';
+    DOM.searchInput.style.display = 'none'; // Future feature
+}
+
+function setActiveSidebarLink() {
+    Object.values(DOM.navLinks).forEach(link => link.classList.remove('active'));
+    if (DOM.navLinks[state.currentView]) {
+        DOM.navLinks[state.currentView].classList.add('active');
+    } else {
+        DOM.navLinks.myFiles.classList.add('active');
+    }
+}
+
+function renderBreadcrumbs() {
+    DOM.breadcrumbsContainer.innerHTML = '';
+    if (state.currentView !== 'myFiles') {
+        const viewName = state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1);
+        DOM.breadcrumbsContainer.innerHTML = `<a class="active">${viewName}</a>`;
+        return;
+    }
+    state.currentPath.forEach((part, index) => {
+        if (index > 0) {
+            DOM.breadcrumbsContainer.innerHTML += `<span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></span>`;
+        }
+        const isLast = index === state.currentPath.length - 1;
+        DOM.breadcrumbsContainer.innerHTML += `<a class="${isLast ? 'active' : ''}" data-id="${part.id}">${part.name}</a>`;
+    });
+}
+
+function renderFiles() {
+    DOM.fileGrid.innerHTML = '';
+    const itemsToRender = state.items;
+
+    if (itemsToRender.length === 0) {
+        DOM.emptyFolderView.classList.remove('hidden');
+        DOM.fileGrid.classList.add('hidden');
+        if (state.currentView === 'favorites') {
+            DOM.emptyFolderTitle.textContent = 'No favorites yet';
+            DOM.emptyFolderText.textContent = 'Click the star icon on any file or folder to add it here.';
+        } else if (state.currentView === 'trash') {
+            DOM.emptyFolderTitle.textContent = 'Trash is empty';
+            DOM.emptyFolderText.textContent = 'Deleted items will appear here.';
+        } else {
+            DOM.emptyFolderTitle.textContent = 'This folder is empty';
+            DOM.emptyFolderText.textContent = 'Drag and drop files here or use the "Upload" button.';
+        }
+    } else {
+        DOM.emptyFolderView.classList.add('hidden');
+        DOM.fileGrid.classList.remove('hidden');
+    }
+
+    itemsToRender.sort((a, b) => (a.type === 'folder' && b.type !== 'file') ? -1 : 1).forEach(item => {
+        const meta = item.file_meta ? JSON.parse(item.file_meta) : {};
+        const fileMeta = item.type === 'folder' ? '' : `${(meta.fileType || 'file').toUpperCase()} • ${meta.size || '0 KB'}`;
+        const isSelected = state.selectedItems.has(item.id.toString());
+        
+        const fileElementHTML = `
+            <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}">
+                <div class="selection-checkbox">${ICONS.check}</div>
+                <div class="file-icon">${ICONS[item.type]}</div>
+                <div class="file-details">
+                    <p class="file-info">${item.name}</p>
+                    <p class="file-meta">${fileMeta}</p>
+                </div>
+                <div class="file-actions">
+                    <button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button>
+                    <button class="file-action-btn" data-action="delete">${ICONS.delete}</button>
+                </div>
+            </div>`;
+        DOM.fileGrid.insertAdjacentHTML('beforeend', fileElementHTML);
+    });
+}
+
+export function updateSelectionToolbar() {
+    const count = state.selectedItems.size;
+    if (count > 0) {
+        DOM.selectionCount.textContent = `${count} selected`;
+        DOM.defaultToolbar.classList.add('hidden');
+        DOM.selectionToolbar.classList.remove('hidden');
+    } else {
+        DOM.defaultToolbar.classList.remove('hidden');
+        DOM.selectionToolbar.classList.add('hidden');
+    }
+}
+
+export function switchToExplorer() {
+    DOM.explorerView.classList.remove('hidden');
+    DOM.uploadView.classList.add('hidden');
+}
+
+export function switchToUpload() {
+    DOM.explorerView.classList.add('hidden');
+    DOM.uploadView.classList.remove('hidden');
+}
+
+export function renderFolderTree(nodes, parentElement) {
+    const ul = document.createElement('ul');
+    nodes.forEach(node => {
+        const li = document.createElement('li');
+        li.innerHTML = `<div class="folder-tree-item" data-id="${node.id}">${ICONS.folder}<span>${node.name}</span></div>`;
+        if (node.children && node.children.length > 0) {
+            renderFolderTree(node.children, li);
+        }
+        ul.appendChild(li);
+    });
+    parentElement.appendChild(ul);
+}
+--- END OF src/app/public/js/cloud/ui.js ---
+
+--- src/app/public/js/cloud/constants.js ---
+
+export const DOM = {
+    mainContent: document.getElementById('drive-main-content'),
+    explorerView: document.getElementById('explorer-view'),
+    uploadView: document.getElementById('upload-view'),
+    explorerUploadBtn: document.getElementById('explorer-upload-btn'),
+    explorerBtn: document.getElementById('explorer-btn'),
+    gridViewBtn: document.getElementById('grid-view-btn'),
+    listViewBtn: document.getElementById('list-view-btn'),
+    fileGrid: document.getElementById('file-grid'),
+    searchInput: document.getElementById('file-search-input'),
+    newBtn: document.getElementById('new-btn'),
+    dropZone: document.getElementById('drop-zone'),
+    browseFilesBtn: document.getElementById('browse-files-btn'),
+    uploadQueueContainer: document.getElementById('upload-queue'),
+    uploadCompleteBtn: document.getElementById('upload-complete-btn'),
+    breadcrumbsContainer: document.getElementById('breadcrumbs'),
+    emptyFolderView: document.getElementById('empty-folder-view'),
+    emptyFolderTitle: document.getElementById('empty-folder-title'),
+    emptyFolderText: document.getElementById('empty-folder-text'),
+    defaultToolbar: document.getElementById('default-toolbar-items'),
+    selectionToolbar: document.getElementById('selection-toolbar'),
+    selectionCount: document.getElementById('selection-count'),
+    selectionMoveBtn: document.getElementById('selection-move-btn'),
+    selectionDeleteBtn: document.getElementById('selection-delete-btn'),
+    marqueeBox: document.getElementById('marquee-selection-box'),
+    createFolderModal: document.getElementById('create-folder-modal'),
+    confirmDeleteModal: document.getElementById('confirm-delete-modal'),
+    moveItemModal: document.getElementById('move-item-modal'),
+    newFolderNameInput: document.getElementById('new-folder-name-input'),
+    confirmCreateFolderBtn: document.getElementById('confirm-create-folder'),
+    cancelCreateFolderBtn: document.getElementById('cancel-create-folder'),
+    confirmDeleteBtn: document.getElementById('confirm-delete'),
+    cancelDeleteBtn: document.getElementById('cancel-delete'),
+    deleteModalText: document.getElementById('delete-modal-text'),
+    moveFolderTreeContainer: document.getElementById('move-folder-tree'),
+    confirmMoveBtn: document.getElementById('confirm-move-item'),
+    cancelMoveBtn: document.getElementById('cancel-move-item'),
+    previewModal: document.getElementById('file-preview-modal'),
+    previewContainer: document.getElementById('preview-container'),
+    previewFileName: document.getElementById('preview-file-name'),
+    closePreviewBtn: document.getElementById('close-preview-btn'),
+    navLinks: {
+        myFiles: document.getElementById('nav-my-files'),
+        favorites: document.getElementById('nav-favorites'),
+        trash: document.getElementById('nav-trash')
+    }
+};
+
+export const ICONS = {
+    folder: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
+    file: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+    favorite: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
+    delete: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+    check: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"></path></svg>`
+};
+--- END OF src/app/public/js/cloud/constants.js ---
+
+--- src/app/public/js/cloud/api.js ---
+
+export async function fetchItems(parentId = null) {
+    const url = parentId ? `api/cloud/items?parentId=${parentId}` : 'api/cloud/items';
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch items');
+    return await response.json();
+}
+
+export async function fetchPath(itemId) {
+    if (!itemId) return [{ id: null, name: 'Home' }];
+    const response = await fetch(`api/cloud/path/${itemId}`);
+    if (!response.ok) throw new Error('Failed to fetch path');
+    return await response.json();
+}
+
+export async function fetchView(viewName) {
+    const response = await fetch(`api/cloud/${viewName}`);
+    if (!response.ok) throw new Error(`Failed to fetch ${viewName}`);
+    return await response.json();
+}
+
+export async function createFolder(name, parentId) {
+    const response = await fetch('api/cloud/folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, parentId })
+    });
+    if (!response.ok) throw new Error('Failed to create folder');
+}
+
+export async function moveItemsToTrash(itemIds) {
+    const response = await fetch('api/cloud/items/trash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds })
+    });
+    if (!response.ok) throw new Error('Failed to move items to trash');
+}
+
+export async function deleteSingleItem(itemId) {
+    const response = await fetch(`api/cloud/item/${itemId}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Failed to delete item');
+}
+
+export async function toggleFavorite(itemId, isFavorite) {
+    const response = await fetch(`api/cloud/item/${itemId}/favorite`, {
+        method: 'PATCH',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ isFavorite })
+    });
+    if (!response.ok) throw new Error('Failed to toggle favorite');
+}
+
+export async function fetchFolders() {
+    const response = await fetch('api/cloud/folders');
+    if (!response.ok) throw new Error('Failed to fetch folders');
+    return await response.json();
+}
+
+export async function moveItems(itemIds, destinationId) {
+    const response = await fetch('api/cloud/items/move', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds, destinationId })
+    });
+    if (!response.ok) throw new Error('Failed to move items');
+}
+
+export async function getDownloadPath(itemId) {
+    const response = await fetch(`api/cloud/download/${itemId}`);
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to get download path');
+    }
+    return await response.json();
+}
+--- END OF src/app/public/js/cloud/api.js ---
+
+--- src/app/public/js/cloud/state.js ---
+
+export const state = {
+    currentView: 'myFiles',
+    currentParentId: null,
+    currentPath: [{ id: null, name: 'Home' }],
+    items: [],
+    itemToDelete: null,
+    selectedItems: new Set(),
+    destinationFolderId: null,
+    isMarqueeSelecting: false,
+    marqueeStart: { x: 0, y: 0 }
+};
+
+export function clearSelection() {
+    state.selectedItems.clear();
+}
+--- END OF src/app/public/js/cloud/state.js ---
+
+--- src/app/public/js/cloud/modals.js ---
+
+import { DOM, ICONS } from './constants.js';
+import { state } from './state.js';
+import * as api from './api.js';
+import { renderFolderTree } from './ui.js';
+
+// --- Create Folder Modal ---
+export const openCreateFolderModal = () => {
+    DOM.createFolderModal.classList.remove('hidden');
+    DOM.newFolderNameInput.value = '';
+    DOM.newFolderNameInput.focus();
+};
+export const closeCreateFolderModal = () => DOM.createFolderModal.classList.add('hidden');
+
+// --- Delete Modal ---
+export const openDeleteModal = (itemElement) => {
+    state.itemToDelete = { id: itemElement.dataset.id, name: itemElement.dataset.name };
+    DOM.deleteModalText.innerHTML = `Are you sure you want to move "<strong>${state.itemToDelete.name}</strong>" to the Trash?`;
+    DOM.confirmDeleteModal.classList.remove('hidden');
+};
+export const openBulkDeleteModal = () => {
+    const count = state.selectedItems.size;
+    DOM.deleteModalText.innerHTML = `Are you sure you want to move <strong>${count} selected items</strong> to the Trash?`;
+    DOM.confirmDeleteModal.classList.remove('hidden');
+};
+export const closeDeleteModal = () => {
+    DOM.confirmDeleteModal.classList.add('hidden');
+    state.itemToDelete = null;
+};
+
+// --- Move Modal ---
+export const openMoveModal = async () => {
+    try {
+        const folderTree = await api.fetchFolders();
+        DOM.moveFolderTreeContainer.innerHTML = '';
+        const rootEl = document.createElement('div');
+        rootEl.innerHTML = `<div class="folder-tree-item" data-id="root">${ICONS.folder}<span>Home (Root)</span></div>`;
+        DOM.moveFolderTreeContainer.appendChild(rootEl);
+        renderFolderTree(folderTree, DOM.moveFolderTreeContainer);
+        
+        state.destinationFolderId = null;
+        DOM.confirmMoveBtn.disabled = true;
+        DOM.moveItemModal.classList.remove('hidden');
+    } catch (error) {
+        console.error('Failed to open move modal:', error);
+    }
+};
+export const closeMoveModal = () => {
+    DOM.moveItemModal.classList.add('hidden');
+    state.destinationFolderId = null;
+};
+
+// --- Preview Modal ---
+export const openFilePreview = async (itemId, itemName) => {
+    DOM.previewFileName.textContent = itemName;
+    DOM.previewContainer.innerHTML = '<h4>Loading preview...</h4>';
+    DOM.previewModal.classList.remove('hidden');
+    try {
+        const { tempPath } = await api.getDownloadPath(itemId);
+        const fileType = itemName.split('.').pop().toLowerCase();
+        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        const videoTypes = ['mp4', 'webm', 'ogg'];
+        const textTypes = ['txt', 'md', 'js', 'css', 'html', 'json', 'log'];
+        if (imageTypes.includes(fileType)) {
+            DOM.previewContainer.innerHTML = `<img src="${tempPath}" alt="${itemName}">`;
+        } else if (fileType === 'pdf') {
+            DOM.previewContainer.innerHTML = `<iframe src="${tempPath}"></iframe>`;
+        } else if (videoTypes.includes(fileType)) {
+            DOM.previewContainer.innerHTML = `<video controls src="${tempPath}"></video>`;
+        } else if (textTypes.includes(fileType)) {
+            const textContent = await (await fetch(tempPath)).text();
+            DOM.previewContainer.innerHTML = `<pre>${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
+        } else {
+            DOM.previewContainer.innerHTML = `<div class="preview-no-preview">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <h3>No preview available for this file type.</h3>
+                <p><a href="${tempPath}" download="${itemName}">Download the file directly</a> to view it.</p>
+            </div>`;
+        }
+    } catch (error) {
+        DOM.previewContainer.innerHTML = `<h4>Error loading preview: ${error.message}</h4>`;
+    }
+};
+export const closeFilePreview = () => {
+    DOM.previewModal.classList.add('hidden');
+    DOM.previewContainer.innerHTML = '';
+    DOM.previewFileName.textContent = '';
+};
+--- END OF src/app/public/js/cloud/modals.js ---
 
 --- package-lock.json ---
 
@@ -7639,71 +8290,4 @@ module.exports = router;
 FileForge is a web-based platform for fast file conversion, sharing, and downloading. Whether video, audio, image, or document – everything can be transformed or temporarily hosted right in your browser. A sleek, user-friendly tool built for anyone who needs flexible format changes or quick file exchanges.
 
 --- END OF README.md ---
-
---- temp/readme.md ---
-
-Hallo Gemini. Wir setzen die Entwicklung meines Projekts "Zrs" (ZeroRequestSystem) fort. Du agierst weiterhin als mein Projektmanager.
-
-PROJEKTÜBERSICHT:
-Wir bauen das Projekt "Zrs" von Grund auf neu auf. Das Ziel ist ein modernes, design-orientiertes Medienportal, das extrem benutzerfreundlich und auf allen Geräten (Desktop & Mobile) eine erstklassige Erfahrung bietet. Die Kernfunktionalitäten umfassen das Anfragen von Medien, das Verwalten des eigenen Accounts und innovative Entdeckungs-Features.
-
-KERNPRINZIPIEN & DESIGN:
-- Design-First: Höchste Priorität hat ein minimalistisches, elegantes "Glassmorphism"-Design mit einem lila/dunkelblauen Farbschema.
-- Mobile-First: Jede Komponente muss auf Mobilgeräten perfekt aussehen und funktionieren.
-- Intuitive UX: Die Bedienung soll so einfach sein, dass sie selbsterklärend ist. Fließende Animationen und eine reaktionsschnelle Oberfläche sind entscheidend.
-- Sicherheit & Stabilität: Die Anwendung wird für den Live-Betrieb entwickelt. Sicherheit und Stabilität sind nicht verhandelbar.
-
-TECHNOLOGIE-STACK:
-- Frontend: Pures HTML, CSS und JavaScript (ES Modules). Kein Framework.
-- Backend: Node.js mit Express.js.
-- Datenbank: MySQL.
-
-REGELN FÜR UNSERE ZUSAMMENARBEIT:
-- Immer ganze Dateien: Du gibst bei jeder Änderung immer den vollständigen Code der betroffenen Datei an. Keine Auslassungen, keine Kommentare wie "// ... restlicher Code ...".
-- Keine Annahmen: Wenn eine Anweisung unklar ist, fragst du nach, anstatt etwas zu erfinden.
-- Strikter Tech-Stack: Wir verwenden ausschließlich die oben genannten Technologien.
-
-AKTUELLER STAND DES PROJEKTS (ERREICHTE MEILENSTEINE):
-
-PROJEKT-STRUKTUR:
-- Eine saubere, modulare Ordnerstruktur ist etabliert (config, routes, middleware, public).
-- Das Frontend ist ebenfalls modular aufgebaut:
-  - `public/js/app.js`: Der Haupt-Controller, der die SPA steuert (Routing, Laden von Views).
-  - `public/js/auth.js`: Kapselt die Login/Logout-Logik.
-  - `public/js/utils.js`: Beinhaltet wiederverwendbare Funktionen (fetchData, postData, createMediaCard, Modal-Logik).
-  - `public/js/views/`: Ein Ordner für seiten-spezifische Logik (`dashboardView.js`, `requestsView.js`, `discoverView.js`).
-
-BACKEND-SETUP:
-- Ein Express-Server ist konfiguriert und läuft.
-- Die MySQL-Verbindung über einen Connection Pool ist stabil.
-- API-Routen sind modular in `routes/*.js` organisiert.
-- Ein `server.js` Skript fängt alle App-Pfade ab (`/dashboard.html`, `/discover.html` etc.) und leitet sie korrekt zur SPA-Hülle (`public/dashboard.html`), um Browser-Reloads zu ermöglichen.
-
-PRE-FLIGHT CHECKS & DATENBANK-INITIALISIERUNG:
-- Beim Serverstart wird ein `preflightChecks.js` Skript ausgeführt, das Node.js-Version, .env-Datei und node_modules überprüft.
-- Direkt danach prüft `db_init.js` die Datenbank, erstellt Tabellen bei Bedarf und führt eine interaktive Daten-Integritätsprüfung durch.
-
-AUTHENTIFIZIERUNG & SICHERHEIT:
-- Die Benutzerauthentifizierung erfolgt ausschließlich über die Jellyfin-API. Es werden keine Passwörter in der Zrs-Datenbank gespeichert.
-- Nach erfolgreichem Login wird ein sicherer JSON Web Token (JWT) erstellt und an den Client gesendet.
-- Eine `protect`-Middleware (`authMiddleware.js`) sichert alle sensiblen API-Endpunkte.
-
-FRONTEND-ARCHITEKTUR & VIEWS:
-- Die App ist als Single-Page-Application (SPA) konzipiert. `index.html` ist die Login-Seite, `dashboard.html` ist die Hülle für den eingeloggten Bereich.
-- Die Login-Seite (`index.html` & `login.js`) ist fertig und leitet bei Erfolg weiter.
-- Das Dashboard (`dashboard-view.html` & `dashboardView.js`) zeigt personalisierte Statistiken an, die über einen geschützten API-Endpunkt (`/api/dashboard/stats`) abgerufen werden.
-- Die Anfragen-Seite (`requests-view.html` & `requestsView.js`) ist implementiert. Sie verfügt über einen dynamischen Hero-Banner, eine Live-Suche und erlaubt das Senden von Anfragen.
-- Ein "Slide-in"-Modal für Detailansichten ist in `utils.js` implementiert und wird von mehreren Ansichten genutzt.
-
-ENTDECKEN-SEITE (`discover-view.html` & `discoverView.js`):
-- Diese Seite ist fertiggestellt und voll funktionsfähig.
-- Sie zeigt dem Benutzer verschiedene Kategorien (Trending, Neu, Action, etc.) in einer bei jedem Besuch zufällig gemischten Reihenfolge an.
-- Jede Kategorie wird als horizontales Karussell dargestellt.
-- Die Daten werden dynamisch über einen flexiblen Backend-Endpunkt (`/api/tmdb/discover?category=...`) geladen.
-- Jedes Karussell verfügt über funktionierende, mit Glassmorphism-Effekt gestylte Pfeil-Buttons zur Navigation, die NEBEN dem Titel der Kategorie angezeigt werden.
-- Die Pfeile werden auf dem Desktop nur dann angezeigt, wenn die Anzahl der Filme die sichtbare Breite des Containers übersteigt. Auf Mobilgeräten sind sie standardmäßig sichtbar, wenn gescrollt werden kann. Die Logik hierfür ist robust und funktioniert auf allen Bildschirmgrößen.
-
-NÄCHSTER SCHRITT:
-Wir haben die "Entdecken"-Seite erfolgreich fertiggestellt. Bitte schlage den nächsten logischen Schritt für das Projekt vor.
---- END OF temp/readme.md ---
 

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = content;
     };
-    
+
     const loadHTML = (elementId, url) => {
         return fetch(url).then(response => response.text()).then(data => injectContent(elementId, data)).catch(error => console.error('Error loading HTML:', error));
     };
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const showRandomNotification = () => {
             const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
             const container = document.getElementById('live-notification-container');
-            
+
             const notification = document.createElement('div');
             notification.className = 'live-notification';
             notification.innerHTML = `
@@ -98,15 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 startNotifications();
             }, (30 + Math.random() * 30) * 1000);
         };
-        
+
         setTimeout(startNotifications, 10000);
     };
 
     const setupSecretsAndEvents = () => {
         console.log("%c                 _ _       \n ___ ___ ___ _| | |_ ___ \n|  _| . | -_| . | . | -_|\n|___|___|___|___|___|___|\n\n%cLooking under the hood? You're in the right place.\nFileForge is proudly open source (GPL-3.0).", "color: var(--primary-color); font-weight: bold;", "color: #c1c1c1;");
-        
+
         const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        let konamiIndex = 0;1
+        let konamiIndex = 0; 1
         document.addEventListener('keydown', (e) => {
             if (e.key === konamiSequence[konamiIndex]) {
                 konamiIndex++;
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('click', (e) => {
             const navLogo = e.target.closest('#main-header .logo');
             if (navLogo) {
-                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             const logoText = e.target.closest('.logo span');
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const footerLogo = e.target.closest('#main-footer .footer-logo');
-            if(footerLogo) {
+            if (footerLogo) {
                 const now = new Date().getTime();
                 const lastClick = parseInt(footerLogo.dataset.lastClick) || 0;
                 let clicks = parseInt(footerLogo.dataset.clicks) || 0;
@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
         content.classList.add('loaded');
 
         Promise.all([
-            loadHTML('main-header', '/models/_nav.html'),
-            loadHTML('main-footer', '/models/_footer.html')
+            loadHTML('main-header', 'models/_nav.html'),
+            loadHTML('main-footer', 'models/_footer.html')
         ]).then(() => {
             for (const id in ICONS) injectContent(id, ICONS[id]);
             setupIntersectionObserver();

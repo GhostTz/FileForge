@@ -36,7 +36,7 @@
 
     const loadSettings = async () => {
         try {
-            const response = await fetch('/api/user/settings');
+            const response = await fetch('api/user/settings');
             if (response.ok) {
                 const settings = await response.json();
                 
@@ -75,14 +75,14 @@
         };
 
         try {
-            const response = await fetch('/api/user/settings', {
+            const response = await fetch('api/user/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settingsData)
             });
 
             if(response.ok) {
-                initialSettings = await (await fetch('/api/user/settings')).json();
+                initialSettings = await (await fetch('api/user/settings')).json();
                 
                 checkForChanges();
                 

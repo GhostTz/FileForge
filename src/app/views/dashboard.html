@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/fileforge/">
     <title>Dashboard - FileForge</title>
-    <link rel="stylesheet" href="/app/public/css/dashboard.css">
-    <link rel="stylesheet" href="/app/public/css/start.css">
-    <link rel="stylesheet" href="/app/public/css/download.css">
-    <link rel="stylesheet" href="/app/public/css/convert.css">
-    <link rel="stylesheet" href="/app/public/css/cloud.css">
-    <link rel="stylesheet" href="/app/public/css/settings.css">
+    <link rel="stylesheet" href="app/public/css/dashboard.css">
+    <link rel="stylesheet" href="app/public/css/start.css">
+    <link rel="stylesheet" href="app/public/css/download.css">
+    <link rel="stylesheet" href="app/public/css/convert.css">
+    <!-- Modularized Cloud CSS -->
+    <link rel="stylesheet" href="app/public/css/cloud/layout.css">
+    <link rel="stylesheet" href="app/public/css/cloud/explorer.css">
+    <link rel="stylesheet" href="app/public/css/cloud/modals.css">
+    <link rel="stylesheet" href="app/public/css/cloud/upload.css">
+    <!-- End of Modularized Cloud CSS -->
+    <link rel="stylesheet" href="app/public/css/settings.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -59,16 +65,16 @@
             let currentUsername = '';
 
             const pageConfig = {
-                'start': { url: '/app/page/start.html' },
-                'download': { url: '/app/page/download.html', js: '/app/public/js/download.js' },
-                'convert': { url: '/app/page/convert.html' },
-                'cloud': { url: '/app/page/cloud.html', js: '/app/public/js/cloud.js' },
-                'settings': { url: '/app/page/settings.html', js: '/app/public/js/settings.js' },
+                'start': { url: 'app/page/start.html' },
+                'download': { url: 'app/page/download.html', js: 'app/public/js/download.js' },
+                'convert': { url: 'app/page/convert.html' },
+                'cloud': { url: 'app/page/cloud.html', js: 'app/public/js/cloud/cloud.js', type: 'module' },
+                'settings': { url: 'app/page/settings.html', js: 'app/public/js/settings.js' },
             };
 
             const handleLogout = () => {
-                fetch('/api/auth/logout', { method: 'POST' })
-                    .then(response => { if (response.ok) window.location.href = '/login'; })
+                fetch('api/auth/logout', { method: 'POST' })
+                    .then(response => { if (response.ok) window.location.href = 'login'; })
                     .catch(error => console.error('Logout failed:', error));
             };
 
@@ -105,6 +111,9 @@
                     if (config.js) {
                         const script = document.createElement('script');
                         script.src = config.js;
+                        if (config.type) {
+                            script.type = config.type;
+                        }
                         script.dataset.pageScript = 'true';
                         document.body.appendChild(script);
                     }
@@ -162,8 +171,9 @@
                 deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('visible'); });
                 deleteBtn.addEventListener('click', async () => {
                     try {
-                        const response = await fetch('/api/user/delete', { method: 'DELETE' });
-                        if(response.ok) { window.location.href = '/'; }
+                        const response = await fetch('api/user/delete', { method: 'DELETE' });
+                        // --- HIER IST DIE FINALE KORREKTUR ---
+                        if(response.ok) { window.location.href = '.'; }
                     } catch (error) { console.error('Error during account deletion:', error); }
                 });
 
@@ -192,7 +202,7 @@
 
             const fetchUserInfo = async () => {
                 try {
-                    const response = await fetch('/api/user/info');
+                    const response = await fetch('api/user/info');
                     const data = await response.json();
                     currentUsername = data.username;
                     const profileIcons = document.querySelectorAll('.profile-icon');
@@ -203,7 +213,7 @@
                 } catch (error) { console.error('Failed to fetch user info', error); }
             };
 
-            fetch('/app/modules/d_nav.html')
+            fetch('app/modules/d_nav.html')
                 .then(response => response.text())
                 .then(async data => {
                     navContainer.innerHTML = data;

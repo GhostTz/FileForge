@@ -33,7 +33,7 @@ const startServer = async () => {
         await initializeDatabase();
         cleanupService.start();
         app.listen(port, () => {
-            console.log("Server is running on ${process.env.DOMAIN}:${port}");
+            console.log(`Server is running on ${process.env.DOMAIN}:${port}`);
         });
     } catch (error) {
         console.error("Server konnte nicht gestartet werden:", error);

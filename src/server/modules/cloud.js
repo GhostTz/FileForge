@@ -112,8 +112,6 @@ router.get('/download/:id', async (req, res) => {
     }
 });
 
-
-// Other routes remain unchanged...
 router.get('/items', async (req, res) => {
     try {
         const owner = req.user.username;
@@ -185,6 +183,31 @@ router.post('/folder', async (req, res) => {
     }
 });
 
+router.get('/folders', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const [folders] = await db.query(
+            "SELECT id, name, parent_id FROM cloud_items WHERE owner_username = ? AND type = 'folder' AND is_trashed = false ORDER BY name ASC",
+            [owner]
+        );
+
+        const buildTree = (items, parentId = null) => {
+            return items
+                .filter(item => item.parent_id === parentId)
+                .map(item => ({
+                    ...item,
+                    children: buildTree(items, item.id)
+                }));
+        };
+        
+        const folderTree = buildTree(folders);
+        res.json(folderTree);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching folder structure.' });
+    }
+});
+
 router.patch('/item/:id/favorite', async (req, res) => {
     try {
         const owner = req.user.username;
@@ -194,6 +217,49 @@ router.patch('/item/:id/favorite', async (req, res) => {
         res.status(200).json({ message: 'Favorite status updated.' });
     } catch (error) {
         res.status(500).json({ message: 'Error updating favorite status.' });
+    }
+});
+
+router.post('/items/trash', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const { itemIds } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ message: 'No item IDs provided.' });
+        }
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET is_trashed = true, is_favorite = false WHERE id IN (?) AND owner_username = ?',
+            [itemIds, owner]
+        );
+
+        res.status(200).json({ message: `${result.affectedRows} items moved to trash.` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error moving items to trash.' });
+    }
+});
+
+router.patch('/items/move', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        let { itemIds, destinationId } = req.body;
+
+        if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({ message: 'No item IDs provided.' });
+        }
+        if (destinationId === 'root') {
+            destinationId = null;
+        }
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET parent_id = ? WHERE id IN (?) AND owner_username = ?',
+            [destinationId, itemIds, owner]
+        );
+
+        res.status(200).json({ message: `${result.affectedRows} items moved.` });
+    } catch(error) {
+        res.status(500).json({ message: 'Error moving items.' });
     }
 });
 

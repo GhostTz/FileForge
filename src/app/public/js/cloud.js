@@ -1,5 +1,6 @@
 (() => {
     // --- DOM ELEMENTS ---
+    const mainContent = document.getElementById('drive-main-content');
     const explorerView = document.getElementById('explorer-view');
     const uploadView = document.getElementById('upload-view');
     const explorerUploadBtn = document.getElementById('explorer-upload-btn');
@@ -16,16 +17,26 @@
     const emptyFolderView = document.getElementById('empty-folder-view');
     const emptyFolderTitle = document.getElementById('empty-folder-title');
     const emptyFolderText = document.getElementById('empty-folder-text');
+    const defaultToolbar = document.getElementById('default-toolbar-items');
+    const selectionToolbar = document.getElementById('selection-toolbar');
+    const selectionCount = document.getElementById('selection-count');
+    const selectionMoveBtn = document.getElementById('selection-move-btn');
+    const selectionDeleteBtn = document.getElementById('selection-delete-btn');
+    const marqueeBox = document.getElementById('marquee-selection-box');
     
     // Modals
     const createFolderModal = document.getElementById('create-folder-modal');
     const confirmDeleteModal = document.getElementById('confirm-delete-modal');
+    const moveItemModal = document.getElementById('move-item-modal');
     const newFolderNameInput = document.getElementById('new-folder-name-input');
     const confirmCreateFolderBtn = document.getElementById('confirm-create-folder');
     const cancelCreateFolderBtn = document.getElementById('cancel-create-folder');
     const confirmDeleteBtn = document.getElementById('confirm-delete');
     const cancelDeleteBtn = document.getElementById('cancel-delete');
     const deleteModalText = document.getElementById('delete-modal-text');
+    const moveFolderTreeContainer = document.getElementById('move-folder-tree');
+    const confirmMoveBtn = document.getElementById('confirm-move-item');
+    const cancelMoveBtn = document.getElementById('cancel-move-item');
 
     // Preview Modal
     const previewModal = document.getElementById('file-preview-modal');
@@ -44,7 +55,8 @@
         folder: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
         file: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
         favorite: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
-        delete: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`
+        delete: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+        check: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"></path></svg>`
     };
     
     // --- STATE MANAGEMENT ---
@@ -53,7 +65,11 @@
         currentParentId: null,
         currentPath: [{ id: null, name: 'Home' }],
         items: [],
-        itemToDelete: null
+        itemToDelete: null,
+        selectedItems: new Set(),
+        destinationFolderId: null,
+        isMarqueeSelecting: false,
+        marqueeStart: { x: 0, y: 0 }
     };
 
     // --- API FUNCTIONS ---
@@ -142,16 +158,30 @@
         itemsToRender.sort((a,b) => (a.type === 'folder' && b.type !== 'file') ? -1 : 1).forEach(item => {
             const meta = item.file_meta ? JSON.parse(item.file_meta) : {};
             const fileMeta = item.type === 'folder' ? '' : `${(meta.fileType || 'file').toUpperCase()} • ${meta.size || '0 KB'}`;
+            const isSelected = state.selectedItems.has(item.id.toString());
             
-            const fileElementHTML = `<div class="file-item ${item.type === 'folder' ? 'is-folder' : ''}" data-id="${item.id}" data-name="${item.name}"><div class="file-icon">${ICONS[item.type]}</div><div class="file-details"><p class="file-info">${item.name}</p><p class="file-meta">${fileMeta}</p></div><div class="file-actions"><button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button><button class="file-action-btn" data-action="delete">${ICONS.delete}</button></div></div>`;
+            const fileElementHTML = `<div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}"><div class="selection-checkbox">${ICONS.check}</div><div class="file-icon">${ICONS[item.type]}</div><div class="file-details"><p class="file-info">${item.name}</p><p class="file-meta">${fileMeta}</p></div><div class="file-actions"><button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button><button class="file-action-btn" data-action="delete">${ICONS.delete}</button></div></div>`;
             fileGrid.insertAdjacentHTML('beforeend', fileElementHTML);
         });
+    };
+    
+    const updateSelectionToolbar = () => {
+        const count = state.selectedItems.size;
+        if (count > 0) {
+            selectionCount.textContent = `${count} selected`;
+            defaultToolbar.classList.add('hidden');
+            selectionToolbar.classList.remove('hidden');
+        } else {
+            defaultToolbar.classList.remove('hidden');
+            selectionToolbar.classList.add('hidden');
+        }
     };
 
     const updateUI = () => {
         setActiveSidebarLink();
         renderBreadcrumbs();
         renderFiles();
+        updateSelectionToolbar();
         newBtn.style.display = state.currentView === 'myFiles' ? 'flex' : 'none';
         searchInput.style.display = 'none';
     };
@@ -168,6 +198,7 @@
     };
     
     const navigateToFolder = async (folderId) => {
+        state.selectedItems.clear();
         state.currentParentId = folderId;
         await fetchPath(folderId);
         await fetchItems(folderId);
@@ -175,9 +206,22 @@
 
     const navigateToBreadcrumb = async (element) => {
         const id = element.dataset.id === 'null' ? null : parseInt(element.dataset.id);
+        state.selectedItems.clear();
         state.currentParentId = id;
         await fetchPath(id);
         await fetchItems(id);
+    };
+    
+    const toggleSelection = (itemId, element) => {
+        const id = itemId.toString();
+        if (state.selectedItems.has(id)) {
+            state.selectedItems.delete(id);
+            element.classList.remove('selected');
+        } else {
+            state.selectedItems.add(id);
+            element.classList.add('selected');
+        }
+        updateSelectionToolbar();
     };
 
     const openCreateFolderModal = () => {
@@ -207,14 +251,28 @@
         confirmDeleteModal.classList.remove('hidden');
     };
     
+    const openBulkDeleteModal = () => {
+        const count = state.selectedItems.size;
+        deleteModalText.innerHTML = `Are you sure you want to move <strong>${count} selected items</strong> to the Trash?`;
+        confirmDeleteModal.classList.remove('hidden');
+    };
+
     const closeDeleteModal = () => {
         confirmDeleteModal.classList.add('hidden');
         state.itemToDelete = null;
     };
     
     const handleDeleteItem = async () => {
-        if (!state.itemToDelete) return;
-        await fetch(`/api/cloud/item/${state.itemToDelete.id}`, { method: 'DELETE' });
+        if(state.selectedItems.size > 0) { // Handle bulk delete
+            await fetch('/api/cloud/items/trash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ itemIds: Array.from(state.selectedItems) })
+            });
+            state.selectedItems.clear();
+        } else if (state.itemToDelete) { // Handle single delete
+            await fetch(`/api/cloud/item/${state.itemToDelete.id}`, { method: 'DELETE' });
+        }
         
         if (state.currentView === 'myFiles') await fetchItems(state.currentParentId);
         else await fetchView(state.currentView);
@@ -231,6 +289,60 @@
         
         if (state.currentView === 'myFiles') await fetchItems(state.currentParentId);
         else await fetchView(state.currentView);
+    };
+
+    const renderFolderTree = (nodes, parentElement, level = 0) => {
+        const ul = document.createElement('ul');
+        nodes.forEach(node => {
+            const li = document.createElement('li');
+            li.innerHTML = `<div class="folder-tree-item" data-id="${node.id}">${ICONS.folder}<span>${node.name}</span></div>`;
+            if (node.children && node.children.length > 0) {
+                renderFolderTree(node.children, li, level + 1);
+            }
+            ul.appendChild(li);
+        });
+        parentElement.appendChild(ul);
+    };
+
+    const openMoveModal = async () => {
+        try {
+            const response = await fetch('/api/cloud/folders');
+            const folderTree = await response.json();
+            
+            moveFolderTreeContainer.innerHTML = '';
+            const rootEl = document.createElement('div');
+            rootEl.innerHTML = `<div class="folder-tree-item" data-id="root">${ICONS.folder}<span>Home (Root)</span></div>`;
+            moveFolderTreeContainer.appendChild(rootEl);
+            renderFolderTree(folderTree, moveFolderTreeContainer);
+            
+            state.destinationFolderId = null;
+            confirmMoveBtn.disabled = true;
+            moveItemModal.classList.remove('hidden');
+        } catch (error) {
+            console.error('Failed to open move modal:', error);
+        }
+    };
+    
+    const closeMoveModal = () => {
+        moveItemModal.classList.add('hidden');
+        state.destinationFolderId = null;
+    };
+
+    const handleBulkMove = async () => {
+        if (state.destinationFolderId === null || state.selectedItems.size === 0) return;
+        
+        await fetch('/api/cloud/items/move', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                itemIds: Array.from(state.selectedItems),
+                destinationId: state.destinationFolderId
+            })
+        });
+        
+        state.selectedItems.clear();
+        await fetchItems(state.currentParentId);
+        closeMoveModal();
     };
 
     const openFilePreview = async (itemId, itemName) => {
@@ -308,8 +420,14 @@
     fileGrid.addEventListener('click', (e) => {
         const fileItem = e.target.closest('.file-item');
         if (!fileItem) return;
+
         const actionBtn = e.target.closest('.file-action-btn');
-        if (actionBtn) {
+        const checkbox = e.target.closest('.selection-checkbox');
+
+        if (checkbox) {
+            e.stopPropagation();
+            toggleSelection(fileItem.dataset.id, fileItem);
+        } else if (actionBtn) {
             e.stopPropagation();
             const action = actionBtn.dataset.action;
             const itemId = fileItem.dataset.id;
@@ -318,14 +436,21 @@
                 toggleFavorite(itemId, currentStatus);
             }
             if (action === 'delete') openDeleteModal(fileItem);
-        } else if (fileItem.classList.contains('is-folder')) {
-            navigateToFolder(parseInt(fileItem.dataset.id));
         } else {
-            openFilePreview(fileItem.dataset.id, fileItem.dataset.name);
+             if (fileItem.classList.contains('is-folder')) {
+                navigateToFolder(parseInt(fileItem.dataset.id));
+            } else {
+                openFilePreview(fileItem.dataset.id, fileItem.dataset.name);
+            }
         }
     });
     
+    selectionDeleteBtn.addEventListener('click', openBulkDeleteModal);
+    selectionMoveBtn.addEventListener('click', openMoveModal);
+    
     const setupSidebarNav = async (viewName) => {
+        state.selectedItems.clear();
+        updateSelectionToolbar();
         state.currentView = viewName;
         state.currentParentId = null;
         
@@ -352,10 +477,84 @@
     cancelDeleteBtn.addEventListener('click', closeDeleteModal);
     confirmDeleteModal.addEventListener('click', (e) => { if(e.target === confirmDeleteModal) closeDeleteModal(); });
 
+    confirmMoveBtn.addEventListener('click', handleBulkMove);
+    cancelMoveBtn.addEventListener('click', closeMoveModal);
+    moveItemModal.addEventListener('click', (e) => { if(e.target === moveItemModal) closeMoveModal(); });
+    
+    moveFolderTreeContainer.addEventListener('click', (e) => {
+        const target = e.target.closest('.folder-tree-item');
+        if (target) {
+            moveFolderTreeContainer.querySelectorAll('.folder-tree-item').forEach(el => el.classList.remove('selected'));
+            target.classList.add('selected');
+            state.destinationFolderId = target.dataset.id;
+            confirmMoveBtn.disabled = false;
+        }
+    });
+
+
     closePreviewBtn.addEventListener('click', closeFilePreview);
     previewModal.addEventListener('click', (e) => {
        if (e.target === previewModal) closeFilePreview();
     });
+
+    // Marquee Selection Logic
+    const checkIntersection = (rect1, rect2) => {
+        return !(rect2.left > rect1.right || rect2.right < rect1.left || rect2.top > rect1.bottom || rect2.bottom < rect1.top);
+    };
+
+    mainContent.addEventListener('mousedown', (e) => {
+        if (e.target !== mainContent && e.target !== fileGrid) return;
+        
+        state.isMarqueeSelecting = true;
+        const rect = mainContent.getBoundingClientRect();
+        state.marqueeStart.x = e.clientX - rect.left;
+        state.marqueeStart.y = e.clientY - rect.top;
+
+        marqueeBox.style.left = `${state.marqueeStart.x}px`;
+        marqueeBox.style.top = `${state.marqueeStart.y}px`;
+        marqueeBox.style.width = '0px';
+        marqueeBox.style.height = '0px';
+        marqueeBox.style.display = 'block';
+    });
+
+    mainContent.addEventListener('mousemove', (e) => {
+        if (!state.isMarqueeSelecting) return;
+        e.preventDefault();
+
+        const rect = mainContent.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+
+        const width = currentX - state.marqueeStart.x;
+        const height = currentY - state.marqueeStart.y;
+
+        marqueeBox.style.width = `${Math.abs(width)}px`;
+        marqueeBox.style.height = `${Math.abs(height)}px`;
+        marqueeBox.style.left = `${width > 0 ? state.marqueeStart.x : currentX}px`;
+        marqueeBox.style.top = `${height > 0 ? state.marqueeStart.y : currentY}px`;
+
+        const marqueeRect = marqueeBox.getBoundingClientRect();
+
+        document.querySelectorAll('.file-item').forEach(item => {
+            const itemRect = item.getBoundingClientRect();
+            if (checkIntersection(marqueeRect, itemRect)) {
+                item.classList.add('selected');
+                state.selectedItems.add(item.dataset.id);
+            } else {
+                item.classList.remove('selected');
+                state.selectedItems.delete(item.dataset.id);
+            }
+        });
+        updateSelectionToolbar();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (state.isMarqueeSelecting) {
+            state.isMarqueeSelecting = false;
+            marqueeBox.style.display = 'none';
+        }
+    });
+
 
     // Upload Logic with Real Progress
     const uploadFile = (file, parentId) => {

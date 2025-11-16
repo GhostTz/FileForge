@@ -243,8 +243,15 @@
 }
 
 /* --- File Grid / List --- */
-#upload-view.hidden, #empty-folder-view.hidden {
+#explorer-view.hidden,
+#upload-view.hidden, 
+#empty-folder-view.hidden {
     display: none;
+}
+
+/* Universal .hidden class */
+.hidden {
+    display: none !important;
 }
 
 .file-grid {

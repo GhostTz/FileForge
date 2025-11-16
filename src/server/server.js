@@ -23,11 +23,13 @@ const mainRoutes = require('./modules/main');
 const authRoutes = require('./modules/auth');
 const appRoutes = require('../app/routes/app');
 const userRoutes = require('./modules/user');
+const cloudRoutes = require('./modules/cloud'); // <-- NEU
 
 app.use('/', mainRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/app', appRoutes);
 app.use('/api/user', authMiddleware, userRoutes);
+app.use('/api/cloud', authMiddleware, cloudRoutes); // <-- NEU
 
 const startServer = async () => {
     try {

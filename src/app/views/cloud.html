@@ -1,0 +1,104 @@
+<div class="cloud-drive-wrapper">
+    <!-- Drive Sidebar -->
+    <aside class="drive-sidebar">
+        <div class="sidebar-header">
+            <h4>FileForge Cloud</h4>
+        </div>
+        <nav class="sidebar-nav">
+            <p class="nav-category">Navigation</p>
+            <ul>
+                <li><a href="#" id="nav-my-files" class="active"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> <span>My Files</span></a></li>
+                <li><a href="#" id="nav-favorites"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> <span>Favorites</span></a></li>
+                <li><a href="#" id="nav-trash"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> <span>Trash</span></a></li>
+            </ul>
+        </nav>
+        <div class="sidebar-storage">
+            <p>Storage</p>
+            <div class="storage-bar">
+                <div class="storage-fill" style="width: 0%;"></div>
+            </div>
+            <p class="storage-info">0 B of 50 GB used</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="drive-main-content">
+
+        <!-- Explorer View -->
+        <div id="explorer-view">
+            <header class="drive-header">
+                <nav id="breadcrumbs" class="breadcrumbs"></nav>
+                <div class="header-actions">
+                    <button id="new-btn" class="header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> <span>New</span></button>
+                    <button id="explorer-upload-btn" class="header-btn primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> <span>Upload</span></button>
+                </div>
+            </header>
+            <div class="explorer-toolbar">
+                <div class="view-toggles">
+                    <button id="grid-view-btn" class="toggle-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Grid</button>
+                    <button id="list-view-btn" class="toggle-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg> List</button>
+                </div>
+                <div class="search-bar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" id="file-search-input" placeholder="Search files...">
+                </div>
+            </div>
+            <div id="file-grid" class="file-grid">
+                <!-- File items will be injected by JS -->
+            </div>
+            <div id="empty-folder-view" class="empty-folder-view hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <h3 id="empty-folder-title">This folder is empty</h3>
+                <p id="empty-folder-text">Drag and drop files here or use the "Upload" button.</p>
+            </div>
+        </div>
+
+        <!-- Upload View -->
+        <div id="upload-view" class="hidden">
+            <header class="upload-header">
+                <h4>FileForge Cloud</h4>
+                <div class="header-actions">
+                    <button id="explorer-btn" class="header-btn primary">Explorer</button>
+                </div>
+            </header>
+            <div class="upload-area">
+                <h2>Upload your files</h2>
+                <p>Drag and drop files into the area below or browse from your computer.</p>
+                <div id="drop-zone" class="drop-zone">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <h3>Drag & drop files here</h3>
+                    <p>PDF, Images, Videos up to 2GB</p>
+                    <div class="upload-buttons">
+                        <button id="browse-files-btn" class="header-btn primary">Browse Files</button>
+                        <button class="header-btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg> Import via link</button>
+                    </div>
+                </div>
+                <div id="upload-queue" class="upload-queue"></div>
+                <button id="upload-complete-btn" class="upload-complete-btn hidden">Upload complete: 3 files added</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Modals -->
+    <div id="create-folder-modal" class="cloud-modal-overlay hidden">
+        <div class="cloud-modal-content">
+            <h3>Create New Folder</h3>
+            <input type="text" id="new-folder-name-input" placeholder="Folder name" autocomplete="off">
+            <div class="cloud-modal-actions">
+                <button id="cancel-create-folder" class="cloud-modal-btn">Cancel</button>
+                <button id="confirm-create-folder" class="cloud-modal-btn primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-delete-modal" class="cloud-modal-overlay hidden">
+        <div class="cloud-modal-content">
+            <h3>Confirm Deletion</h3>
+            <p id="delete-modal-text">Are you sure you want to move this item to the Trash?</p>
+            <div class="cloud-modal-actions">
+                <button id="cancel-delete" class="cloud-modal-btn">Cancel</button>
+                <button id="confirm-delete" class="cloud-modal-btn danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>```

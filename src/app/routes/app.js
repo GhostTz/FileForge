@@ -15,7 +15,7 @@ router.get('/modules/:moduleName', (req, res) => {
     res.sendFile(path.join(__dirname, `../views/modules/${moduleName}`));
 });
 
-const pages = ['start', 'download', 'convert', 'sharing', 'settings'];
+const pages = ['start', 'download', 'convert', 'cloud', 'settings'];
 pages.forEach(page => {
     const filePath = path.join(__dirname, `../views/${page}.html`);
     if (fs.existsSync(filePath)) {

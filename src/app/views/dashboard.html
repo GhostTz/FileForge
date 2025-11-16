@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/app/public/css/start.css">
     <link rel="stylesheet" href="/app/public/css/download.css">
     <link rel="stylesheet" href="/app/public/css/convert.css">
-    <link rel="stylesheet" href="/app/public/css/sharing.css">
+    <link rel="stylesheet" href="/app/public/css/cloud.css">
     <link rel="stylesheet" href="/app/public/css/settings.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -62,7 +62,7 @@
                 'start': { url: '/app/page/start.html' },
                 'download': { url: '/app/page/download.html', js: '/app/public/js/download.js' },
                 'convert': { url: '/app/page/convert.html' },
-                'sharing': { url: '/app/page/sharing.html' },
+                'cloud': { url: '/app/page/cloud.html', js: '/app/public/js/cloud.js' },
                 'settings': { url: '/app/page/settings.html' },
             };
 
@@ -100,8 +100,13 @@
 
                     // If there's a script associated with the page, load it
                     if (config.js) {
+                        // Remove previous script if it exists
+                        const oldScript = document.querySelector('script[data-page-script]');
+                        if(oldScript) oldScript.remove();
+                        
                         const script = document.createElement('script');
                         script.src = config.js;
+                        script.dataset.pageScript = 'true'; // Mark the script
                         script.onload = () => script.remove(); // Clean up script tag after execution
                         document.body.appendChild(script);
                     }

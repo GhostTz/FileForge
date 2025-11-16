@@ -18,21 +18,30 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
         <span>Convert</span>
     </a></li>
-    <li><a href="#" data-page="sharing" class="nav-link" title="Share">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-        <span>Share</span>
+    <li><a href="#" data-page="cloud" class="nav-link" title="Cloud">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+        <span>Cloud</span>
     </a></li>
+    <!-- Profile link for Mobile View -->
+    <li class="mobile-profile-li">
+        <a href="#" id="profile-btn" title="Profile">
+            <div class="profile-icon"></div>
+        </a>
+    </li>
 </ul>
-<div class="profile-section">
-    <a href="#" id="profile-btn" title="Profile">
+<!-- Profile Section for Desktop View -->
+<div class="profile-section desktop-profile-section">
+    <a href="#" id="desktop-profile-btn" title="Profile">
         <div class="profile-icon"></div>
         <span>Profile</span>
     </a>
-    <div id="profile-menu" class="profile-menu">
-        <ul>
-            <li><a href="#" class="nav-link" data-page="settings">Settings</a></li>
-            <li><a href="#" id="menu-logout-btn">Logout</a></li>
-            <li><a href="#" class="delete-link">Delete Account</a></li>
-        </ul>
-    </div>
+</div>
+
+<!-- Standalone Profile Menu -->
+<div id="profile-menu" class="profile-menu">
+    <ul>
+        <li><a href="#" class="nav-link" data-page="settings">Settings</a></li>
+        <li><a href="#" id="menu-logout-btn">Logout</a></li>
+        <li><a href="#" class="delete-link">Delete Account</a></li>
+    </ul>
 </div>

@@ -31,7 +31,7 @@ const requiredTables = {
             type: "ENUM('folder', 'file') NOT NULL",
             is_favorite: 'BOOLEAN NOT NULL DEFAULT FALSE',
             is_trashed: 'BOOLEAN NOT NULL DEFAULT FALSE',
-            file_meta: 'JSON NULL',
+            file_meta: 'TEXT NULL',
             created_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
             updated_at: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'
         },

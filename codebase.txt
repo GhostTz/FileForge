@@ -1622,7 +1622,6 @@ body {
 
 --- src/app/public/css/cloud/explorer.css ---
 
-/* --- Drive Header --- */
 .drive-header {
     display: flex;
     justify-content: space-between;
@@ -1667,7 +1666,7 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: 10px; /* KORREKTUR: Angepasst an das Design */
     border: 1px solid var(--card-border);
     background-color: var(--active-bg);
     color: var(--text-color);
@@ -1801,7 +1800,7 @@ body {
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px; /* KORREKTUR: Angepasst an das Design */
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
@@ -1845,7 +1844,7 @@ body {
     border: 1px solid var(--card-border);
     border-radius: 6px;
     transition: all 0.2s ease;
-    opacity: 0.5;
+    opacity: 0; /* KORREKTUR: Standardmäßig unsichtbar */
     z-index: 2;
     display: flex;
     align-items: center;
@@ -1860,7 +1859,7 @@ body {
     transition: transform 0.2s ease;
 }
 .file-item:hover .selection-checkbox {
-    opacity: 1;
+    opacity: 1; /* KORREKTUR: Sichtbar bei Hover */
 }
 
 .file-item .file-icon {
@@ -1876,13 +1875,13 @@ body {
     flex-grow: 1;
 }
 .file-item .file-info {
-    font-size: 1rem;
+    font-size: 0.9rem; /* KORREKTUR: Angepasst an das Design */
     font-weight: 500;
     color: var(--text-color);
     word-break: break-all;
 }
 .file-item .file-meta {
-    font-size: 0.8rem;
+    font-size: 0.75rem; /* KORREKTUR: Angepasst an das Design */
     color: var(--text-muted);
     display: flex;
     align-items: center;
@@ -2119,7 +2118,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    overflow-x: hidden; /* Prevents horizontal scrollbar */
     position: relative; /* For marquee selection */
 }
 
@@ -2135,18 +2133,6 @@ body {
 @keyframes fadeOut {
     from { opacity: 1; transform: scale(1); }
     to { opacity: 0; transform: scale(0.9); }
-}
-
-@media (max-width: 992px) {
-    .cloud-drive-wrapper {
-        height: auto;
-    }
-    .drive-sidebar {
-        display: none; /* Handled by main dashboard CSS */
-    }
-    .drive-main-content {
-        padding: 0 15px;
-    }
 }
 --- END OF src/app/public/css/cloud/layout.css ---
 

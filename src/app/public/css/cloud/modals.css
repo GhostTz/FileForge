@@ -96,6 +96,11 @@
     color: white;
 }
 
+.progress-bar-container { display: flex; align-items: center; gap: 15px; }
+.progress-bar-bg { flex-grow: 1; height: 12px; background: var(--active-bg); border-radius: 10px; overflow: hidden; }
+.progress-bar-fill { height: 100%; width: 0; background: var(--danger-color); border-radius: 10px; transition: width 0.3s ease; }
+
+
 /* --- Move Item Modal Specifics --- */
 .move-folder-tree {
     max-height: 300px;

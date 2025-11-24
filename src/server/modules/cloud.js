@@ -43,11 +43,10 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             throw new Error('Failed to send file to Telegram or document is missing.');
         }
 
-        // KORREKTUR: file_id wird jetzt gespeichert
         const fileMeta = {
             message_id: sentMessage.message_id,
             chat_id: sentMessage.chat.id,
-            file_id: sentMessage.document.file_id, // WICHTIG!
+            file_id: sentMessage.document.file_id, 
             size: formatBytes(file.size),
             fileType: path.extname(file.originalname).substring(1) || 'file'
         };
@@ -84,7 +83,6 @@ router.get('/download/:id', async (req, res) => {
         const item = items[0];
         const meta = JSON.parse(item.file_meta);
         
-        // KORREKTUR: Stabile Methode zum herunterladen
         const bot = new TelegramBot(token);
         const fileInfo = await bot.getFile(meta.file_id);
         const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
@@ -263,14 +261,72 @@ router.patch('/items/move', async (req, res) => {
     }
 });
 
-router.delete('/item/:id', async (req, res) => {
+router.get('/search', async (req, res) => {
     try {
         const owner = req.user.username;
-        const itemId = req.params.id;
-        await db.query('UPDATE cloud_items SET is_trashed = true, is_favorite = false WHERE id = ? AND owner_username = ?', [itemId, owner]);
-        res.status(200).json({ message: 'Item moved to trash.' });
-    } catch(error) {
-        res.status(500).json({ message: 'Error deleting item.' });
+        const searchTerm = req.query.term;
+
+        if (!searchTerm) {
+            return res.status(400).json({ message: 'Search term is required.' });
+        }
+
+        const [items] = await db.query(
+            'SELECT * FROM cloud_items WHERE owner_username = ? AND name LIKE ? AND is_trashed = false',
+            [owner, `%${searchTerm}%`]
+        );
+
+        res.json(items);
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({ message: 'Error searching items.' });
+    }
+});
+
+router.patch('/trash/restore', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const { itemIds } = req.body;
+        if (!itemIds || itemIds.length === 0) {
+            return res.status(400).json({ message: 'No item IDs provided.' });
+        }
+        await db.query('UPDATE cloud_items SET is_trashed = false WHERE id IN (?) AND owner_username = ?', [itemIds, owner]);
+        res.status(200).json({ message: 'Items restored.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error restoring items.' });
+    }
+});
+
+router.delete('/trash/item/:id', async (req, res) => {
+    const owner = req.user.username;
+    const itemId = req.params.id;
+
+    try {
+        const [items] = await db.query('SELECT * FROM cloud_items WHERE id = ? AND owner_username = ?', [itemId, owner]);
+        if (items.length === 0) {
+            return res.status(404).json({ message: 'Item not found.' });
+        }
+        const item = items[0];
+
+        if (item.type === 'file' && item.file_meta) {
+            const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
+            if (settings.length > 0 && settings[0].telegramBotToken) {
+                const token = settings[0].telegramBotToken;
+                const meta = JSON.parse(item.file_meta);
+                try {
+                    const bot = new TelegramBot(token);
+                    await bot.deleteMessage(meta.chat_id, meta.message_id);
+                } catch (tgError) {
+                    console.error(`Telegram Deletion Error for item ${itemId}:`, tgError.response ? tgError.response.body : tgError.message);
+                }
+            }
+        }
+        
+        await db.query('DELETE FROM cloud_items WHERE id = ?', [itemId]);
+        res.status(200).json({ message: 'Item permanently deleted.' });
+
+    } catch (error) {
+        console.error(`DB Deletion Error for item ${itemId}:`, error);
+        res.status(500).json({ message: 'Server error during final deletion.' });
     }
 });
 

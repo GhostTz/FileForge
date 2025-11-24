@@ -73,3 +73,23 @@ export async function getDownloadPath(itemId) {
     }
     return await response.json();
 }
+
+export async function searchItems(term) {
+    const response = await fetch(`api/cloud/search?term=${encodeURIComponent(term)}`);
+    if (!response.ok) throw new Error('Search failed');
+    return await response.json();
+}
+
+export async function restoreItems(itemIds) {
+    const response = await fetch('api/cloud/trash/restore', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds })
+    });
+    if (!response.ok) throw new Error('Failed to restore items');
+}
+
+export async function permanentlyDeleteItem(itemId) {
+    const response = await fetch(`api/cloud/trash/item/${itemId}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Failed to permanently delete item');
+}

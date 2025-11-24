@@ -69,6 +69,7 @@
 .sidebar-nav ul li a svg {
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
 }
 
 .sidebar-storage {

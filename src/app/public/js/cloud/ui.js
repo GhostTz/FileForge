@@ -6,8 +6,11 @@ export function updateUI() {
     renderBreadcrumbs();
     renderFiles();
     updateSelectionToolbar();
-    DOM.newBtn.style.display = state.currentView === 'myFiles' ? 'flex' : 'none';
-    DOM.searchInput.style.display = 'none'; // Future feature
+
+    const isTrash = state.currentView === 'trash';
+    DOM.newBtn.classList.toggle('hidden', isTrash);
+    DOM.explorerUploadBtn.classList.toggle('hidden', isTrash);
+    DOM.emptyTrashBtn.classList.toggle('hidden', !isTrash || state.items.length === 0);
 }
 
 function setActiveSidebarLink() {
@@ -21,6 +24,12 @@ function setActiveSidebarLink() {
 
 function renderBreadcrumbs() {
     DOM.breadcrumbsContainer.innerHTML = '';
+
+    if (state.isSearching) {
+        DOM.breadcrumbsContainer.innerHTML = `<a class="active">Search results for "${state.currentSearchTerm}"</a>`;
+        return;
+    }
+
     if (state.currentView !== 'myFiles') {
         const viewName = state.currentView.charAt(0).toUpperCase() + state.currentView.slice(1);
         DOM.breadcrumbsContainer.innerHTML = `<a class="active">${viewName}</a>`;
@@ -42,12 +51,15 @@ function renderFiles() {
     if (itemsToRender.length === 0) {
         DOM.emptyFolderView.classList.remove('hidden');
         DOM.fileGrid.classList.add('hidden');
-        if (state.currentView === 'favorites') {
+        if (state.isSearching) {
+            DOM.emptyFolderTitle.textContent = 'No results found';
+            DOM.emptyFolderText.textContent = `Your search for "${state.currentSearchTerm}" did not match any files or folders.`;
+        } else if (state.currentView === 'favorites') {
             DOM.emptyFolderTitle.textContent = 'No favorites yet';
             DOM.emptyFolderText.textContent = 'Click the star icon on any file or folder to add it here.';
         } else if (state.currentView === 'trash') {
             DOM.emptyFolderTitle.textContent = 'Trash is empty';
-            DOM.emptyFolderText.textContent = 'Deleted items will appear here.';
+            DOM.emptyFolderText.textContent = 'Items you delete will appear here.';
         } else {
             DOM.emptyFolderTitle.textContent = 'This folder is empty';
             DOM.emptyFolderText.textContent = 'Drag and drop files here or use the "Upload" button.';
@@ -57,11 +69,20 @@ function renderFiles() {
         DOM.fileGrid.classList.remove('hidden');
     }
 
+    const isTrashView = state.currentView === 'trash';
     itemsToRender.sort((a, b) => (a.type === 'folder' && b.type !== 'file') ? -1 : 1).forEach(item => {
         const meta = item.file_meta ? JSON.parse(item.file_meta) : {};
         const fileMeta = item.type === 'folder' ? '' : `${(meta.fileType || 'file').toUpperCase()} • ${meta.size || '0 KB'}`;
         const isSelected = state.selectedItems.has(item.id.toString());
         
+        const actionsHTML = isTrashView ? `
+            <button class="file-action-btn" data-action="restore" title="Restore">${ICONS.restore}</button>
+            <button class="file-action-btn" data-action="permanent-delete" title="Delete Permanently">${ICONS.delete}</button>
+        ` : `
+            <button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button>
+            <button class="file-action-btn" data-action="delete">${ICONS.delete}</button>
+        `;
+
         const fileElementHTML = `
             <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}">
                 <div class="selection-checkbox">${ICONS.check}</div>
@@ -71,8 +92,7 @@ function renderFiles() {
                     <p class="file-meta">${fileMeta}</p>
                 </div>
                 <div class="file-actions">
-                    <button class="file-action-btn favorite ${item.is_favorite ? 'is-favorite' : ''}" data-action="favorite">${ICONS.favorite}</button>
-                    <button class="file-action-btn" data-action="delete">${ICONS.delete}</button>
+                    ${actionsHTML}
                 </div>
             </div>`;
         DOM.fileGrid.insertAdjacentHTML('beforeend', fileElementHTML);
@@ -81,10 +101,18 @@ function renderFiles() {
 
 export function updateSelectionToolbar() {
     const count = state.selectedItems.size;
+    const isTrash = state.currentView === 'trash';
+
+    DOM.selectionMoveBtn.classList.toggle('hidden', isTrash);
+    DOM.selectionRestoreBtn.classList.toggle('hidden', !isTrash);
+
     if (count > 0) {
         DOM.selectionCount.textContent = `${count} selected`;
         DOM.defaultToolbar.classList.add('hidden');
         DOM.selectionToolbar.classList.remove('hidden');
+        DOM.selectionDeleteBtn.innerHTML = isTrash 
+            ? `${ICONS.delete} Delete Permanently` 
+            : `${ICONS.delete} Delete`;
     } else {
         DOM.defaultToolbar.classList.remove('hidden');
         DOM.selectionToolbar.classList.add('hidden');

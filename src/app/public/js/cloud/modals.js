@@ -12,14 +12,17 @@ export const openCreateFolderModal = () => {
 export const closeCreateFolderModal = () => DOM.createFolderModal.classList.add('hidden');
 
 // --- Delete Modal ---
-export const openDeleteModal = (itemElement) => {
+export const openDeleteModal = (itemElement, isPermanent = false) => {
     state.itemToDelete = { id: itemElement.dataset.id, name: itemElement.dataset.name };
-    DOM.deleteModalText.innerHTML = `Are you sure you want to move "<strong>${state.itemToDelete.name}</strong>" to the Trash?`;
+    const actionText = isPermanent ? 'permanently delete' : 'move to Trash';
+    DOM.deleteModalText.innerHTML = `Are you sure you want to <strong>${actionText}</strong> "${state.itemToDelete.name}"? This action cannot be undone.`;
     DOM.confirmDeleteModal.classList.remove('hidden');
 };
-export const openBulkDeleteModal = () => {
+export const openBulkDeleteModal = (isPermanent = false) => {
     const count = state.selectedItems.size;
-    DOM.deleteModalText.innerHTML = `Are you sure you want to move <strong>${count} selected items</strong> to the Trash?`;
+    const actionText = isPermanent ? 'permanently delete' : 'move to Trash';
+    const itemText = count === 1 ? '1 selected item' : `${count} selected items`;
+    DOM.deleteModalText.innerHTML = `Are you sure you want to <strong>${actionText} ${itemText}</strong>? This action cannot be undone.`;
     DOM.confirmDeleteModal.classList.remove('hidden');
 };
 export const closeDeleteModal = () => {
@@ -48,6 +51,21 @@ export const closeMoveModal = () => {
     DOM.moveItemModal.classList.add('hidden');
     state.destinationFolderId = null;
 };
+
+// --- Bulk Delete Progress Modal ---
+export const openBulkDeleteProgressModal = () => {
+    DOM.bulkDeleteProgressModal.classList.remove('hidden');
+    updateBulkDeleteProgress(0, 1); // Start with 0
+};
+export const updateBulkDeleteProgress = (deletedCount, totalCount) => {
+    const percentage = totalCount > 0 ? (deletedCount / totalCount) * 100 : 0;
+    DOM.bulkDeleteProgressBar.style.width = `${percentage}%`;
+    DOM.bulkDeleteProgressText.textContent = `Deleting ${deletedCount} of ${totalCount} items...`;
+};
+export const closeBulkDeleteProgressModal = () => {
+    DOM.bulkDeleteProgressModal.classList.add('hidden');
+};
+
 
 // --- Preview Modal ---
 export const openFilePreview = async (itemId, itemName) => {

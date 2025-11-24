@@ -7,7 +7,9 @@ export const state = {
     selectedItems: new Set(),
     destinationFolderId: null,
     isMarqueeSelecting: false,
-    marqueeStart: { x: 0, y: 0 }
+    marqueeStart: { x: 0, y: 0 },
+    isSearching: false,
+    currentSearchTerm: ''
 };
 
 export function clearSelection() {

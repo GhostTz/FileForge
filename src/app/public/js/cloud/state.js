@@ -9,7 +9,8 @@ export const state = {
     isMarqueeSelecting: false,
     marqueeStart: { x: 0, y: 0 },
     isSearching: false,
-    currentSearchTerm: ''
+    currentSearchTerm: '',
+    isEmptyingTrash: false
 };
 
 export function clearSelection() {

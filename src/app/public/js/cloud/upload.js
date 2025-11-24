@@ -23,6 +23,12 @@ function uploadFile(file, parentId, onProgress) {
         const elId = `upload-item-${Date.now()}-${Math.random()}`;
         const uploadItemHTML = `
             <div class="upload-item" id="${elId}">
+                <div class="upload-item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                </div>
                 <div class="upload-item-info">
                     <p class="file-name">${file.name}</p>
                     <p class="upload-status-text">Starting...</p>
@@ -31,12 +37,12 @@ function uploadFile(file, parentId, onProgress) {
                 <span class="upload-percentage">0%</span>
             </div>`;
         DOM.uploadQueueContainer.insertAdjacentHTML('beforeend', uploadItemHTML);
-        
+
         const itemElement = document.getElementById(elId);
         const fill = itemElement.querySelector('.upload-progress-fill');
         const percent = itemElement.querySelector('.upload-percentage');
         const statusText = itemElement.querySelector('.upload-status-text');
-        
+
         const startTime = Date.now();
 
         xhr.upload.addEventListener('progress', (e) => {
@@ -46,11 +52,11 @@ function uploadFile(file, parentId, onProgress) {
                 const speed = e.loaded / elapsedSeconds;
                 const remainingBytes = e.total - e.loaded;
                 const timeRemaining = remainingBytes / speed;
-                
+
                 onProgress({ el: itemElement, percentage, speed, timeRemaining });
             }
         });
-        
+
         xhr.addEventListener('load', () => {
             if (xhr.status >= 200 && xhr.status < 300) {
                 statusText.textContent = 'Completed';
@@ -76,7 +82,7 @@ function uploadFile(file, parentId, onProgress) {
 
 async function handleFiles(files, showToast) {
     DOM.uploadQueueContainer.innerHTML = '';
-    
+
     let fileList = Array.from(files);
     if (fileList.length === 0) return;
 
@@ -91,8 +97,8 @@ async function handleFiles(files, showToast) {
     };
 
     const MAX_FILE_SIZE = 49 * 1024 * 1024; // 49 MB (Sicherheitsmarge für Telegrams 50MB Limit)
-    
-    for(const file of fileList) {
+
+    for (const file of fileList) {
         // --- HIER IST DIE NEUE PRÜFUNG ---
         if (file.size > MAX_FILE_SIZE) {
             failed++;
@@ -100,7 +106,7 @@ async function handleFiles(files, showToast) {
             showToast(`${file.name} is too large (max 50 MB).`, 'error');
             continue; // Überspringt diese Datei und macht mit der nächsten weiter
         }
-        
+
         try {
             await uploadFile(file, state.currentParentId, onProgress);
             completed++;

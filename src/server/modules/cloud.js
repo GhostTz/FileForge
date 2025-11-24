@@ -38,7 +38,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             filename: file.originalname,
             contentType: file.mimetype
         });
-        
+
         if (!sentMessage || !sentMessage.document) {
             throw new Error('Failed to send file to Telegram or document is missing.');
         }
@@ -46,7 +46,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         const fileMeta = {
             message_id: sentMessage.message_id,
             chat_id: sentMessage.chat.id,
-            file_id: sentMessage.document.file_id, 
+            file_id: sentMessage.document.file_id,
             size: formatBytes(file.size),
             fileType: path.extname(file.originalname).substring(1) || 'file'
         };
@@ -82,14 +82,14 @@ router.get('/download/:id', async (req, res) => {
 
         const item = items[0];
         const meta = JSON.parse(item.file_meta);
-        
+
         const bot = new TelegramBot(token);
         const fileInfo = await bot.getFile(meta.file_id);
         const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
 
         const tempFilePath = path.join(__dirname, '..', '..', '..', 'temp', item.name);
         const writer = fs.createWriteStream(tempFilePath);
-        
+
         https.get(fileUrl, (response) => {
             response.pipe(writer);
             writer.on('finish', () => {
@@ -132,9 +132,9 @@ router.get('/path/:id', async (req, res) => {
         const itemId = req.params.id;
         const path = [];
         let currentId = itemId;
-        while(currentId) {
+        while (currentId) {
             const [rows] = await db.query('SELECT id, name, parent_id FROM cloud_items WHERE id = ? AND owner_username = ?', [currentId, owner]);
-            if(rows.length === 0) break;
+            if (rows.length === 0) break;
             const item = rows[0];
             path.unshift({ id: item.id, name: item.name });
             currentId = item.parent_id;
@@ -197,7 +197,7 @@ router.get('/folders', async (req, res) => {
                     children: buildTree(items, item.id)
                 }));
         };
-        
+
         const folderTree = buildTree(folders);
         res.json(folderTree);
 
@@ -256,7 +256,7 @@ router.patch('/items/move', async (req, res) => {
         );
 
         res.status(200).json({ message: `${result.affectedRows} items moved.` });
-    } catch(error) {
+    } catch (error) {
         res.status(500).json({ message: 'Error moving items.' });
     }
 });
@@ -300,6 +300,26 @@ router.delete('/trash/item/:id', async (req, res) => {
     const owner = req.user.username;
     const itemId = req.params.id;
 
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Helper function to recursively collect all items in a folder
+    async function collectAllItems(parentId) {
+        const allItems = [];
+        const [children] = await db.query(
+            'SELECT * FROM cloud_items WHERE parent_id = ? AND owner_username = ?',
+            [parentId, owner]
+        );
+
+        for (const child of children) {
+            allItems.push(child);
+            if (child.type === 'folder') {
+                const nestedItems = await collectAllItems(child.id);
+                allItems.push(...nestedItems);
+            }
+        }
+        return allItems;
+    }
+
     try {
         const [items] = await db.query('SELECT * FROM cloud_items WHERE id = ? AND owner_username = ?', [itemId, owner]);
         if (items.length === 0) {
@@ -307,22 +327,46 @@ router.delete('/trash/item/:id', async (req, res) => {
         }
         const item = items[0];
 
-        if (item.type === 'file' && item.file_meta) {
-            const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
-            if (settings.length > 0 && settings[0].telegramBotToken) {
-                const token = settings[0].telegramBotToken;
-                const meta = JSON.parse(item.file_meta);
+        let itemsToDelete = [item];
+
+        // If it's a folder, collect all nested items
+        if (item.type === 'folder') {
+            const nestedItems = await collectAllItems(item.id);
+            itemsToDelete.push(...nestedItems);
+        }
+
+        // Get Telegram settings once
+        const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
+        const token = settings.length > 0 && settings[0].telegramBotToken ? settings[0].telegramBotToken : null;
+        const bot = token ? new TelegramBot(token) : null;
+
+        let deletedCount = 0;
+        const totalCount = itemsToDelete.length;
+
+        // Delete files from Telegram first (with rate limiting)
+        for (const itemToDelete of itemsToDelete) {
+            if (itemToDelete.type === 'file' && itemToDelete.file_meta && bot) {
                 try {
-                    const bot = new TelegramBot(token);
+                    const meta = JSON.parse(itemToDelete.file_meta);
                     await bot.deleteMessage(meta.chat_id, meta.message_id);
+                    deletedCount++;
+                    console.log(`Deleted file ${itemToDelete.id} from Telegram (${deletedCount}/${totalCount})`);
+                    // Rate limiting: wait 1 second between Telegram deletions
+                    await sleep(1000);
                 } catch (tgError) {
-                    console.error(`Telegram Deletion Error for item ${itemId}:`, tgError.response ? tgError.response.body : tgError.message);
+                    console.error(`Telegram Deletion Error for item ${itemToDelete.id}:`, tgError.response ? tgError.response.body : tgError.message);
                 }
             }
         }
-        
-        await db.query('DELETE FROM cloud_items WHERE id = ?', [itemId]);
-        res.status(200).json({ message: 'Item permanently deleted.' });
+
+        // Delete all items from database
+        const idsToDelete = itemsToDelete.map(i => i.id);
+        await db.query('DELETE FROM cloud_items WHERE id IN (?)', [idsToDelete]);
+
+        res.status(200).json({
+            message: 'Item permanently deleted.',
+            deletedCount: itemsToDelete.length
+        });
 
     } catch (error) {
         console.error(`DB Deletion Error for item ${itemId}:`, error);

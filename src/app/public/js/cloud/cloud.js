@@ -22,6 +22,31 @@ function showToast(message, type = 'default') {
     }, 4000);
 }
 
+function showProgressToast(message) {
+    const container = document.getElementById('cloud-toast-container');
+    if (!container) return null;
+
+    const toast = document.createElement('div');
+    toast.className = 'cloud-toast progress';
+    toast.innerHTML = `
+        <div class="progress-content">
+            <span class="progress-message">${message}</span>
+            <div class="progress-spinner"></div>
+        </div>
+    `;
+    container.appendChild(toast);
+
+    return {
+        update: (newMessage) => {
+            const messageEl = toast.querySelector('.progress-message');
+            if (messageEl) messageEl.textContent = newMessage;
+        },
+        close: () => {
+            toast.remove();
+        }
+    };
+}
+
 async function refreshCurrentView() {
     try {
         state.isSearching = false;
@@ -84,33 +109,8 @@ function handleSearch(event) {
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function handleEmptyTrash() {
+    state.isEmptyingTrash = true;
     modals.openBulkDeleteModal(true);
-    // Overwrite the confirm button's default behavior for this specific case
-    DOM.confirmDeleteBtn.onclick = async () => {
-        modals.closeDeleteModal();
-        const itemsToDelete = [...state.items]; // Get all items currently in trash view
-        const total = itemsToDelete.length;
-        if (total === 0) return;
-
-        modals.openBulkDeleteProgressModal();
-        let deletedCount = 0;
-
-        for (const item of itemsToDelete) {
-            try {
-                await api.permanentlyDeleteItem(item.id);
-                deletedCount++;
-                modals.updateBulkDeleteProgress(deletedCount, total);
-                await sleep(1000); // Wait 1 second
-            } catch (error) {
-                console.error(`Failed to delete item ${item.id}:`, error);
-                showToast(`Error deleting ${item.name}.`, 'error');
-            }
-        }
-
-        modals.closeBulkDeleteProgressModal();
-        showToast('Trash has been emptied.', 'success');
-        refreshCurrentView();
-    };
 }
 
 
@@ -194,6 +194,37 @@ function setupEventListeners() {
         }
     };
     DOM.confirmDeleteBtn.onclick = async () => {
+        if (state.isEmptyingTrash) {
+            modals.closeDeleteModal();
+            const itemsToDelete = [...state.items]; // Get all items currently in trash view
+            const total = itemsToDelete.length;
+            if (total === 0) {
+                state.isEmptyingTrash = false;
+                return;
+            }
+
+            modals.openBulkDeleteProgressModal();
+            let deletedCount = 0;
+
+            for (const item of itemsToDelete) {
+                try {
+                    await api.permanentlyDeleteItem(item.id);
+                    deletedCount++;
+                    modals.updateBulkDeleteProgress(deletedCount, total);
+                    await sleep(1000); // Wait 1 second
+                } catch (error) {
+                    console.error(`Failed to delete item ${item.id}:`, error);
+                    showToast(`Error deleting ${item.name}.`, 'error');
+                }
+            }
+
+            modals.closeBulkDeleteProgressModal();
+            showToast('Trash has been emptied.', 'success');
+            state.isEmptyingTrash = false;
+            await refreshCurrentView();
+            return;
+        }
+
         const isPermanent = state.currentView === 'trash';
         if (state.selectedItems.size > 0) {
             const ids = Array.from(state.selectedItems);
@@ -203,8 +234,23 @@ function setupEventListeners() {
                 await api.moveItemsToTrash(ids);
             }
         } else if (state.itemToDelete) {
-            if (isPermanent) await api.permanentlyDeleteItem(state.itemToDelete.id);
-            else await api.deleteSingleItem(state.itemToDelete.id);
+            if (isPermanent) {
+                modals.closeDeleteModal();
+                const progressToast = showProgressToast(`Deleting ${state.itemToDelete.name}...`);
+                try {
+                    await api.permanentlyDeleteItem(state.itemToDelete.id);
+                    if (progressToast) progressToast.close();
+                    showToast('Item permanently deleted.', 'success');
+                } catch (error) {
+                    if (progressToast) progressToast.close();
+                    showToast('Failed to delete item.', 'error');
+                    console.error('Delete error:', error);
+                }
+                await refreshCurrentView();
+                return;
+            } else {
+                await api.moveItemsToTrash([state.itemToDelete.id]);
+            }
         }
         clearSelection();
         await refreshCurrentView();
@@ -221,7 +267,12 @@ function setupEventListeners() {
 
     // Generic modal close buttons
     [DOM.cancelCreateFolderBtn, DOM.createFolderModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeCreateFolderModal() }));
-    [DOM.cancelDeleteBtn, DOM.confirmDeleteModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeDeleteModal() }));
+    [DOM.cancelDeleteBtn, DOM.confirmDeleteModal].forEach(el => el.addEventListener('click', (e) => {
+        if (e.target === el) {
+            state.isEmptyingTrash = false;
+            modals.closeDeleteModal();
+        }
+    }));
     [DOM.cancelMoveBtn, DOM.moveItemModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeMoveModal() }));
     [DOM.closePreviewBtn, DOM.previewModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeFilePreview() }));
 
@@ -265,11 +316,26 @@ function setupEventListeners() {
     });
 }
 
+async function checkTelegramSettings() {
+    try {
+        const settings = await api.fetchSettings();
+        if (!settings.telegramBotToken || !settings.telegramChannelId) {
+            const warningContainer = document.getElementById('telegram-warning-container');
+            if (warningContainer) {
+                warningContainer.classList.remove('hidden');
+            }
+        }
+    } catch (error) {
+        console.error("Failed to check Telegram settings:", error);
+    }
+}
+
 function initialize() {
     setupEventListeners();
     initializeUpload(showToast);
     initializeMarqueeSelection();
     setupSidebarNav('myFiles');
+    checkTelegramSettings();
 }
 
 initialize();

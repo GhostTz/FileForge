@@ -36,15 +36,12 @@ export async function moveItemsToTrash(itemIds) {
     if (!response.ok) throw new Error('Failed to move items to trash');
 }
 
-export async function deleteSingleItem(itemId) {
-    const response = await fetch(`api/cloud/item/${itemId}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Failed to delete item');
-}
+
 
 export async function toggleFavorite(itemId, isFavorite) {
     const response = await fetch(`api/cloud/item/${itemId}/favorite`, {
         method: 'PATCH',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isFavorite })
     });
     if (!response.ok) throw new Error('Failed to toggle favorite');
@@ -92,4 +89,10 @@ export async function restoreItems(itemIds) {
 export async function permanentlyDeleteItem(itemId) {
     const response = await fetch(`api/cloud/trash/item/${itemId}`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to permanently delete item');
+}
+
+export async function fetchSettings() {
+    const response = await fetch('api/user/settings');
+    if (!response.ok) throw new Error('Failed to fetch settings');
+    return await response.json();
 }

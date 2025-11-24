@@ -30,13 +30,16 @@
     transition: color 0.2s ease;
     cursor: pointer;
 }
+
 .breadcrumbs a:hover {
     color: var(--text-color);
 }
+
 .breadcrumbs a.active {
     color: var(--text-color);
     cursor: default;
 }
+
 .breadcrumbs span {
     color: var(--text-muted);
 }
@@ -71,15 +74,18 @@
     color: white;
     border-color: var(--primary-color);
 }
+
 .header-btn.primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 20px var(--primary-glow);
 }
+
 .header-btn.danger {
     background-color: transparent;
     border-color: var(--danger-color);
     color: var(--danger-color);
 }
+
 .header-btn.danger:hover {
     background-color: var(--danger-color);
     color: white;
@@ -98,6 +104,7 @@
     flex-grow: 1;
     min-width: 250px;
 }
+
 .drive-search-bar svg {
     position: absolute;
     left: 15px;
@@ -107,6 +114,7 @@
     width: 20px;
     height: 20px;
 }
+
 .drive-search-bar input {
     width: 100%;
     padding: 12px 15px 12px 45px;
@@ -117,6 +125,7 @@
     outline: none;
     transition: all 0.2s ease;
 }
+
 .drive-search-bar input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 10px var(--primary-glow);
@@ -136,6 +145,7 @@
     padding: 5px;
     border-radius: 8px;
 }
+
 .toggle-btn {
     padding: 8px 15px;
     background: transparent;
@@ -148,11 +158,13 @@
     align-items: center;
     gap: 8px;
 }
+
 .toggle-btn svg {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
 }
+
 .toggle-btn.active {
     background-color: var(--card-bg);
     color: var(--text-color);
@@ -167,12 +179,14 @@
     padding: 5px;
     border-radius: 8px;
 }
+
 .selection-toolbar span {
     font-weight: 500;
     font-size: 0.9rem;
     padding: 0 10px;
     color: var(--text-muted);
 }
+
 .toolbar-action-btn {
     display: flex;
     align-items: center;
@@ -186,9 +200,11 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
 .toolbar-action-btn:hover {
     background-color: var(--card-bg);
 }
+
 .toolbar-action-btn.danger:hover {
     color: var(--danger-color);
 }
@@ -199,7 +215,8 @@
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
     padding-bottom: 30px;
-    user-select: none; /* Prevent text selection during drag */
+    user-select: none;
+    /* Prevent text selection during drag */
 }
 
 .file-item {
@@ -231,11 +248,13 @@
     transform: translateY(-2px);
     box-shadow: 0 0 15px var(--primary-glow);
 }
+
 .file-item.selected .selection-checkbox {
     opacity: 1;
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
+
 .file-item.selected .selection-checkbox svg {
     transform: scale(1);
 }
@@ -256,6 +275,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .selection-checkbox svg {
     width: 16px;
     height: 16px;
@@ -264,6 +284,7 @@
     transform: scale(0);
     transition: transform 0.2s ease;
 }
+
 .file-item:hover .selection-checkbox {
     opacity: 1;
 }
@@ -274,18 +295,22 @@
     justify-content: space-between;
     margin-bottom: 15px;
 }
+
 .file-item .file-icon svg {
     color: var(--primary-color);
 }
+
 .file-item .file-details {
     flex-grow: 1;
 }
+
 .file-item .file-info {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-color);
     word-break: break-all;
 }
+
 .file-item .file-meta {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -301,11 +326,14 @@
     opacity: 0;
     transition: opacity 0.2s ease;
 }
+
 .file-item:hover .file-actions {
     opacity: 1;
 }
+
 .file-item.selected .file-actions {
-    opacity: 0; /* Hide individual actions when selected */
+    opacity: 0;
+    /* Hide individual actions when selected */
 }
 
 
@@ -316,9 +344,11 @@
     cursor: pointer;
     padding: 2px;
 }
+
 .file-action-btn:hover {
     color: var(--text-color);
 }
+
 .file-action-btn.favorite.is-favorite svg {
     fill: #f0a020;
     stroke: #f0a020;
@@ -328,27 +358,35 @@
 .file-grid.list-view {
     grid-template-columns: 1fr;
 }
+
 .file-grid.list-view .file-item {
     flex-direction: row;
     align-items: center;
     padding: 15px 20px;
-    padding-right: 45px; /* space for checkbox */
+    padding-right: 45px;
+    /* space for checkbox */
 }
+
 .file-grid.list-view .selection-checkbox {
     top: 50%;
     transform: translateY(-50%);
     right: 15px;
 }
+
 .file-grid.list-view .file-icon {
     margin: 0;
     margin-right: 15px;
 }
+
 .file-grid.list-view .file-details {
     flex-grow: 1;
 }
+
 .file-grid.list-view .file-actions {
-    opacity: 1; /* Always visible in list view */
+    opacity: 1;
+    /* Always visible in list view */
 }
+
 .file-grid.list-view .file-item.selected .file-actions {
     opacity: 0;
 }
@@ -369,10 +407,12 @@
     height: 64px;
     margin-bottom: 20px;
 }
+
 .empty-folder-view h3 {
     font-size: 1.5rem;
     color: var(--text-color);
 }
+
 .empty-folder-view p {
     margin-top: 10px;
 }
@@ -391,6 +431,30 @@
     .drive-header {
         flex-direction: column;
         align-items: stretch;
+        gap: 15px;
+        padding: 15px 0;
+    }
+
+    .drive-header-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .drive-search-bar {
+        width: 100%;
+        min-width: unset;
+        order: 3;
+        /* Move search bar to bottom on mobile */
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .header-actions .header-btn {
+        flex: 1;
+        justify-content: center;
     }
 }
 
@@ -399,12 +463,60 @@
         flex-direction: column-reverse;
         gap: 15px;
         align-items: stretch;
+        padding: 10px 0;
     }
+
     .selection-toolbar {
         justify-content: space-between;
+        flex-wrap: wrap;
     }
+
     .file-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        padding-bottom: 80px;
+        /* Extra padding for bottom actions if needed */
+    }
+
+    /* Adjust list view for mobile */
+    .file-grid.list-view .file-item {
+        padding: 10px;
+        padding-right: 40px;
+    }
+
+    .file-grid.list-view .file-icon {
+        margin-right: 10px;
+    }
+
+    .file-grid.list-view .file-info {
+        font-size: 0.85rem;
+    }
+
+    .file-grid.list-view .file-meta {
+        font-size: 0.7rem;
+    }
+
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        color: var(--text-color);
+        cursor: pointer;
+        padding: 5px;
+        margin-right: 10px;
+    }
+
+    .mobile-menu-btn svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+@media (min-width: 769px) {
+    .hidden-desktop {
+        display: none !important;
     }
 }

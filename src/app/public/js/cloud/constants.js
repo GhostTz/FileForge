@@ -48,7 +48,10 @@ export const DOM = {
         myFiles: document.getElementById('nav-my-files'),
         favorites: document.getElementById('nav-favorites'),
         trash: document.getElementById('nav-trash')
-    }
+    },
+    mobileMenuBtn: document.getElementById('mobile-menu-btn'),
+    sidebarOverlay: document.getElementById('sidebar-overlay'),
+    sidebar: document.querySelector('.drive-sidebar')
 };
 
 export const ICONS = {

@@ -14,7 +14,7 @@ router.get('/settings', async (req, res) => {
     try {
         const username = req.user.username;
         const [settings] = await db.query('SELECT fullName, age, email, telegramBotToken, telegramChannelId FROM settings WHERE username = ?', [username]);
-        
+
         if (settings.length > 0) {
             res.json(settings[0]);
         } else {
@@ -33,7 +33,7 @@ router.post('/settings', async (req, res) => {
 
         await db.query(
             'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ? WHERE username = ?',
-            [fullName, email, age || null, telegramBotToken, telegramChannelId, username]
+            [fullName || null, email || null, age || null, telegramBotToken || null, telegramChannelId || null, username]
         );
 
         res.status(200).json({ message: 'Settings saved successfully.' });

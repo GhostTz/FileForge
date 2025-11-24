@@ -216,6 +216,9 @@
     gap: 20px;
     padding-bottom: 30px;
     user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     /* Prevent text selection during drag */
 }
 
@@ -231,6 +234,12 @@
     animation: fadeIn 0.5s ease forwards;
     cursor: pointer;
     position: relative;
+    pointer-events: auto;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .file-item.is-folder {

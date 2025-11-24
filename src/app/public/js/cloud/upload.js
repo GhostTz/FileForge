@@ -13,64 +13,45 @@ function formatSpeed(bytesPerSecond) {
     return `${(bytesPerSecond / (1024 * 1024)).toFixed(1)} MB/s`;
 }
 
-function uploadFile(file, parentId, onProgress) {
+function uploadFile(file, parentId, notificationId) {
     return new Promise((resolve, reject) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('parentId', parentId === null ? 'null' : parentId);
 
         const xhr = new XMLHttpRequest();
-        const elId = `upload-item-${Date.now()}-${Math.random()}`;
-        const uploadItemHTML = `
-            <div class="upload-item" id="${elId}">
-                <div class="upload-item-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                </div>
-                <div class="upload-item-info">
-                    <p class="file-name">${file.name}</p>
-                    <p class="upload-status-text">Starting...</p>
-                    <div class="upload-progress-bar"><div class="upload-progress-fill"></div></div>
-                </div>
-                <span class="upload-percentage">0%</span>
-            </div>`;
-        DOM.uploadQueueContainer.insertAdjacentHTML('beforeend', uploadItemHTML);
-
-        const itemElement = document.getElementById(elId);
-        const fill = itemElement.querySelector('.upload-progress-fill');
-        const percent = itemElement.querySelector('.upload-percentage');
-        const statusText = itemElement.querySelector('.upload-status-text');
-
         const startTime = Date.now();
 
         xhr.upload.addEventListener('progress', (e) => {
-            if (e.lengthComputable) {
+            if (e.lengthComputable && window.NotificationManager) {
                 const percentage = Math.round((e.loaded / e.total) * 100);
                 const elapsedSeconds = (Date.now() - startTime) / 1000;
                 const speed = e.loaded / elapsedSeconds;
                 const remainingBytes = e.total - e.loaded;
                 const timeRemaining = remainingBytes / speed;
 
-                onProgress({ el: itemElement, percentage, speed, timeRemaining });
+                const speedText = formatSpeed(speed);
+                const timeText = isFinite(timeRemaining) ? formatTime(timeRemaining) : 'calculating...';
+
+                window.NotificationManager.updateProgress(
+                    notificationId,
+                    e.loaded,
+                    e.total,
+                    `Uploading ${file.name} - ${speedText} • ${timeText}`
+                );
             }
         });
 
         xhr.addEventListener('load', () => {
             if (xhr.status >= 200 && xhr.status < 300) {
-                statusText.textContent = 'Completed';
                 resolve(JSON.parse(xhr.responseText));
             } else {
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
-                    statusText.textContent = `Error: ${errorResponse.message}`;
                     reject(new Error(errorResponse.message));
                 } catch (jsonError) {
-                    statusText.textContent = `Error: Server returned an invalid response.`;
                     reject(new Error(`Server error: ${xhr.status}`));
                 }
-                itemElement.querySelector('.upload-progress-bar').style.backgroundColor = 'var(--danger-color)';
             }
         });
         xhr.addEventListener('error', () => reject(new Error('Network error')));
@@ -81,46 +62,90 @@ function uploadFile(file, parentId, onProgress) {
 }
 
 async function handleFiles(files, showToast) {
-    DOM.uploadQueueContainer.innerHTML = '';
-
     let fileList = Array.from(files);
     if (fileList.length === 0) return;
 
+    const MAX_FILE_SIZE = 49 * 1024 * 1024; // 49 MB
+    const totalFiles = fileList.length;
     let completed = 0;
     let failed = 0;
 
-    const onProgress = ({ el, percentage, speed, timeRemaining }) => {
-        el.querySelector('.upload-progress-fill').style.width = percentage + '%';
-        el.querySelector('.upload-percentage').textContent = percentage + '%';
-        const statusEl = el.querySelector('.upload-status-text');
-        statusEl.textContent = `${formatSpeed(speed)} • ${isFinite(timeRemaining) ? formatTime(timeRemaining) : '...'}`;
-    };
+    // Create single notification for all uploads
+    let notifId = null;
+    if (window.NotificationManager) {
+        notifId = window.NotificationManager.showProgressNotification('Uploading Files');
+        window.NotificationManager.updateProgress(notifId, 0, totalFiles, `Preparing ${totalFiles} file(s)...`);
+    }
 
-    const MAX_FILE_SIZE = 49 * 1024 * 1024; // 49 MB (Sicherheitsmarge für Telegrams 50MB Limit)
+    for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        const fileNum = i + 1;
 
-    for (const file of fileList) {
-        // --- HIER IST DIE NEUE PRÜFUNG ---
+        // Check file size
         if (file.size > MAX_FILE_SIZE) {
             failed++;
             console.error(`Failed to upload ${file.name}: File exceeds 50 MB limit.`);
-            showToast(`${file.name} is too large (max 50 MB).`, 'error');
-            continue; // Überspringt diese Datei und macht mit der nächsten weiter
+            if (notifId && window.NotificationManager) {
+                window.NotificationManager.updateProgress(
+                    notifId,
+                    completed,
+                    totalFiles,
+                    `Skipped ${file.name} (too large) - ${fileNum} of ${totalFiles}`
+                );
+            }
+            continue;
+        }
+
+        // Update notification to show current file being uploaded
+        if (notifId && window.NotificationManager) {
+            window.NotificationManager.updateProgress(
+                notifId,
+                completed,
+                totalFiles,
+                `Uploading ${file.name} (${fileNum} of ${totalFiles})...`
+            );
         }
 
         try {
-            await uploadFile(file, state.currentParentId, onProgress);
+            await uploadFile(file, state.currentParentId, notifId);
             completed++;
+
+            // Update progress after successful upload
+            if (notifId && window.NotificationManager) {
+                window.NotificationManager.updateProgress(
+                    notifId,
+                    completed,
+                    totalFiles,
+                    `Uploaded ${completed} of ${totalFiles} files`
+                );
+            }
         } catch (error) {
             failed++;
             console.error(`Failed to upload ${file.name}:`, error);
+
+            // Update with error info
+            if (notifId && window.NotificationManager) {
+                window.NotificationManager.updateProgress(
+                    notifId,
+                    completed,
+                    totalFiles,
+                    `Failed to upload ${file.name} - ${completed} of ${totalFiles} complete`
+                );
+            }
         }
     }
 
-    if (completed > 0) {
-        showToast(`${completed} file(s) uploaded successfully`, 'success');
-    }
-    if (failed > 0 && completed === 0) { // Zeigt die allgemeine Fehlermeldung nur an, wenn keine andere spezifische Meldung angezeigt wurde
-        showToast(`${failed} upload(s) failed.`, 'error');
+    // Close progress notification and show final result
+    if (notifId && window.NotificationManager) {
+        window.NotificationManager.closeNotification(notifId);
+
+        if (failed === 0) {
+            window.NotificationManager.showNotification('success', 'Upload Complete', `Successfully uploaded ${completed} file(s).`);
+        } else if (completed > 0) {
+            window.NotificationManager.showNotification('info', 'Upload Finished', `Uploaded ${completed} file(s), ${failed} failed.`);
+        } else {
+            window.NotificationManager.showNotification('error', 'Upload Failed', `Failed to upload ${failed} file(s).`);
+        }
     }
 }
 

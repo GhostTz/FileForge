@@ -17,11 +17,16 @@
     <link rel="stylesheet" href="app/public/css/cloud/upload.css">
     <!-- End of Modularized Cloud CSS -->
     <link rel="stylesheet" href="app/public/css/settings.css">
+    <!-- Global Notification System -->
+    <link rel="stylesheet" href="app/public/css/notifications.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <nav id="app-sidebar" class="app-sidebar"></nav>
+
+    <!-- Global Notification Container -->
+    <div id="global-notifications-container"></div>
 
     <div id="page-content" class="main-container">
         <!-- Content will be loaded here by JavaScript -->
@@ -59,6 +64,9 @@
             <button id="format-required-ok" class="modal-ok-btn">OK</button>
         </div>
     </div>
+
+    <!-- Global Notification System -->
+    <script src="app/public/js/notifications.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

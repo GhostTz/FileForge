@@ -110,6 +110,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function handleEmptyTrash() {
     state.isEmptyingTrash = true;
+    console.log('[Cloud] handleEmptyTrash called, isEmptyingTrash set to:', state.isEmptyingTrash);
     modals.openBulkDeleteModal(true);
 }
 
@@ -193,7 +194,16 @@ function setupEventListeners() {
             modals.closeCreateFolderModal();
         }
     };
+
+    console.log('[Cloud] Setting up delete button handler...');
+    console.log('[Cloud] confirmDeleteBtn element:', DOM.confirmDeleteBtn);
+
     DOM.confirmDeleteBtn.onclick = async () => {
+        console.log('[Cloud] Delete button clicked!');
+        console.log('[Cloud] isEmptyingTrash:', state.isEmptyingTrash);
+        console.log('[Cloud] currentView:', state.currentView);
+        console.log('[Cloud] selectedItems:', state.selectedItems);
+
         if (state.isEmptyingTrash) {
             modals.closeDeleteModal();
             const itemsToDelete = [...state.items]; // Get all items currently in trash view
@@ -203,14 +213,26 @@ function setupEventListeners() {
                 return;
             }
 
-            modals.openBulkDeleteProgressModal();
+            // Check if NotificationManager is available
+            if (!window.NotificationManager) {
+                console.error('NotificationManager is not available!');
+                showToast('Error: Notification system not loaded', 'error');
+                state.isEmptyingTrash = false;
+                return;
+            }
+
+            // Show non-blocking progress notification
+            console.log('Starting trash deletion, showing notification...');
+            const notifId = window.NotificationManager.showProgressNotification('Emptying Trash');
+            console.log('Notification ID:', notifId);
             let deletedCount = 0;
 
             for (const item of itemsToDelete) {
                 try {
                     await api.permanentlyDeleteItem(item.id);
                     deletedCount++;
-                    modals.updateBulkDeleteProgress(deletedCount, total);
+                    console.log(`Deleted ${deletedCount}/${total}`);
+                    window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
                     await sleep(1000); // Wait 1 second
                 } catch (error) {
                     console.error(`Failed to delete item ${item.id}:`, error);
@@ -218,8 +240,8 @@ function setupEventListeners() {
                 }
             }
 
-            modals.closeBulkDeleteProgressModal();
-            showToast('Trash has been emptied.', 'success');
+            window.NotificationManager.closeNotification(notifId);
+            window.NotificationManager.showNotification('success', 'Trash Emptied', `Successfully deleted ${deletedCount} items.`);
             state.isEmptyingTrash = false;
             await refreshCurrentView();
             return;
@@ -229,22 +251,58 @@ function setupEventListeners() {
         if (state.selectedItems.size > 0) {
             const ids = Array.from(state.selectedItems);
             if (isPermanent) {
-                for (const id of ids) await api.permanentlyDeleteItem(id);
+                // Bulk permanent delete with progress notification
+                modals.closeDeleteModal();
+
+                if (!window.NotificationManager) {
+                    console.error('NotificationManager not available');
+                    for (const id of ids) await api.permanentlyDeleteItem(id);
+                } else {
+                    const notifId = window.NotificationManager.showProgressNotification('Deleting Items');
+                    let deletedCount = 0;
+                    const total = ids.length;
+
+                    for (const id of ids) {
+                        try {
+                            await api.permanentlyDeleteItem(id);
+                            deletedCount++;
+                            window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
+                            await sleep(1000);
+                        } catch (error) {
+                            console.error(`Failed to delete item ${id}:`, error);
+                        }
+                    }
+
+                    window.NotificationManager.closeNotification(notifId);
+                    window.NotificationManager.showNotification('success', 'Items Deleted', `Successfully deleted ${deletedCount} items.`);
+                }
             } else {
                 await api.moveItemsToTrash(ids);
             }
         } else if (state.itemToDelete) {
             if (isPermanent) {
                 modals.closeDeleteModal();
-                const progressToast = showProgressToast(`Deleting ${state.itemToDelete.name}...`);
-                try {
+
+                // Single item permanent delete with progress notification
+                if (!window.NotificationManager) {
+                    console.error('NotificationManager not available');
                     await api.permanentlyDeleteItem(state.itemToDelete.id);
-                    if (progressToast) progressToast.close();
                     showToast('Item permanently deleted.', 'success');
-                } catch (error) {
-                    if (progressToast) progressToast.close();
-                    showToast('Failed to delete item.', 'error');
-                    console.error('Delete error:', error);
+                } else {
+                    const progressToast = window.NotificationManager.showProgressNotification('Deleting Item');
+                    window.NotificationManager.updateProgress(progressToast, 0, 1, `Deleting ${state.itemToDelete.name}...`);
+
+                    try {
+                        await api.permanentlyDeleteItem(state.itemToDelete.id);
+                        window.NotificationManager.updateProgress(progressToast, 1, 1, 'Deletion complete');
+                        await sleep(500);
+                        window.NotificationManager.closeNotification(progressToast);
+                        window.NotificationManager.showNotification('success', 'Item Deleted', `Successfully deleted ${state.itemToDelete.name}.`);
+                    } catch (error) {
+                        window.NotificationManager.closeNotification(progressToast);
+                        window.NotificationManager.showNotification('error', 'Delete Failed', 'Could not delete item.');
+                        console.error('Delete error:', error);
+                    }
                 }
                 await refreshCurrentView();
                 return;

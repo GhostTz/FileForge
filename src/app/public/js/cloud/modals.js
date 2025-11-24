@@ -39,7 +39,7 @@ export const openMoveModal = async () => {
         rootEl.innerHTML = `<div class="folder-tree-item" data-id="root">${ICONS.folder}<span>Home (Root)</span></div>`;
         DOM.moveFolderTreeContainer.appendChild(rootEl);
         renderFolderTree(folderTree, DOM.moveFolderTreeContainer);
-        
+
         state.destinationFolderId = null;
         DOM.confirmMoveBtn.disabled = true;
         DOM.moveItemModal.classList.remove('hidden');
@@ -50,20 +50,6 @@ export const openMoveModal = async () => {
 export const closeMoveModal = () => {
     DOM.moveItemModal.classList.add('hidden');
     state.destinationFolderId = null;
-};
-
-// --- Bulk Delete Progress Modal ---
-export const openBulkDeleteProgressModal = () => {
-    DOM.bulkDeleteProgressModal.classList.remove('hidden');
-    updateBulkDeleteProgress(0, 1); // Start with 0
-};
-export const updateBulkDeleteProgress = (deletedCount, totalCount) => {
-    const percentage = totalCount > 0 ? (deletedCount / totalCount) * 100 : 0;
-    DOM.bulkDeleteProgressBar.style.width = `${percentage}%`;
-    DOM.bulkDeleteProgressText.textContent = `Deleting ${deletedCount} of ${totalCount} items...`;
-};
-export const closeBulkDeleteProgressModal = () => {
-    DOM.bulkDeleteProgressModal.classList.add('hidden');
 };
 
 

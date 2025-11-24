@@ -74,7 +74,7 @@ function renderFiles() {
         const meta = item.file_meta ? JSON.parse(item.file_meta) : {};
         const fileMeta = item.type === 'folder' ? '' : `${(meta.fileType || 'file').toUpperCase()} • ${meta.size || '0 KB'}`;
         const isSelected = state.selectedItems.has(item.id.toString());
-        
+
         const actionsHTML = isTrashView ? `
             <button class="file-action-btn" data-action="restore" title="Restore">${ICONS.restore}</button>
             <button class="file-action-btn" data-action="permanent-delete" title="Delete Permanently">${ICONS.delete}</button>
@@ -84,7 +84,7 @@ function renderFiles() {
         `;
 
         const fileElementHTML = `
-            <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}">
+            <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}" draggable="false">
                 <div class="selection-checkbox">${ICONS.check}</div>
                 <div class="file-icon">${ICONS[item.type]}</div>
                 <div class="file-details">
@@ -110,8 +110,8 @@ export function updateSelectionToolbar() {
         DOM.selectionCount.textContent = `${count} selected`;
         DOM.defaultToolbar.classList.add('hidden');
         DOM.selectionToolbar.classList.remove('hidden');
-        DOM.selectionDeleteBtn.innerHTML = isTrash 
-            ? `${ICONS.delete} Delete Permanently` 
+        DOM.selectionDeleteBtn.innerHTML = isTrash
+            ? `${ICONS.delete} Delete Permanently`
             : `${ICONS.delete} Delete`;
     } else {
         DOM.defaultToolbar.classList.remove('hidden');

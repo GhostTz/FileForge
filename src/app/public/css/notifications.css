@@ -1,0 +1,213 @@
+/* ===============================================
+   GLOBAL NOTIFICATION SYSTEM
+   =============================================== */
+
+#global-notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    pointer-events: none;
+}
+
+.notification {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.3s ease-out forwards;
+    pointer-events: auto;
+    min-width: 320px;
+    transition: all 0.2s ease;
+}
+
+.notification:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+}
+
+.notification.closing {
+    animation: slideOutRight 0.2s ease-in forwards;
+}
+
+/* Notification Types */
+.notification-success {
+    border-left: 4px solid #4ade80;
+}
+
+.notification-error {
+    border-left: 4px solid #ef4444;
+}
+
+.notification-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.notification-progress {
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Notification Header */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notification-header h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    background: var(--active-bg);
+    color: var(--text-color);
+}
+
+/* Notification Body */
+.notification-body {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.notification-body p {
+    margin: 0;
+}
+
+/* Progress Specific Styles */
+.progress-info {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.progress-bar-container {
+    margin-top: 10px;
+    height: 6px;
+    background: var(--active-bg);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    position: relative;
+    animation: progressPulse 2s ease-in-out infinite;
+}
+
+/* Loading Spinner (for indeterminate progress) */
+.notification-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--active-bg);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+
+@keyframes progressPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #global-notifications-container {
+        top: 10px;
+        right: 10px;
+        left: auto;
+        max-width: calc(100vw - 40px);
+    }
+
+    .notification {
+        min-width: auto;
+        max-width: 340px;
+        padding: 12px 14px;
+    }
+
+    .notification-header h4 {
+        font-size: 0.85rem;
+    }
+
+    .notification-body {
+        font-size: 0.8rem;
+    }
+
+    .progress-info {
+        font-size: 0.75rem;
+    }
+}

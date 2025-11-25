@@ -28,13 +28,7 @@
                         </svg> <span>Trash</span></a></li>
             </ul>
         </nav>
-        <div class="sidebar-storage">
-            <p>Storage</p>
-            <div class="storage-bar">
-                <div class="storage-fill" style="width: 0%;"></div>
-            </div>
-            <p class="storage-info">0 B of 50 GB used</p>
-        </div>
+
     </aside>
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
@@ -92,51 +86,72 @@
                 </div>
             </header>
             <div class="explorer-toolbar">
-                <div id="default-toolbar-items" class="view-toggles">
-                    <button id="grid-view-btn" class="toggle-btn active"><svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="14" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                        </svg> Grid</button>
-                    <button id="list-view-btn" class="toggle-btn"><svg xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="8" y1="6" x2="21" y2="6"></line>
-                            <line x1="8" y1="12" x2="21" y2="12"></line>
-                            <line x1="8" y1="18" x2="21" y2="18"></line>
-                            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                            <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                        </svg> List</button>
+                <div class="toolbar-main-actions">
+                    <div id="default-toolbar-items" class="view-toggles">
+                        <button id="grid-view-btn" class="toggle-btn active"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg> Grid</button>
+                        <button id="list-view-btn" class="toggle-btn"><svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg> List</button>
+                    </div>
+                    <div id="selection-toolbar" class="selection-toolbar hidden">
+                        <span id="selection-count"></span>
+                        <button id="selection-restore-btn" class="toolbar-action-btn hidden"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="1 4 1 10 7 10"></polyline>
+                                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                            </svg> <span>Restore</span></button>
+                        <button id="selection-download-btn" class="toolbar-action-btn"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg> <span>Download</span></button>
+                        <button id="selection-move-btn" class="toolbar-action-btn"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="5 9 2 12 5 15"></polyline>
+                                <polyline points="9 5 12 2 15 5"></polyline>
+                                <polyline points="15 19 12 22 9 19"></polyline>
+                                <polyline points="19 9 22 12 19 15"></polyline>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <line x1="12" y1="2" x2="12" y2="22"></line>
+                            </svg> <span>Move</span></button>
+                        <button id="selection-delete-btn" class="toolbar-action-btn danger"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                </path>
+                            </svg> <span>Delete</span></button>
+                    </div>
                 </div>
-                <div id="selection-toolbar" class="selection-toolbar hidden">
-                    <span id="selection-count"></span>
-                    <button id="selection-restore-btn" class="toolbar-action-btn hidden"><svg
-                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="1 4 1 10 7 10"></polyline>
-                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                        </svg> Restore</button>
-                    <button id="selection-move-btn" class="toolbar-action-btn"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="5 9 2 12 5 15"></polyline>
-                            <polyline points="9 5 12 2 15 5"></polyline>
-                            <polyline points="15 19 12 22 9 19"></polyline>
-                            <polyline points="19 9 22 12 19 15"></polyline>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <line x1="12" y1="2" x2="12" y2="22"></line>
-                        </svg> Move</button>
-                    <button id="selection-delete-btn" class="toolbar-action-btn danger"><svg
-                            xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                            </path>
-                        </svg> Delete</button>
+                <div class="toolbar-select-all">
+                    <div id="select-all-checkbox" class="selection-checkbox" title="Select All">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M20 6 9 17l-5-5"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
             <div id="file-grid" class="file-grid">
@@ -148,7 +163,7 @@
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                 </svg>
                 <h3 id="empty-folder-title">This folder is empty</h3>
-                <p id="empty-folder-text">Drag and drop files here or use the "Upload" button.</p>
+                <p id="empty-folder-text">Use the "Upload" button to upload files</p>
             </div>
         </div>
 
@@ -222,9 +237,20 @@
         <div class="file-preview-content">
             <div class="preview-header">
                 <h3 id="preview-file-name"></h3>
-                <button id="close-preview-btn">&times;</button>
+                <div class="preview-header-actions">
+                    <button id="preview-download-action-btn" class="header-icon-btn" title="Download"><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg></button>
+                    <button id="close-preview-btn">&times;</button>
+                </div>
             </div>
             <div id="preview-container" class="preview-container"></div>
+            <button id="preview-prev-btn" class="preview-nav-btn prev">&lt;</button>
+            <button id="preview-next-btn" class="preview-nav-btn next">&gt;</button>
         </div>
     </div>
 </div>

@@ -137,6 +137,43 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
+    gap: 15px;
+}
+
+.toolbar-main-actions {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    /* Prevent overflow if toolbar gets too wide */
+}
+
+.toolbar-select-all {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.toolbar-select-all .selection-checkbox {
+    position: static;
+    /* Reset absolute positioning from file item styles */
+    opacity: 1;
+    cursor: pointer;
+    transform: none;
+    border-color: var(--text-muted);
+}
+
+.toolbar-select-all .selection-checkbox:hover {
+    border-color: var(--primary-color);
+}
+
+.toolbar-select-all .selection-checkbox.checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.toolbar-select-all .selection-checkbox.checked svg {
+    transform: scale(1);
 }
 
 .view-toggles {
@@ -278,7 +315,7 @@
     border: 1px solid var(--card-border);
     border-radius: 6px;
     transition: all 0.2s ease;
-    opacity: 0;
+    opacity: 1;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -294,9 +331,7 @@
     transition: transform 0.2s ease;
 }
 
-.file-item:hover .selection-checkbox {
-    opacity: 1;
-}
+
 
 .file-item .file-icon {
     display: flex;
@@ -332,13 +367,11 @@
 .file-actions {
     display: flex;
     gap: 8px;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.2s ease;
 }
 
-.file-item:hover .file-actions {
-    opacity: 1;
-}
+
 
 .file-item.selected .file-actions {
     opacity: 0;
@@ -468,16 +501,22 @@
 }
 
 @media (max-width: 768px) {
-    .explorer-toolbar {
-        flex-direction: column-reverse;
-        gap: 15px;
-        align-items: stretch;
-        padding: 10px 0;
-    }
+    /* .explorer-toolbar removed to keep row layout */
 
     .selection-toolbar {
-        justify-content: space-between;
-        flex-wrap: wrap;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .selection-toolbar::-webkit-scrollbar {
+        display: none;
+        /* Hide scrollbar for cleaner look */
     }
 
     .file-grid {
@@ -527,5 +566,15 @@
 @media (min-width: 769px) {
     .hidden-desktop {
         display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .toolbar-action-btn span {
+        display: none;
+    }
+
+    .toolbar-action-btn {
+        padding: 8px;
     }
 }

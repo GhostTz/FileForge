@@ -1,6 +1,7 @@
 /* --- Custom Cloud Modals --- */
 .cloud-modal-overlay {
-    position: absolute; /* Changed to stay within the wrapper */
+    position: absolute;
+    /* Changed to stay within the wrapper */
     top: 0;
     left: 0;
     width: 100%;
@@ -16,6 +17,7 @@
     pointer-events: none;
     transition: opacity 0.2s ease-in-out, visibility 0s linear 0.2s;
 }
+
 .cloud-modal-overlay:not(.hidden) {
     opacity: 1;
     visibility: visible;
@@ -33,6 +35,7 @@
     transform: scale(0.95);
     transition: transform 0.2s ease-in-out;
 }
+
 .cloud-modal-overlay:not(.hidden) .cloud-modal-content {
     transform: scale(1);
 }
@@ -41,15 +44,18 @@
     font-size: 1.3rem;
     margin-bottom: 10px;
 }
+
 .cloud-modal-content p {
     color: var(--text-muted);
     margin-bottom: 25px;
     line-height: 1.6;
 }
+
 .cloud-modal-content p strong {
     color: var(--text-color);
     font-weight: 600;
 }
+
 .cloud-modal-content input {
     width: 100%;
     padding: 12px 15px;
@@ -60,17 +66,20 @@
     font-size: 1rem;
     transition: all 0.3s ease;
 }
+
 .cloud-modal-content input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 10px var(--primary-glow);
 }
+
 .cloud-modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
     margin-top: 25px;
 }
+
 .cloud-modal-btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -81,24 +90,45 @@
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .cloud-modal-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
+
 .cloud-modal-btn.primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     color: white;
 }
+
 .cloud-modal-btn.danger {
     background-color: var(--danger-color);
     border-color: var(--danger-color);
     color: white;
 }
 
-.progress-bar-container { display: flex; align-items: center; gap: 15px; }
-.progress-bar-bg { flex-grow: 1; height: 12px; background: var(--active-bg); border-radius: 10px; overflow: hidden; }
-.progress-bar-fill { height: 100%; width: 0; background: var(--danger-color); border-radius: 10px; transition: width 0.3s ease; }
+.progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.progress-bar-bg {
+    flex-grow: 1;
+    height: 12px;
+    background: var(--active-bg);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    width: 0;
+    background: var(--danger-color);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
 
 
 /* --- Move Item Modal Specifics --- */
@@ -110,12 +140,15 @@
     border-radius: 8px;
     padding: 10px;
 }
+
 .move-folder-tree ul {
     list-style: none;
 }
+
 .move-folder-tree li {
     padding-left: 20px;
 }
+
 .folder-tree-item {
     display: flex;
     align-items: center;
@@ -125,13 +158,16 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
 .folder-tree-item:hover {
     background-color: var(--active-bg);
 }
+
 .folder-tree-item.selected {
     background-color: var(--primary-color);
     color: white;
 }
+
 .folder-tree-item svg {
     width: 20px;
     height: 20px;
@@ -142,8 +178,10 @@
 /* File Preview Modal */
 .file-preview-overlay {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(10px);
     display: flex;
@@ -155,9 +193,14 @@
     pointer-events: none;
     transition: opacity 0.3s ease, visibility 0s linear 0.3s;
 }
+
 .file-preview-overlay:not(.hidden) {
-    opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
 }
+
 .file-preview-content {
     width: 90%;
     height: 90%;
@@ -169,10 +212,14 @@
     flex-direction: column;
     transform: scale(0.9);
     transition: transform 0.3s ease;
+    position: relative;
+    /* For absolute positioning of arrows */
 }
+
 .file-preview-overlay:not(.hidden) .file-preview-content {
     transform: scale(1);
 }
+
 .preview-header {
     display: flex;
     justify-content: space-between;
@@ -180,17 +227,48 @@
     padding: 15px 25px;
     border-bottom: 1px solid var(--card-border);
 }
+
+.preview-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon-btn:hover {
+    color: var(--primary-color);
+}
+
 .preview-header h3 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 #close-preview-btn {
-    background: none; border: none; font-size: 2rem; color: var(--text-muted); cursor: pointer; line-height: 1; transition: color 0.2s ease;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
 }
+
 #close-preview-btn:hover {
     color: var(--text-color);
 }
+
 .preview-container {
     flex-grow: 1;
     padding: 20px;
@@ -199,12 +277,16 @@
     align-items: center;
     overflow: auto;
 }
-.preview-container img, .preview-container iframe, .preview-container video {
+
+.preview-container img,
+.preview-container iframe,
+.preview-container video {
     max-width: 100%;
     max-height: 100%;
     border: none;
     border-radius: 8px;
 }
+
 .preview-container pre {
     background: var(--card-bg);
     padding: 20px;
@@ -216,9 +298,50 @@
     height: 100%;
     overflow: auto;
 }
+
 .preview-no-preview {
     text-align: center;
     color: var(--text-muted);
 }
-.preview-no-preview svg { width: 64px; height: 64px; margin-bottom: 20px; }
-.preview-no-preview a { color: var(--primary-color); text-decoration: none; }
+
+.preview-no-preview svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 20px;
+}
+
+.preview-no-preview a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.preview-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    z-index: 10;
+}
+
+.preview-nav-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.preview-nav-btn.prev {
+    left: 20px;
+}
+
+.preview-nav-btn.next {
+    right: 20px;
+}

@@ -62,7 +62,7 @@ function renderFiles() {
             DOM.emptyFolderText.textContent = 'Items you delete will appear here.';
         } else {
             DOM.emptyFolderTitle.textContent = 'This folder is empty';
-            DOM.emptyFolderText.textContent = 'Drag and drop files here or use the "Upload" button.';
+            DOM.emptyFolderText.textContent = 'Use the "Upload" button to upload files';
         }
     } else {
         DOM.emptyFolderView.classList.add('hidden');
@@ -84,7 +84,7 @@ function renderFiles() {
         `;
 
         const fileElementHTML = `
-            <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}" draggable="false">
+            <div class="file-item ${item.type === 'folder' ? 'is-folder' : ''} ${isSelected ? 'selected' : ''}" data-id="${item.id}" data-name="${item.name}" data-size="${meta.sizeBytes || 0}" draggable="false">
                 <div class="selection-checkbox">${ICONS.check}</div>
                 <div class="file-icon">${ICONS[item.type]}</div>
                 <div class="file-details">
@@ -105,6 +105,8 @@ export function updateSelectionToolbar() {
 
     DOM.selectionMoveBtn.classList.toggle('hidden', isTrash);
     DOM.selectionRestoreBtn.classList.toggle('hidden', !isTrash);
+    const downloadBtn = document.getElementById('selection-download-btn');
+    if (downloadBtn) downloadBtn.classList.toggle('hidden', isTrash);
 
     if (count > 0) {
         DOM.selectionCount.textContent = `${count} selected`;
@@ -116,6 +118,18 @@ export function updateSelectionToolbar() {
     } else {
         DOM.defaultToolbar.classList.remove('hidden');
         DOM.selectionToolbar.classList.add('hidden');
+    }
+
+    // Update Select All Checkbox State
+    if (DOM.selectAllCheckbox) {
+        const totalItems = state.items.length;
+        const selectedCount = state.selectedItems.size;
+
+        if (totalItems > 0 && selectedCount === totalItems) {
+            DOM.selectAllCheckbox.classList.add('checked');
+        } else {
+            DOM.selectAllCheckbox.classList.remove('checked');
+        }
     }
 }
 

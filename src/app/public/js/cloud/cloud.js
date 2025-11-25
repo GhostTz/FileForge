@@ -66,6 +66,7 @@ async function refreshCurrentView() {
 
 async function navigateToFolder(folderId) {
     clearSelection();
+    state.currentView = 'myFiles';
     state.currentParentId = folderId;
     state.currentPath = await api.fetchPath(folderId);
     await refreshCurrentView();
@@ -169,7 +170,7 @@ function setupEventListeners() {
             if (action === 'permanent-delete') modals.openDeleteModal(fileItem, true);
         } else {
             if (fileItem.classList.contains('is-folder')) navigateToFolder(parseInt(itemId));
-            else modals.openFilePreview(itemId, fileItem.dataset.name);
+            else modals.openFilePreview(itemId, fileItem.dataset.name, parseInt(fileItem.dataset.size || 0));
         }
     });
 
@@ -184,6 +185,92 @@ function setupEventListeners() {
     DOM.selectionDeleteBtn.addEventListener('click', () => modals.openBulkDeleteModal(state.currentView === 'trash'));
     DOM.selectionMoveBtn.addEventListener('click', modals.openMoveModal);
     DOM.selectionRestoreBtn.addEventListener('click', () => api.restoreItems(Array.from(state.selectedItems)).then(refreshCurrentView));
+
+    // Bulk Download
+    const selectionDownloadBtn = document.getElementById('selection-download-btn');
+    if (selectionDownloadBtn) {
+        selectionDownloadBtn.addEventListener('click', async () => {
+            const selectedIds = Array.from(state.selectedItems);
+            if (selectedIds.length === 0) return;
+
+            if (selectedIds.length === 1) {
+                // Single file download (if not a folder)
+                const itemId = selectedIds[0];
+                const item = state.items.find(i => i.id == itemId);
+
+                // If it's a file, download directly. If it's a folder, fall through to bulk ZIP download.
+                if (item && item.type !== 'folder') {
+                    try {
+                        const { tempPath } = await api.getDownloadPath(itemId);
+                        const a = document.createElement('a');
+                        a.href = tempPath;
+                        a.download = item.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        clearSelection();
+                        updateUI();
+                        return; // Exit early for single file
+                    } catch (e) { console.error("Download failed", e); showToast("Download failed", "error"); return; }
+                }
+            }
+
+            // Bulk ZIP download (or single folder)
+            {
+                if (!window.NotificationManager) {
+                    console.error('NotificationManager not available');
+                    return;
+                }
+                const notifId = window.NotificationManager.showProgressNotification('Creating ZIP archive');
+                window.NotificationManager.updateProgress(notifId, 0, 100, 'Preparing files...');
+
+                try {
+                    // Simulate progress or just wait for response (since it's a stream, we might not get granular progress easily without more complex backend)
+                    // For now, we'll just show indeterminate or "Processing"
+
+                    const blob = await api.downloadZip(selectedIds);
+
+                    window.NotificationManager.updateProgress(notifId, 100, 100, 'Download starting...');
+
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `files_archive_${Date.now()}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    window.NotificationManager.closeNotification(notifId);
+                    window.NotificationManager.showNotification('success', 'Download Started', 'Your ZIP archive is ready.');
+
+                } catch (error) {
+                    console.error("Bulk download failed", error);
+                    window.NotificationManager.closeNotification(notifId);
+                    window.NotificationManager.showNotification('error', 'Download Failed', 'Could not create ZIP archive.');
+                }
+            }
+            clearSelection();
+            updateUI();
+        });
+    }
+
+    // Select All Checkbox
+    if (DOM.selectAllCheckbox) {
+        DOM.selectAllCheckbox.addEventListener('click', () => {
+            const isChecked = DOM.selectAllCheckbox.classList.contains('checked');
+            if (isChecked) {
+                // Deselect all
+                clearSelection();
+                DOM.selectAllCheckbox.classList.remove('checked');
+            } else {
+                // Select all
+                state.items.forEach(item => state.selectedItems.add(item.id.toString()));
+                DOM.selectAllCheckbox.classList.add('checked');
+            }
+            updateUI();
+        });
+    }
 
     // Modal Handlers (default confirm actions)
     DOM.confirmCreateFolderBtn.onclick = async () => {

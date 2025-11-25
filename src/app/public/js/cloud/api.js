@@ -96,3 +96,13 @@ export async function fetchSettings() {
     if (!response.ok) throw new Error('Failed to fetch settings');
     return await response.json();
 }
+
+export async function downloadZip(itemIds) {
+    const response = await fetch('api/cloud/download/zip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds })
+    });
+    if (!response.ok) throw new Error('Failed to create zip');
+    return await response.blob();
+}

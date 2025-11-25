@@ -25,6 +25,7 @@ export const DOM = {
     get selectionRestoreBtn() { return document.getElementById('selection-restore-btn'); },
     get selectionDeleteBtn() { return document.getElementById('selection-delete-btn'); },
     get marqueeBox() { return document.getElementById('marquee-selection-box'); },
+    get selectAllCheckbox() { return document.getElementById('select-all-checkbox'); },
     get createFolderModal() { return document.getElementById('create-folder-modal'); },
     get confirmDeleteModal() { return document.getElementById('confirm-delete-modal'); },
     get moveItemModal() { return document.getElementById('move-item-modal'); },

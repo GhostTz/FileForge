@@ -93,7 +93,7 @@ router.get('/download/:id', async (req, res) => {
         https.get(fileUrl, (response) => {
             response.pipe(writer);
             writer.on('finish', () => {
-                res.json({ tempPath: `/temp/${item.name}` });
+                res.json({ tempPath: `temp/${item.name}` });
             });
             writer.on('error', (err) => {
                 console.error('File write stream error:', err);
@@ -371,6 +371,99 @@ router.delete('/trash/item/:id', async (req, res) => {
     } catch (error) {
         console.error(`DB Deletion Error for item ${itemId}:`, error);
         res.status(500).json({ message: 'Server error during final deletion.' });
+    }
+});
+
+router.post('/download/zip', async (req, res) => {
+    const owner = req.user.username;
+    const { itemIds } = req.body;
+
+    if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+        return res.status(400).json({ message: 'No items selected.' });
+    }
+
+    try {
+        // Get Telegram settings
+        const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
+        if (settings.length === 0 || !settings[0].telegramBotToken) {
+            return res.status(400).json({ message: 'Telegram Bot Token not configured.' });
+        }
+        const token = settings[0].telegramBotToken;
+        const bot = new TelegramBot(token);
+
+        // Helper to recursively collect items with paths
+        async function collectItemsRecursively(ids, currentPath = '') {
+            const items = [];
+            if (ids.length === 0) return items;
+
+            const [rows] = await db.query('SELECT * FROM cloud_items WHERE id IN (?) AND owner_username = ?', [ids, owner]);
+
+            for (const item of rows) {
+                // Use forward slashes for zip paths
+                const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+
+                if (item.type === 'folder') {
+                    // Add the folder itself (for empty folders)
+                    items.push({ ...item, zipPath: itemPath, isDir: true });
+
+                    // Get children
+                    const [children] = await db.query('SELECT id FROM cloud_items WHERE parent_id = ? AND owner_username = ?', [item.id, owner]);
+                    const childIds = children.map(c => c.id);
+
+                    if (childIds.length > 0) {
+                        const childItems = await collectItemsRecursively(childIds, itemPath);
+                        items.push(...childItems);
+                    }
+                } else {
+                    items.push({ ...item, zipPath: itemPath, isDir: false });
+                }
+            }
+            return items;
+        }
+
+        const itemsToZip = await collectItemsRecursively(itemIds);
+
+        if (itemsToZip.length === 0) {
+            return res.status(404).json({ message: 'No files found.' });
+        }
+
+        const archiver = require('archiver');
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        res.attachment('download.zip');
+        archive.pipe(res);
+
+        for (const item of itemsToZip) {
+            try {
+                if (item.isDir) {
+                    archive.append(null, { name: item.zipPath + '/' });
+                } else {
+                    const meta = JSON.parse(item.file_meta);
+                    const fileInfo = await bot.getFile(meta.file_id);
+                    const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+
+                    await new Promise((resolve, reject) => {
+                        https.get(fileUrl, (response) => {
+                            archive.append(response, { name: item.zipPath });
+                            resolve();
+                        }).on('error', (err) => {
+                            console.error(`Error downloading file ${item.name} for zip:`, err);
+                            resolve(); // Continue even if one fails
+                        });
+                    });
+                }
+            } catch (err) {
+                console.error(`Error processing item ${item.name} for zip:`, err);
+            }
+        }
+
+        await archive.finalize();
+
+    } catch (error) {
+        console.error('Zip creation error:', error);
+        if (!res.headersSent) {
+            res.status(500).json({ message: 'Failed to create zip archive.' });
+        }
     }
 });
 

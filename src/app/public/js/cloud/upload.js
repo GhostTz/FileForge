@@ -13,32 +13,17 @@ function formatSpeed(bytesPerSecond) {
     return `${(bytesPerSecond / (1024 * 1024)).toFixed(1)} MB/s`;
 }
 
-function uploadFile(file, parentId, notificationId) {
+function uploadFile(file, parentId, onProgress) {
     return new Promise((resolve, reject) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('parentId', parentId === null ? 'null' : parentId);
 
         const xhr = new XMLHttpRequest();
-        const startTime = Date.now();
 
         xhr.upload.addEventListener('progress', (e) => {
-            if (e.lengthComputable && window.NotificationManager) {
-                const percentage = Math.round((e.loaded / e.total) * 100);
-                const elapsedSeconds = (Date.now() - startTime) / 1000;
-                const speed = e.loaded / elapsedSeconds;
-                const remainingBytes = e.total - e.loaded;
-                const timeRemaining = remainingBytes / speed;
-
-                const speedText = formatSpeed(speed);
-                const timeText = isFinite(timeRemaining) ? formatTime(timeRemaining) : 'calculating...';
-
-                window.NotificationManager.updateProgress(
-                    notificationId,
-                    e.loaded,
-                    e.total,
-                    `Uploading ${file.name} - ${speedText} • ${timeText}`
-                );
+            if (e.lengthComputable && onProgress) {
+                onProgress(e.loaded, e.total);
             }
         });
 
@@ -70,66 +55,77 @@ async function handleFiles(files, showToast) {
     let completed = 0;
     let failed = 0;
 
+    // Calculate total batch size for smooth progress
+    const totalBatchSize = fileList.reduce((acc, file) => acc + file.size, 0);
+    let totalUploadedBytes = 0;
+    let currentFileUploadedBytes = 0;
+
     // Create single notification for all uploads
     let notifId = null;
     if (window.NotificationManager) {
         notifId = window.NotificationManager.showProgressNotification('Uploading Files');
-        window.NotificationManager.updateProgress(notifId, 0, totalFiles, `Preparing ${totalFiles} file(s)...`);
+        window.NotificationManager.updateProgress(notifId, 0, totalBatchSize, `Preparing ${totalFiles} file(s)...`);
     }
+
+    const startTime = Date.now();
 
     for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         const fileNum = i + 1;
+        currentFileUploadedBytes = 0; // Reset for new file
 
         // Check file size
         if (file.size > MAX_FILE_SIZE) {
             failed++;
             console.error(`Failed to upload ${file.name}: File exceeds 50 MB limit.`);
+            // Add skipped file size to total uploaded so progress bar doesn't lag
+            totalUploadedBytes += file.size;
+
             if (notifId && window.NotificationManager) {
                 window.NotificationManager.updateProgress(
                     notifId,
-                    completed,
-                    totalFiles,
-                    `Skipped ${file.name} (too large) - ${fileNum} of ${totalFiles}`
+                    totalUploadedBytes,
+                    totalBatchSize,
+                    `Skipped ${file.name} (too large)`
                 );
             }
             continue;
         }
 
-        // Update notification to show current file being uploaded
-        if (notifId && window.NotificationManager) {
-            window.NotificationManager.updateProgress(
-                notifId,
-                completed,
-                totalFiles,
-                `Uploading ${file.name} (${fileNum} of ${totalFiles})...`
-            );
-        }
-
         try {
-            await uploadFile(file, state.currentParentId, notifId);
-            completed++;
+            await uploadFile(file, state.currentParentId, (loaded, total) => {
+                currentFileUploadedBytes = loaded;
+                const currentTotalUploaded = totalUploadedBytes + currentFileUploadedBytes;
 
-            // Update progress after successful upload
-            if (notifId && window.NotificationManager) {
-                window.NotificationManager.updateProgress(
-                    notifId,
-                    completed,
-                    totalFiles,
-                    `Uploaded ${completed} of ${totalFiles} files`
-                );
-            }
+                if (notifId && window.NotificationManager) {
+                    const elapsedSeconds = (Date.now() - startTime) / 1000;
+                    const speed = elapsedSeconds > 0 ? currentTotalUploaded / elapsedSeconds : 0;
+                    const speedText = formatSpeed(speed);
+
+                    window.NotificationManager.updateProgress(
+                        notifId,
+                        currentTotalUploaded,
+                        totalBatchSize,
+                        `Uploading ${file.name} (${fileNum}/${totalFiles}) - ${speedText}`
+                    );
+                }
+            });
+
+            completed++;
+            totalUploadedBytes += file.size; // Add completed file size to total
+
         } catch (error) {
             failed++;
             console.error(`Failed to upload ${file.name}:`, error);
+            // Even if failed, we count it as "processed" for progress bar continuity
+            totalUploadedBytes += file.size;
 
-            // Update with error info
             if (notifId && window.NotificationManager) {
                 window.NotificationManager.updateProgress(
                     notifId,
-                    completed,
-                    totalFiles,
-                    `Failed to upload ${file.name} - ${completed} of ${totalFiles} complete`
+                    totalUploadedBytes,
+                    totalBatchSize,
+                    `Failed to upload ${file.name}`
                 );
             }
         }

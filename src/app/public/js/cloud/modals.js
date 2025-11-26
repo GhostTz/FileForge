@@ -70,9 +70,10 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
     if (downloadBtn) {
         downloadBtn.onclick = async () => {
             try {
-                const { tempPath } = await api.getDownloadPath(itemId);
+                // Use streaming download URL
+                const downloadUrl = `api/cloud/download/${itemId}?type=download`;
                 const a = document.createElement('a');
-                a.href = tempPath;
+                a.href = downloadUrl;
                 a.download = itemName;
                 document.body.appendChild(a);
                 a.click();
@@ -113,12 +114,13 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
             </div>`;
 
         try {
-            const { tempPath } = await api.getDownloadPath(itemId);
+            // Use streaming download URL for large file fallback
             const btn = document.getElementById('preview-download-btn');
             if (btn) {
                 btn.onclick = () => {
+                    const downloadUrl = `api/cloud/download/${itemId}?type=download`;
                     const a = document.createElement('a');
-                    a.href = tempPath;
+                    a.href = downloadUrl;
                     a.download = itemName;
                     document.body.appendChild(a);
                     a.click();
@@ -126,7 +128,7 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
                 };
             }
         } catch (e) {
-            console.error("Failed to get download path for large file", e);
+            console.error("Failed to setup download for large file", e);
         }
         return;
     }
@@ -162,7 +164,33 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
             </div>`;
         }
     } catch (error) {
-        DOM.previewContainer.innerHTML = `<h4>Error loading preview: ${error.message}</h4>`;
+        let errorMessage = error.message;
+        if (errorMessage.includes('Preview not allowed') || errorMessage.includes('File too large')) {
+            DOM.previewContainer.innerHTML = `
+            <div class="preview-no-preview">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <h3>Preview Unavailable</h3>
+                <p>${errorMessage}</p>
+                <div class="preview-actions">
+                    <button id="preview-error-download-btn" class="cloud-modal-btn primary">Download File</button>
+                </div>
+            </div>`;
+
+            const btn = document.getElementById('preview-error-download-btn');
+            if (btn) {
+                btn.onclick = () => {
+                    const downloadUrl = `api/cloud/download/${itemId}?type=download`;
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = itemName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                };
+            }
+        } else {
+            DOM.previewContainer.innerHTML = `<h4>Error loading preview: ${errorMessage}</h4>`;
+        }
     }
 };
 

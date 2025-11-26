@@ -201,10 +201,11 @@ function setupEventListeners() {
                 // If it's a file, download directly. If it's a folder, fall through to bulk ZIP download.
                 if (item && item.type !== 'folder') {
                     try {
-                        const { tempPath } = await api.getDownloadPath(itemId);
+                        // Use streaming download URL directly
+                        const downloadUrl = `api/cloud/download/${itemId}?type=download`;
                         const a = document.createElement('a');
-                        a.href = tempPath;
-                        a.download = item.name;
+                        a.href = downloadUrl;
+                        a.download = item.name; // This might be redundant if Content-Disposition is set, but good fallback
                         document.body.appendChild(a);
                         a.click();
                         document.body.removeChild(a);

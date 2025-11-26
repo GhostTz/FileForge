@@ -60,13 +60,15 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
     } catch (error) {
         console.error('Upload Error:', error.response ? error.response.body : error.message);
-        res.status(500).json({ message: 'Failed to upload file.' });
+        const statusCode = error.response && error.response.statusCode ? error.response.statusCode : 500;
+        res.status(statusCode).json({ message: 'Failed to upload file.' });
     }
 });
 
 router.get('/download/:id', async (req, res) => {
     const owner = req.user.username;
     const itemId = req.params.id;
+    const type = req.query.type || 'preview'; // 'preview' or 'download'
 
     try {
         const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
@@ -82,31 +84,71 @@ router.get('/download/:id', async (req, res) => {
 
         const item = items[0];
         const meta = JSON.parse(item.file_meta);
+        const fileSize = parseInt(meta.sizeBytes || 0); // Assuming sizeBytes is available, or parse from 'size' string if needed. 
+        // Note: The original code used formatBytes for 'size' in meta. We might need to rely on Telegram info or parse the string if sizeBytes isn't there.
+        // Let's get fresh info from Telegram to be sure about size for validation.
 
         const bot = new TelegramBot(token);
         const fileInfo = await bot.getFile(meta.file_id);
         const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
+        const currentFileSize = fileInfo.file_size; // Size in bytes from Telegram
 
-        const tempFilePath = path.join(__dirname, '..', '..', '..', 'temp', item.name);
-        const writer = fs.createWriteStream(tempFilePath);
+        if (type === 'preview') {
+            // 1. Validate Extension
+            const allowedExtensions = [
+                'mp4', 'mp3', 'mov', 'txt', 'png', 'jpg', 'jpeg',
+                'ico', 'pdf', 'gif', 'webp', 'svg', 'webm', 'wav'
+            ];
+            const fileExt = path.extname(item.name).substring(1).toLowerCase();
 
-        https.get(fileUrl, (response) => {
-            response.pipe(writer);
-            writer.on('finish', () => {
-                res.json({ tempPath: `temp/${item.name}` });
+            if (!allowedExtensions.includes(fileExt)) {
+                return res.status(403).json({ message: 'Preview not allowed for this file type.' });
+            }
+
+            // 2. Validate Size (Max 30MB)
+            const MAX_SIZE = 30 * 1024 * 1024;
+            if (currentFileSize > MAX_SIZE) {
+                return res.status(403).json({ message: 'File too large for preview (Max 30MB).' });
+            }
+
+            // 3. Download to Temp (Existing Logic)
+            const tempFilePath = path.join(__dirname, '..', '..', '..', 'temp', item.name);
+            const writer = fs.createWriteStream(tempFilePath);
+
+            https.get(fileUrl, (response) => {
+                response.pipe(writer);
+                writer.on('finish', () => {
+                    res.json({ tempPath: `temp/${item.name}` });
+                });
+                writer.on('error', (err) => {
+                    console.error('File write stream error:', err);
+                    res.status(500).json({ message: 'Failed to save temporary file.' });
+                });
+            }).on('error', (err) => {
+                console.error('HTTPS request error for file download:', err);
+                res.status(500).json({ message: 'Failed to download file from source.' });
             });
-            writer.on('error', (err) => {
-                console.error('File write stream error:', err);
-                res.status(500).json({ message: 'Failed to save temporary file.' });
+
+        } else if (type === 'download') {
+            // Streaming Download (No validation, no temp file)
+            res.setHeader('Content-Disposition', `attachment; filename="${item.name}"`);
+            res.setHeader('Content-Type', 'application/octet-stream');
+
+            https.get(fileUrl, (response) => {
+                response.pipe(res);
+            }).on('error', (err) => {
+                console.error('Streaming download error:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({ message: 'Failed to stream file.' });
+                }
             });
-        }).on('error', (err) => {
-            console.error('HTTPS request error for file download:', err);
-            res.status(500).json({ message: 'Failed to download file from source.' });
-        });
+        } else {
+            res.status(400).json({ message: 'Invalid download type.' });
+        }
 
     } catch (error) {
         console.error('Download preparation error:', error.response ? error.response.body : error.message);
-        res.status(500).json({ message: 'Failed to prepare file for preview.' });
+        res.status(500).json({ message: 'Failed to prepare file.' });
     }
 });
 

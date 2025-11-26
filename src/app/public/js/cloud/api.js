@@ -63,7 +63,7 @@ export async function moveItems(itemIds, destinationId) {
 }
 
 export async function getDownloadPath(itemId) {
-    const response = await fetch(`api/cloud/download/${itemId}`);
+    const response = await fetch(`api/cloud/download/${itemId}?type=preview`);
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to get download path');

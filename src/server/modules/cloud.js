@@ -19,6 +19,20 @@ const formatBytes = (bytes, decimals = 2) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
+router.get('/stats', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const [rows] = await db.query(
+            'SELECT COUNT(*) as count FROM cloud_items WHERE owner_username = ? AND type = "file" AND is_trashed = false',
+            [owner]
+        );
+        res.json({ fileCount: rows[0].count });
+    } catch (error) {
+        console.error('Stats Error:', error);
+        res.status(500).json({ message: 'Failed to fetch stats.' });
+    }
+});
+
 router.post('/upload', upload.single('file'), async (req, res) => {
     const owner = req.user.username;
     const { parentId } = req.body;

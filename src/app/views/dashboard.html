@@ -176,9 +176,22 @@
                     openDeleteModal();
                 });
 
-                window.addEventListener('click', () => profileMenu.classList.remove('show'));
-                window.addEventListener('resize', () => updateNavIndicator(document.querySelector('.nav-link.active')));
+                window.addEventListener('resize', () => {
+                    const activeLink = document.querySelector('.nav-link.active');
+                    if (activeLink) updateNavIndicator(activeLink);
+                });
+
+                // Update indicator on fullscreen toggle (fix for video player)
+                document.addEventListener('fullscreenchange', () => {
+                    setTimeout(() => {
+                        const activeLink = document.querySelector('.nav-link.active');
+                        if (activeLink) updateNavIndicator(activeLink);
+                    }, 200);
+                });
             };
+
+            // Expose for external use if needed, but the event listener above handles the specific reported issue
+            window.updateNavIndicator = updateNavIndicator;
 
             const setupModals = () => {
                 const deleteModal = document.getElementById('delete-confirm-modal');

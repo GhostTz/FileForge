@@ -132,7 +132,6 @@ class NotificationManager {
 
         if (progressBar) {
             progressBar.style.width = `${percentage}%`;
-            console.log(`[NotificationManager] Progress bar width set to ${percentage}%`);
         } else {
             console.log('[NotificationManager] Progress bar element not found!');
         }

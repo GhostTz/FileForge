@@ -55,8 +55,15 @@ export const closeMoveModal = () => {
 
 // --- Preview Modal ---
 let currentPreviewId = null;
+let currentAudio = null;
 
 export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
+    // Stop any currently playing audio before loading new preview
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
     currentPreviewId = itemId;
     DOM.previewFileName.textContent = itemName;
     DOM.previewContainer.innerHTML = '<h4>Loading preview...</h4>';
@@ -148,11 +155,103 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
         } else if (videoTypes.includes(fileType)) {
             DOM.previewContainer.innerHTML = `<video controls src="${tempPath}" style="max-width: 100%; max-height: 70vh;"></video>`;
         } else if (audioTypes.includes(fileType)) {
+
             DOM.previewContainer.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 20px;"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-                    <audio controls src="${tempPath}" style="width: 100%; max-width: 400px;"></audio>
+                <div class="custom-audio-player">
+                    <div class="audio-icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                    </div>
+                    <div class="audio-info">
+                        <div class="audio-title">${itemName}</div>
+                    </div>
+                    
+                    <div class="audio-progress-container">
+                        <input type="range" class="audio-progress-bar" id="audio-progress" value="0" min="0" max="100" step="0.1">
+                        <div class="audio-time">
+                            <span id="audio-current-time">0:00</span>
+                            <span id="audio-duration">0:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="audio-rewind" title="-10s">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+                        </button>
+                        <button class="audio-play-btn" id="audio-play-toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>
+                        </button>
+                        <button class="audio-btn" id="audio-forward" title="+10s">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="audio-volume-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        <input type="range" class="audio-volume-slider" id="audio-volume" min="0" max="1" step="0.05" value="1">
+                    </div>
                 </div>`;
+
+            const audio = new Audio(tempPath);
+            currentAudio = audio;
+
+            const playBtn = document.getElementById('audio-play-toggle');
+            const progress = document.getElementById('audio-progress');
+            const currentTimeEl = document.getElementById('audio-current-time');
+            const durationEl = document.getElementById('audio-duration');
+            const volumeSlider = document.getElementById('audio-volume');
+            const rewindBtn = document.getElementById('audio-rewind');
+            const forwardBtn = document.getElementById('audio-forward');
+
+            const playIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>`;
+            const pauseIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+            const formatTime = (s) => {
+                const mins = Math.floor(s / 60);
+                const secs = Math.floor(s % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            };
+
+            audio.addEventListener('loadedmetadata', () => {
+                if (!isNaN(audio.duration)) {
+                    durationEl.textContent = formatTime(audio.duration);
+                    progress.max = audio.duration;
+                }
+            });
+
+            audio.addEventListener('timeupdate', () => {
+                progress.value = audio.currentTime;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+            });
+
+            playBtn.onclick = () => {
+                if (audio.paused) {
+                    audio.play().catch(e => console.log('Playback prevented', e));
+                    playBtn.innerHTML = pauseIcon;
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = playIcon;
+                }
+            };
+
+            progress.oninput = () => {
+                audio.currentTime = progress.value;
+            };
+
+            volumeSlider.oninput = () => {
+                audio.volume = volumeSlider.value;
+            };
+
+            rewindBtn.onclick = () => {
+                audio.currentTime = Math.max(0, audio.currentTime - 10);
+            };
+
+            forwardBtn.onclick = () => {
+                audio.currentTime = Math.min(audio.duration, audio.currentTime + 10);
+            };
+
+            audio.onended = () => {
+                playBtn.innerHTML = playIcon;
+            };
         } else if (textTypes.includes(fileType)) {
             const textContent = await (await fetch(tempPath)).text();
             DOM.previewContainer.innerHTML = `<pre style="background: #1e1e1e; padding: 15px; border-radius: 8px; overflow: auto; max-height: 70vh; color: #d4d4d4;">${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
@@ -212,6 +311,12 @@ const navigatePreview = (direction) => {
 
 export const closeFilePreview = () => {
     DOM.previewModal.classList.add('hidden');
+
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
     DOM.previewContainer.innerHTML = '';
     DOM.previewFileName.textContent = '';
     currentPreviewId = null;

@@ -39,14 +39,17 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             contentType: file.mimetype
         });
 
-        if (!sentMessage || !sentMessage.document) {
-            throw new Error('Failed to send file to Telegram or document is missing.');
+        const fileSlot = sentMessage.document || sentMessage.audio || sentMessage.video || sentMessage.voice;
+
+        if (!sentMessage || !fileSlot) {
+            console.error('Telegram Unexpected Response:', JSON.stringify(sentMessage, null, 2));
+            throw new Error('Failed to send file to Telegram: Response missing file information.');
         }
 
         const fileMeta = {
             message_id: sentMessage.message_id,
             chat_id: sentMessage.chat.id,
-            file_id: sentMessage.document.file_id,
+            file_id: fileSlot.file_id,
             size: formatBytes(file.size),
             fileType: path.extname(file.originalname).substring(1) || 'file'
         };
@@ -61,7 +64,11 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     } catch (error) {
         console.error('Upload Error:', error.response ? error.response.body : error.message);
         const statusCode = error.response && error.response.statusCode ? error.response.statusCode : 500;
-        res.status(statusCode).json({ message: 'Failed to upload file.' });
+        res.status(statusCode).json({
+            message: 'Failed to upload file.',
+            error: error.message,
+            details: error.response ? error.response.body : undefined
+        });
     }
 });
 

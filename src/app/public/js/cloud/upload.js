@@ -33,7 +33,9 @@ function uploadFile(file, parentId, onProgress) {
             } else {
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
-                    reject(new Error(errorResponse.message));
+                    console.error("Full Error Response:", errorResponse);
+                    const errorMsg = errorResponse.message + (errorResponse.error ? `: ${errorResponse.error}` : '');
+                    reject(new Error(errorMsg));
                 } catch (jsonError) {
                     reject(new Error(`Server error: ${xhr.status}`));
                 }

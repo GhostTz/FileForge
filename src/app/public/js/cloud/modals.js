@@ -56,12 +56,17 @@ export const closeMoveModal = () => {
 // --- Preview Modal ---
 let currentPreviewId = null;
 let currentAudio = null;
+let currentVideo = null;
 
 export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
-    // Stop any currently playing audio before loading new preview
+    // Stop any currently playing audio or video before loading new preview
     if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
+    }
+    if (currentVideo) {
+        currentVideo.pause();
+        currentVideo = null;
     }
 
     currentPreviewId = itemId;
@@ -153,7 +158,135 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
         } else if (fileType === 'pdf') {
             DOM.previewContainer.innerHTML = `<iframe src="${tempPath}#toolbar=0&navpanes=0&scrollbar=0" type="application/pdf" width="100%" height="100%" style="height: 70vh; border: none;"></iframe>`;
         } else if (videoTypes.includes(fileType)) {
-            DOM.previewContainer.innerHTML = `<video controls src="${tempPath}" style="max-width: 100%; max-height: 70vh;"></video>`;
+            DOM.previewContainer.innerHTML = `
+                <div class="custom-video-player paused" id="video-player-container">
+                    <div class="video-wrapper">
+                        <video class="video-element" id="custom-video-element" src="${tempPath}" preload="metadata"></video>
+                    </div>
+                    <div class="video-controls-panel">
+                        <div class="video-progress-container" id="video-progress-bar">
+                            <div class="video-progress-fill" id="video-progress-fill"></div>
+                        </div>
+                        <div class="video-controls-row">
+                            <div class="video-controls-left">
+                                <button class="video-btn" id="video-rewind" title="-10s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+                                </button>
+                                <button class="video-btn" id="video-play-toggle">
+                                    <svg id="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <svg id="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                                </button>
+                                <button class="video-btn" id="video-forward" title="+10s">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
+                                </button>
+                                <div class="video-time">
+                                    <span id="video-current-time">0:00</span> / <span id="video-duration">0:00</span>
+                                </div>
+                                <div class="video-volume-container">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
+                                    <input type="range" class="video-volume-slider" id="video-volume" min="0" max="1" step="0.05" value="1">
+                                </div>
+                            </div>
+                            <div class="video-controls-right">
+                                <button class="video-btn" id="video-fullscreen">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            const video = document.getElementById('custom-video-element');
+            currentVideo = video;
+            const playerContainer = document.getElementById('video-player-container');
+            const playBtn = document.getElementById('video-play-toggle');
+            const playIcon = document.getElementById('video-play-icon');
+            const pauseIcon = document.getElementById('video-pause-icon');
+            const progressBar = document.getElementById('video-progress-bar');
+            const progressFill = document.getElementById('video-progress-fill');
+            const currentTimeEl = document.getElementById('video-current-time');
+            const durationEl = document.getElementById('video-duration');
+            const volumeSlider = document.getElementById('video-volume');
+            const rewindBtn = document.getElementById('video-rewind');
+            const forwardBtn = document.getElementById('video-forward');
+            const fullscreenBtn = document.getElementById('video-fullscreen');
+
+            const formatTime = (s) => {
+                const mins = Math.floor(s / 60);
+                const secs = Math.floor(s % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            };
+
+            const togglePlay = () => {
+                if (video.paused || video.ended) {
+                    video.play();
+                    playerContainer.classList.remove('paused');
+                    playIcon.style.display = 'none';
+                    pauseIcon.style.display = 'block';
+                } else {
+                    video.pause();
+                    playerContainer.classList.add('paused');
+                    playIcon.style.display = 'block';
+                    pauseIcon.style.display = 'none';
+                }
+            };
+
+            playBtn.onclick = togglePlay;
+            video.onclick = togglePlay;
+
+            video.addEventListener('loadedmetadata', () => {
+                durationEl.textContent = formatTime(video.duration);
+            });
+
+            video.addEventListener('timeupdate', () => {
+                const percent = (video.currentTime / video.duration) * 100;
+                progressFill.style.width = `${percent}%`;
+                currentTimeEl.textContent = formatTime(video.currentTime);
+            });
+
+            video.addEventListener('ended', () => {
+                playerContainer.classList.add('paused');
+                playIcon.style.display = 'block';
+                pauseIcon.style.display = 'none';
+            });
+
+            progressBar.onclick = (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                video.currentTime = pos * video.duration;
+            };
+
+            volumeSlider.oninput = () => {
+                video.volume = volumeSlider.value;
+            };
+
+            rewindBtn.onclick = () => {
+                video.currentTime = Math.max(0, video.currentTime - 10);
+            };
+
+            forwardBtn.onclick = () => {
+                video.currentTime = Math.min(video.duration, video.currentTime + 10);
+            };
+
+            fullscreenBtn.onclick = () => {
+                if (!document.fullscreenElement) {
+                    if (playerContainer.requestFullscreen) {
+                        playerContainer.requestFullscreen();
+                    } else if (playerContainer.webkitRequestFullscreen) {
+                        playerContainer.webkitRequestFullscreen();
+                    } else if (playerContainer.msRequestFullscreen) {
+                        playerContainer.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            };
         } else if (audioTypes.includes(fileType)) {
 
             DOM.previewContainer.innerHTML = `
@@ -315,6 +448,10 @@ export const closeFilePreview = () => {
     if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
+    }
+    if (currentVideo) {
+        currentVideo.pause();
+        currentVideo = null;
     }
 
     DOM.previewContainer.innerHTML = '';

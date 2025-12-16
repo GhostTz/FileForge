@@ -2,6 +2,12 @@
     const form = document.getElementById('settings-form');
     const saveBtn = document.getElementById('save-settings-btn');
     const pfpPreview = document.getElementById('pfp-preview');
+    
+    // UI Modal Elements
+    const openUiBtn = document.getElementById('open-ui-modal-btn');
+    const uiModal = document.getElementById('ui-modal');
+    const closeUiBtns = document.querySelectorAll('.close-modal-btn, .close-ui-modal-btn');
+    const themeRadios = document.querySelectorAll('input[name="theme-radio"]');
 
     const inputs = {
         fullName: document.getElementById('full-name'),
@@ -9,7 +15,7 @@
         age: document.getElementById('age'),
         telegramBotToken: document.getElementById('telegram-bot-token'),
         telegramChannelId: document.getElementById('telegram-channel-id'),
-        colormode: document.getElementById('colormode')
+        colormode: document.getElementById('colormode') // Using hidden input
     };
     
     let initialSettings = {};
@@ -18,7 +24,6 @@
         const isVal1Empty = val1 === null || val1 === undefined || val1 === '';
         const isVal2Empty = val2 === null || val2 === undefined || val2 === '';
         if (isVal1Empty && isVal2Empty) return true;
-        // Use == for intentional type coercion (e.g., 30 == '30')
         return val1 == val2;
     };
 
@@ -58,7 +63,11 @@
                 inputs.telegramChannelId.value = settings.telegramChannelId || '';
                 inputs.colormode.value = settings.colormode || 'dark';
 
-                // Ensure theme is applied based on fetched settings
+                // Sync radio buttons with loaded setting
+                themeRadios.forEach(radio => {
+                    radio.checked = (radio.value === (settings.colormode || 'dark'));
+                });
+
                 applyTheme(settings.colormode);
             }
         } catch (error) {
@@ -77,12 +86,39 @@
     loadSettings();
 
     form.addEventListener('input', checkForChanges);
-    // Specifically listen for select change
-    inputs.colormode.addEventListener('change', () => {
-        checkForChanges();
-        // Preview theme immediately? Optional. Let's keep it on save to avoid flickering
+
+    // --- UI Customization Logic ---
+    
+    // Open Modal
+    openUiBtn.addEventListener('click', () => {
+        uiModal.classList.add('visible');
     });
 
+    // Close Modal
+    const closeUiModal = () => uiModal.classList.remove('visible');
+    closeUiBtns.forEach(btn => btn.addEventListener('click', closeUiModal));
+    uiModal.addEventListener('click', (e) => {
+        if (e.target === uiModal) closeUiModal();
+    });
+
+    // Handle Theme Change inside Modal
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const newTheme = e.target.value;
+            
+            // 1. Update hidden input
+            inputs.colormode.value = newTheme;
+            
+            // 2. Apply visually immediately (Preview)
+            applyTheme(newTheme);
+            
+            // 3. Trigger change detection for main save button
+            checkForChanges();
+        });
+    });
+
+
+    // --- Save Logic ---
     saveBtn.addEventListener('click', async () => {
         const settingsData = {
             fullName: inputs.fullName.value,
@@ -103,9 +139,7 @@
             if(response.ok) {
                 initialSettings = await (await fetch('api/user/settings')).json();
                 
-                // Apply theme immediately upon save
                 applyTheme(settingsData.colormode);
-
                 checkForChanges();
                 
                 saveBtn.textContent = 'Saved!';

@@ -28,13 +28,18 @@
                 <label for="age">Age</label>
                 <input type="number" id="age" placeholder="Your age">
             </div>
+            
+            <!-- UI Customization Button & Hidden Input -->
             <div class="input-group">
-                <label for="colormode">Interface Theme</label>
-                <select id="colormode">
-                    <option value="dark">Dark Mode (Default)</option>
-                    <option value="white">Light Mode</option>
-                </select>
+                <label>Interface & Appearance</label>
+                <button type="button" id="open-ui-modal-btn" class="secondary-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                    UI Customization
+                </button>
+                <!-- Hidden input to store the value for the save logic -->
+                <input type="hidden" id="colormode" value="dark">
             </div>
+
             <div class="input-group">
                 <label for="telegram-bot-token">Telegram Bot Token</label>
                 <input type="text" id="telegram-bot-token" placeholder="Your Telegram bot token">
@@ -48,4 +53,39 @@
 </div>
 <div class="save-button-container">
     <button id="save-settings-btn" class="save-btn" disabled>Save Changes</button>
+</div>
+
+<!-- UI Customization Modal -->
+<div id="ui-modal" class="modal-overlay">
+    <div class="modal ui-modal-content">
+        <div class="modal-header">
+            <h3>UI Customization</h3>
+            <button class="close-modal-btn">&times;</button>
+        </div>
+        <p>Customize the look and feel of FileForge.</p>
+        
+        <div class="ui-section">
+            <h4>Theme</h4>
+            <div class="theme-selector">
+                <label class="theme-option">
+                    <input type="radio" name="theme-radio" value="dark">
+                    <div class="theme-card dark">
+                        <div class="theme-preview"></div>
+                        <span>Dark Mode</span>
+                    </div>
+                </label>
+                <label class="theme-option">
+                    <input type="radio" name="theme-radio" value="white">
+                    <div class="theme-card light">
+                        <div class="theme-preview"></div>
+                        <span>Light Mode</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="modal-actions">
+            <button class="modal-ok-btn close-ui-modal-btn">Done</button>
+        </div>
+    </div>
 </div>

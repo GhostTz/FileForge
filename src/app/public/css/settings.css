@@ -121,6 +121,31 @@
     box-shadow: 0 0 10px var(--primary-glow);
 }
 
+/* Secondary Button for UI Customization */
+.secondary-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--active-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.secondary-btn:hover {
+    border-color: var(--text-muted);
+    background: var(--card-bg);
+}
+
+.secondary-btn svg {
+    color: var(--primary-color);
+}
+
 .save-button-container {
     display: flex;
     justify-content: flex-end;
@@ -152,6 +177,116 @@
 
 .save-btn.active:hover {
     transform: translateY(-2px);
+}
+
+/* --- UI Customization Modal Styles --- */
+.ui-modal-content {
+    max-width: 500px;
+    text-align: left;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.close-modal-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.ui-section {
+    margin-top: 25px;
+    border-top: 1px solid var(--card-border);
+    padding-top: 20px;
+}
+
+.ui-section h4 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.theme-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.theme-option input {
+    display: none;
+}
+
+.theme-card {
+    border: 2px solid var(--card-border);
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: var(--active-bg);
+}
+
+.theme-option input:checked + .theme-card {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.theme-preview {
+    width: 100%;
+    height: 80px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Dark Theme Preview */
+.theme-card.dark .theme-preview {
+    background-color: #120F1A;
+}
+.theme-card.dark .theme-preview::after {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 30px; height: 30px;
+    background-color: #1A1622;
+    border-radius: 6px;
+    box-shadow: 40px 0 0 #A020F0; /* Primary color dot */
+}
+
+/* Light Theme Preview */
+.theme-card.light .theme-preview {
+    background-color: #F4F6F8;
+}
+.theme-card.light .theme-preview::after {
+    content: '';
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 30px; height: 30px;
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    box-shadow: 40px 0 0 #8A2BE2; /* Primary color dot */
+}
+
+.theme-card span {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.modal-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 @media (max-width: 992px) {

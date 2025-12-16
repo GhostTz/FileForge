@@ -234,7 +234,7 @@ body {
     border-radius: 16px;
     text-align: center;
     width: 90%;
-    max-width: 400px;
+    max-width: 450px;
     transform: scale(0.9);
     transition: transform 0.3s ease;
 }
@@ -302,61 +302,79 @@ body {
     top: 41.5px;
 }
 
-.confirm-delete-group {
+/* Danger Zone Options Styles */
+.danger-options {
+    text-align: left;
     margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.confirm-delete-group label {
+.danger-option {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: var(--active-bg);
     cursor: pointer;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.confirm-delete-group label strong {
-    color: var(--text-color);
-    font-weight: 600;
-    margin-left: 0.3em;
-}
-
-.confirm-delete-group input {
-    display: none;
-}
-
-.confirm-delete-group .checkbox {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--text-muted);
-    border-radius: 6px;
-    margin-right: 10px;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
 }
 
-.confirm-delete-group input:checked+.checkbox {
-    background: var(--danger-color);
+.danger-option:hover {
+    border-color: var(--text-muted);
+}
+
+.danger-option input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-muted);
+    border-radius: 50%;
+    margin: 0;
+    flex-shrink: 0;
+    display: grid;
+    place-content: center;
+}
+
+.danger-option input[type="radio"]::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 0.1s transform ease-in-out;
+    background-color: var(--danger-color);
+}
+
+.danger-option input[type="radio"]:checked {
     border-color: var(--danger-color);
 }
 
-.confirm-delete-group .checkbox::after {
-    content: '✔';
-    color: white;
-    opacity: 0;
-    transform: scale(0.5);
-    transition: all 0.2s ease;
-}
-
-.confirm-delete-group input:checked+.checkbox::after {
-    opacity: 1;
+.danger-option input[type="radio"]:checked::before {
     transform: scale(1);
 }
 
-#delete-account-btn {
+.danger-option-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.danger-option-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.danger-option-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+#confirm-danger-btn {
     width: 100%;
     padding: 12px;
     border: none;
@@ -368,13 +386,13 @@ body {
     transition: all 0.3s ease;
 }
 
-#delete-account-btn:disabled {
+#confirm-danger-btn:disabled {
     background: var(--active-bg);
     color: var(--text-muted);
     cursor: not-allowed;
 }
 
-#delete-account-btn:not(:disabled):hover {
+#confirm-danger-btn:not(:disabled):hover {
     box-shadow: 0 0 20px var(--danger-glow);
 }
 

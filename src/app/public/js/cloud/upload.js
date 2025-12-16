@@ -1,6 +1,9 @@
 import { DOM } from './constants.js';
 import { state } from './state.js';
 
+// 50 MB Limit (Telegram Bot API restriction)
+const MAX_FILE_SIZE = 50 * 1024 * 1024; 
+
 function formatTime(seconds) {
     if (seconds < 60) return `${Math.round(seconds)}s remaining`;
     const minutes = Math.floor(seconds / 60);
@@ -60,11 +63,12 @@ async function processQueue(showToast) {
     while (uploadQueue.length > 0) {
         // Take the next batch of files
         const { files, parentId } = uploadQueue.shift();
+        
+        // Files are already filtered in handleFiles, so we can process them directly
         const fileList = Array.from(files);
 
         if (fileList.length === 0) continue;
 
-        const MAX_FILE_SIZE = 49 * 1024 * 1024; // 49 MB
         const totalFiles = fileList.length;
         let completed = 0;
         let failed = 0;
@@ -87,24 +91,6 @@ async function processQueue(showToast) {
             const file = fileList[i];
             const fileNum = i + 1;
             currentFileUploadedBytes = 0; // Reset for new file
-
-            // Check file size
-            if (file.size > MAX_FILE_SIZE) {
-                failed++;
-                console.error(`Failed to upload ${file.name}: File exceeds 50 MB limit.`);
-                // Add skipped file size to total uploaded so progress bar doesn't lag
-                totalUploadedBytes += file.size;
-
-                if (notifId && window.NotificationManager) {
-                    window.NotificationManager.updateProgress(
-                        notifId,
-                        totalUploadedBytes,
-                        totalBatchSize,
-                        `Skipped ${file.name} (too large)`
-                    );
-                }
-                continue;
-            }
 
             try {
                 await uploadFile(file, parentId, (loaded, total) => {
@@ -168,11 +154,42 @@ async function processQueue(showToast) {
 }
 
 async function handleFiles(files, showToast) {
-    if (files.length === 0) return;
-    // Push to queue
-    uploadQueue.push({ files, parentId: state.currentParentId });
-    // Trigger processing
-    processQueue(showToast);
+    const rawFileList = Array.from(files);
+    const validFiles = [];
+    const invalidFiles = [];
+
+    // Pre-Check Phase
+    for (const file of rawFileList) {
+        if (file.size > MAX_FILE_SIZE) {
+            invalidFiles.push(file);
+        } else {
+            validFiles.push(file);
+        }
+    }
+
+    // Immediate Feedback for invalid files
+    if (invalidFiles.length > 0) {
+        if (window.NotificationManager) {
+            invalidFiles.forEach(file => {
+                window.NotificationManager.showNotification(
+                    'error', 
+                    'File too large', 
+                    `"${file.name}" exceeds the 50MB limit.`
+                );
+            });
+        } else {
+            // Fallback if notification system isn't ready
+            alert(`${invalidFiles.length} file(s) skipped because they exceed 50MB.`);
+        }
+    }
+
+    // Process valid files
+    if (validFiles.length > 0) {
+        // Push only valid files to queue
+        uploadQueue.push({ files: validFiles, parentId: state.currentParentId });
+        // Trigger processing
+        processQueue(showToast);
+    }
 }
 
 export function initializeUpload(showToast) {

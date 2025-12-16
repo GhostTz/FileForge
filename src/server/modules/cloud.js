@@ -19,6 +19,22 @@ const formatBytes = (bytes, decimals = 2) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
+// --- MAINTENANCE / DANGER ZONE ENDPOINTS ---
+
+// Clear Database Only
+router.delete('/maintenance/db', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        await db.query('DELETE FROM cloud_items WHERE owner_username = ?', [owner]);
+        res.status(200).json({ message: 'Database cleared successfully.' });
+    } catch (error) {
+        console.error('Database Clear Error:', error);
+        res.status(500).json({ message: 'Failed to clear database.' });
+    }
+});
+
+// --- STANDARD ENDPOINTS ---
+
 router.get('/stats', async (req, res) => {
     try {
         const owner = req.user.username;
@@ -105,14 +121,11 @@ router.get('/download/:id', async (req, res) => {
 
         const item = items[0];
         const meta = JSON.parse(item.file_meta);
-        const fileSize = parseInt(meta.sizeBytes || 0); // Assuming sizeBytes is available, or parse from 'size' string if needed. 
-        // Note: The original code used formatBytes for 'size' in meta. We might need to rely on Telegram info or parse the string if sizeBytes isn't there.
-        // Let's get fresh info from Telegram to be sure about size for validation.
-
+        
         const bot = new TelegramBot(token);
         const fileInfo = await bot.getFile(meta.file_id);
         const fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-        const currentFileSize = fileInfo.file_size; // Size in bytes from Telegram
+        const currentFileSize = fileInfo.file_size; 
 
         if (type === 'preview') {
             // 1. Validate Extension

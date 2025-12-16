@@ -35,16 +35,28 @@
     <div id="delete-confirm-modal" class="modal-overlay">
         <div class="modal">
             <div class="warning-icon"></div>
-            <h3>Delete Account</h3>
-            <p>This action is permanent and cannot be reverted. Are you absolutely sure?</p>
-            <div class="confirm-delete-group">
-                <label for="confirm-delete-checkbox">
-                    <input type="checkbox" id="confirm-delete-checkbox">
-                    <span class="checkbox"></span>
-                    <span>I'm sure I want to delete the account <strong id="delete-username"></strong>.</span>
+            <h3>Danger Zone</h3>
+            <p>Please select an action. <br><strong>Warning: These actions are irreversible.</strong></p>
+            
+            <div class="danger-options">
+                <label class="danger-option">
+                    <input type="radio" name="danger-action" value="clear-db">
+                    <div class="danger-option-text">
+                        <span class="danger-option-title">Clear Database Only</span>
+                        <span class="danger-option-desc">Removes files from app, keeps them in Telegram.</span>
+                    </div>
+                </label>
+
+                <label class="danger-option">
+                    <input type="radio" name="danger-action" value="delete-account">
+                    <div class="danger-option-text">
+                        <span class="danger-option-title">Delete Account</span>
+                        <span class="danger-option-desc">Deletes account & DB. Telegram channel stays untouched.</span>
+                    </div>
                 </label>
             </div>
-            <button id="delete-account-btn" class="danger-btn" disabled>Delete Account</button>
+
+            <button id="confirm-danger-btn" disabled>Confirm Action</button>
         </div>
     </div>
 
@@ -173,7 +185,7 @@
                 document.querySelector('.delete-link')?.addEventListener('click', (e) => {
                     e.preventDefault();
                     profileMenu.classList.remove('show');
-                    openDeleteModal();
+                    openDangerModal();
                 });
 
                 window.addEventListener('resize', () => {
@@ -181,7 +193,6 @@
                     if (activeLink) updateNavIndicator(activeLink);
                 });
 
-                // Update indicator on fullscreen toggle (fix for video player)
                 document.addEventListener('fullscreenchange', () => {
                     setTimeout(() => {
                         const activeLink = document.querySelector('.nav-link.active');
@@ -190,24 +201,42 @@
                 });
             };
 
-            // Expose for external use if needed, but the event listener above handles the specific reported issue
             window.updateNavIndicator = updateNavIndicator;
 
             const setupModals = () => {
-                const deleteModal = document.getElementById('delete-confirm-modal');
-                const checkbox = document.getElementById('confirm-delete-checkbox');
-                const deleteBtn = document.getElementById('delete-account-btn');
+                const dangerModal = document.getElementById('delete-confirm-modal');
+                const confirmBtn = document.getElementById('confirm-danger-btn');
+                const radioButtons = document.querySelectorAll('input[name="danger-action"]');
 
-                checkbox.addEventListener('change', () => { deleteBtn.disabled = !checkbox.checked; });
-                deleteModal.addEventListener('click', (e) => { if (e.target === deleteModal) deleteModal.classList.remove('visible'); });
-                deleteBtn.addEventListener('click', async () => {
-                    try {
-                        const response = await fetch('api/user/delete', { method: 'DELETE' });
-                        // --- HIER IST DIE FINALE KORREKTUR ---
-                        if (response.ok) { window.location.href = '.'; }
-                    } catch (error) { console.error('Error during account deletion:', error); }
+                // Enable button only when radio is selected
+                radioButtons.forEach(radio => {
+                    radio.addEventListener('change', () => {
+                        confirmBtn.disabled = false;
+                        confirmBtn.textContent = 'Confirm Action';
+                    });
                 });
 
+                dangerModal.addEventListener('click', (e) => { 
+                    if (e.target === dangerModal) {
+                        dangerModal.classList.remove('visible');
+                        // Reset modal state
+                        radioButtons.forEach(r => r.checked = false);
+                        confirmBtn.disabled = true;
+                    }
+                });
+
+                confirmBtn.addEventListener('click', async () => {
+                    const selected = document.querySelector('input[name="danger-action"]:checked');
+                    if (!selected) return;
+
+                    const action = selected.value;
+                    confirmBtn.disabled = true;
+                    confirmBtn.textContent = 'Processing...';
+
+                    await handleDangerAction(action, dangerModal);
+                });
+
+                // Other modals
                 const otherPlatformModal = document.getElementById('other-platform-modal');
                 otherPlatformModal.addEventListener('click', (e) => {
                     if (e.target === otherPlatformModal || e.target.id === 'other-platform-ok') {
@@ -223,11 +252,38 @@
                 });
             };
 
-            const openDeleteModal = () => {
+            const handleDangerAction = async (action, modal) => {
+                try {
+                    if (action === 'clear-db') {
+                        const res = await fetch('api/cloud/maintenance/db', { method: 'DELETE' });
+                        if (res.ok) {
+                            window.NotificationManager.showNotification('success', 'Database Cleared', 'All database entries have been removed.');
+                            modal.classList.remove('visible');
+                            if (document.querySelector('.nav-link[data-page="cloud"]').classList.contains('active')) {
+                                loadPage('cloud'); // Refresh cloud view
+                            }
+                        } else throw new Error('Failed to clear DB');
+
+                    } else if (action === 'delete-account') {
+                        const res = await fetch('api/user/delete', { method: 'DELETE' });
+                        if (res.ok) {
+                            window.location.href = '.';
+                        } else throw new Error('Failed to delete account');
+                    }
+                } catch (error) {
+                    console.error('Danger Action Failed:', error);
+                    window.NotificationManager.showNotification('error', 'Action Failed', error.message || 'Something went wrong.');
+                    modal.classList.remove('visible');
+                }
+            };
+
+            const openDangerModal = () => {
                 const modal = document.getElementById('delete-confirm-modal');
-                document.getElementById('delete-username').textContent = currentUsername;
-                document.getElementById('confirm-delete-checkbox').checked = false;
-                document.getElementById('delete-account-btn').disabled = true;
+                // Reset fields
+                document.querySelectorAll('input[name="danger-action"]').forEach(r => r.checked = false);
+                const btn = document.getElementById('confirm-danger-btn');
+                btn.disabled = true;
+                btn.textContent = 'Confirm Action';
                 modal.classList.add('visible');
             };
 

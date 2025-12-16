@@ -8,7 +8,8 @@
         email: document.getElementById('email'),
         age: document.getElementById('age'),
         telegramBotToken: document.getElementById('telegram-bot-token'),
-        telegramChannelId: document.getElementById('telegram-channel-id')
+        telegramChannelId: document.getElementById('telegram-channel-id'),
+        colormode: document.getElementById('colormode')
     };
     
     let initialSettings = {};
@@ -34,6 +35,14 @@
         saveBtn.classList.toggle('active', hasChanged);
     };
 
+    const applyTheme = (mode) => {
+        if (mode === 'white') {
+            document.body.classList.add('light-theme');
+        } else {
+            document.body.classList.remove('light-theme');
+        }
+    };
+
     const loadSettings = async () => {
         try {
             const response = await fetch('api/user/settings');
@@ -47,6 +56,10 @@
                 inputs.age.value = settings.age || '';
                 inputs.telegramBotToken.value = settings.telegramBotToken || '';
                 inputs.telegramChannelId.value = settings.telegramChannelId || '';
+                inputs.colormode.value = settings.colormode || 'dark';
+
+                // Ensure theme is applied based on fetched settings
+                applyTheme(settings.colormode);
             }
         } catch (error) {
             console.error('Failed to load settings:', error);
@@ -64,6 +77,11 @@
     loadSettings();
 
     form.addEventListener('input', checkForChanges);
+    // Specifically listen for select change
+    inputs.colormode.addEventListener('change', () => {
+        checkForChanges();
+        // Preview theme immediately? Optional. Let's keep it on save to avoid flickering
+    });
 
     saveBtn.addEventListener('click', async () => {
         const settingsData = {
@@ -71,7 +89,8 @@
             email: inputs.email.value,
             age: inputs.age.value,
             telegramBotToken: inputs.telegramBotToken.value,
-            telegramChannelId: inputs.telegramChannelId.value
+            telegramChannelId: inputs.telegramChannelId.value,
+            colormode: inputs.colormode.value
         };
 
         try {
@@ -84,6 +103,9 @@
             if(response.ok) {
                 initialSettings = await (await fetch('api/user/settings')).json();
                 
+                // Apply theme immediately upon save
+                applyTheme(settingsData.colormode);
+
                 checkForChanges();
                 
                 saveBtn.textContent = 'Saved!';

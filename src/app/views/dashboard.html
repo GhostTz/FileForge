@@ -7,17 +7,15 @@
     <base href="/fileforge/">
     <title>Dashboard - FileForge</title>
     <link rel="stylesheet" href="app/public/css/dashboard.css">
+    <!-- ... (rest of stylesheets same as before) ... -->
     <link rel="stylesheet" href="app/public/css/start.css">
     <link rel="stylesheet" href="app/public/css/download.css">
     <link rel="stylesheet" href="app/public/css/convert.css">
-    <!-- Modularized Cloud CSS -->
     <link rel="stylesheet" href="app/public/css/cloud/layout.css">
     <link rel="stylesheet" href="app/public/css/cloud/explorer.css">
     <link rel="stylesheet" href="app/public/css/cloud/modals.css">
     <link rel="stylesheet" href="app/public/css/cloud/upload.css">
-    <!-- End of Modularized Cloud CSS -->
     <link rel="stylesheet" href="app/public/css/settings.css">
-    <!-- Global Notification System -->
     <link rel="stylesheet" href="app/public/css/notifications.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -25,13 +23,13 @@
 <body>
     <nav id="app-sidebar" class="app-sidebar"></nav>
 
-    <!-- Global Notification Container -->
     <div id="global-notifications-container"></div>
 
     <div id="page-content" class="main-container">
-        <!-- Content will be loaded here by JavaScript -->
+        <!-- Content will be loaded here -->
     </div>
 
+    <!-- Modals (Danger Zone, etc.) remain here as in previous version -->
     <div id="delete-confirm-modal" class="modal-overlay">
         <div class="modal">
             <div class="warning-icon"></div>
@@ -77,7 +75,6 @@
         </div>
     </div>
 
-    <!-- Global Notification System -->
     <script src="app/public/js/notifications.js"></script>
 
     <script>
@@ -139,7 +136,6 @@
 
                     if (config.js) {
                         const script = document.createElement('script');
-                        // Add timestamp to force reload of the module
                         script.src = `${config.js}?t=${Date.now()}`;
                         if (config.type) {
                             script.type = config.type;
@@ -157,7 +153,6 @@
             const setupNavigation = () => {
                 navLinks = document.querySelectorAll('.nav-link');
                 const profileMenu = document.getElementById('profile-menu');
-
                 const profileBtns = [
                     document.getElementById('profile-btn'),
                     document.getElementById('desktop-profile-btn')
@@ -208,7 +203,6 @@
                 const confirmBtn = document.getElementById('confirm-danger-btn');
                 const radioButtons = document.querySelectorAll('input[name="danger-action"]');
 
-                // Enable button only when radio is selected
                 radioButtons.forEach(radio => {
                     radio.addEventListener('change', () => {
                         confirmBtn.disabled = false;
@@ -219,7 +213,6 @@
                 dangerModal.addEventListener('click', (e) => { 
                     if (e.target === dangerModal) {
                         dangerModal.classList.remove('visible');
-                        // Reset modal state
                         radioButtons.forEach(r => r.checked = false);
                         confirmBtn.disabled = true;
                     }
@@ -236,7 +229,6 @@
                     await handleDangerAction(action, dangerModal);
                 });
 
-                // Other modals
                 const otherPlatformModal = document.getElementById('other-platform-modal');
                 otherPlatformModal.addEventListener('click', (e) => {
                     if (e.target === otherPlatformModal || e.target.id === 'other-platform-ok') {
@@ -260,7 +252,7 @@
                             window.NotificationManager.showNotification('success', 'Database Cleared', 'All database entries have been removed.');
                             modal.classList.remove('visible');
                             if (document.querySelector('.nav-link[data-page="cloud"]').classList.contains('active')) {
-                                loadPage('cloud'); // Refresh cloud view
+                                loadPage('cloud'); 
                             }
                         } else throw new Error('Failed to clear DB');
 
@@ -279,7 +271,6 @@
 
             const openDangerModal = () => {
                 const modal = document.getElementById('delete-confirm-modal');
-                // Reset fields
                 document.querySelectorAll('input[name="danger-action"]').forEach(r => r.checked = false);
                 const btn = document.getElementById('confirm-danger-btn');
                 btn.disabled = true;
@@ -291,6 +282,14 @@
                 try {
                     const response = await fetch('api/user/info');
                     const data = await response.json();
+                    
+                    // APPLY THEME HERE
+                    if (data.colormode === 'white') {
+                        document.body.classList.add('light-theme');
+                    } else {
+                        document.body.classList.remove('light-theme');
+                    }
+
                     currentUsername = data.username;
                     const profileIcons = document.querySelectorAll('.profile-icon');
                     if (profileIcons.length && currentUsername) {

@@ -1,4 +1,5 @@
 :root {
+    /* Default Dark Theme */
     --primary-color: #A020F0;
     --primary-glow: rgba(160, 32, 240, 0.4);
     --background-main: #120F1A;
@@ -10,6 +11,21 @@
     --active-bg: #24202C;
     --danger-color: #ff5c5c;
     --danger-glow: rgba(255, 92, 92, 0.4);
+}
+
+/* Light Theme Overrides */
+body.light-theme {
+    --primary-color: #8A2BE2; /* Etwas dunkleres Lila für besseren Kontrast auf Weiß */
+    --primary-glow: rgba(138, 43, 226, 0.3);
+    --background-main: #F4F6F8;
+    --background-sidebar: rgba(255, 255, 255, 0.85);
+    --text-color: #1A1A1A;
+    --text-muted: #666666;
+    --card-bg: #FFFFFF;
+    --card-border: #E1E4E8;
+    --active-bg: #E8EAED;
+    --danger-color: #DC3545;
+    --danger-glow: rgba(220, 53, 69, 0.3);
 }
 
 * {
@@ -24,6 +40,7 @@ body {
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
     display: flex;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-sidebar {
@@ -38,9 +55,11 @@ body {
     position: fixed;
     left: 0;
     top: 0;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
     z-index: 100;
 }
+
+/* Rest of the CSS remains largely the same, utilizing variables */
 
 .logo {
     display: flex;
@@ -76,7 +95,7 @@ body {
     text-decoration: none;
     font-weight: 500;
     margin-bottom: 10px;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, background-color 0.2s ease;
     position: relative;
     z-index: 2;
 }
@@ -86,7 +105,7 @@ body {
 }
 
 .nav-links a.active {
-    color: white;
+    color: white; /* Keep white text on active primary color background */
     font-weight: 600;
 }
 
@@ -141,6 +160,7 @@ body {
     justify-content: center;
     font-weight: 600;
     flex-shrink: 0;
+    color: white; /* Ensure initial is readable in light mode */
 }
 
 .profile-menu {
@@ -246,6 +266,7 @@ body {
 .modal h3 {
     font-size: 1.5rem;
     margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .modal p {
@@ -446,6 +467,11 @@ body {
         z-index: 1100;
     }
 
+    /* Light Theme override for mobile sidebar */
+    body.light-theme .app-sidebar {
+        background: rgba(255, 255, 255, 0.85);
+    }
+
     .logo,
     .desktop-profile-section {
         display: none;
@@ -487,7 +513,11 @@ body {
     }
 
     .nav-links a.active {
-        color: var(--text-color);
+        color: var(--text-color); /* Light theme might need adjustment here, but text-color handles it mostly */
+    }
+
+    body.light-theme .nav-links a.active {
+        color: var(--primary-color); /* On mobile light theme, text color is better than white if no bg */
     }
 
     .nav-links span {
@@ -498,6 +528,12 @@ body {
         height: 50px;
         width: 80px;
         border-radius: 16px;
+    }
+    
+    /* Ensure indicator on mobile light theme is subtle or uses primary */
+    body.light-theme #nav-active-indicator {
+        background-color: rgba(138, 43, 226, 0.15); /* Softer on light */
+        box-shadow: none;
     }
 
     .mobile-profile-li {

@@ -2,9 +2,22 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
-router.get('/info', (req, res) => {
+router.get('/info', async (req, res) => {
     if (req.user && req.user.username) {
-        res.json({ username: req.user.username });
+        try {
+            // Fetch theme setting along with basic info
+            const [settings] = await db.query('SELECT colormode FROM settings WHERE username = ?', [req.user.username]);
+            const colormode = settings.length > 0 ? settings[0].colormode : 'dark';
+            
+            res.json({ 
+                username: req.user.username,
+                colormode: colormode
+            });
+        } catch (error) {
+            console.error('Error fetching user info details:', error);
+            // Fallback if DB query fails
+            res.json({ username: req.user.username, colormode: 'dark' });
+        }
     } else {
         res.status(401).json({ message: 'Not authenticated' });
     }
@@ -13,7 +26,7 @@ router.get('/info', (req, res) => {
 router.get('/settings', async (req, res) => {
     try {
         const username = req.user.username;
-        const [settings] = await db.query('SELECT fullName, age, email, telegramBotToken, telegramChannelId FROM settings WHERE username = ?', [username]);
+        const [settings] = await db.query('SELECT fullName, age, email, telegramBotToken, telegramChannelId, colormode FROM settings WHERE username = ?', [username]);
 
         if (settings.length > 0) {
             res.json(settings[0]);
@@ -29,11 +42,11 @@ router.get('/settings', async (req, res) => {
 router.post('/settings', async (req, res) => {
     try {
         const username = req.user.username;
-        const { fullName, email, age, telegramBotToken, telegramChannelId } = req.body;
+        const { fullName, email, age, telegramBotToken, telegramChannelId, colormode } = req.body;
 
         await db.query(
-            'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ? WHERE username = ?',
-            [fullName || null, email || null, age || null, telegramBotToken || null, telegramChannelId || null, username]
+            'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ?, colormode = ? WHERE username = ?',
+            [fullName || null, email || null, age || null, telegramBotToken || null, telegramChannelId || null, colormode || 'dark', username]
         );
 
         res.status(200).json({ message: 'Settings saved successfully.' });

@@ -16,7 +16,8 @@ const requiredTables = {
             pfp: 'VARCHAR(255)',
             email: 'VARCHAR(255)',
             telegramBotToken: 'VARCHAR(255)',
-            telegramChannelId: 'VARCHAR(255)'
+            telegramChannelId: 'VARCHAR(255)',
+            colormode: "VARCHAR(20) DEFAULT 'dark'" // NEU: Colormode Spalte
         },
         foreignKeys: [
             'FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE'

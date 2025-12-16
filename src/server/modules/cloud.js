@@ -376,9 +376,7 @@ router.delete('/trash/item/:id', async (req, res) => {
     const owner = req.user.username;
     const itemId = req.params.id;
 
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-    // Helper function to recursively collect all items in a folder
+    // Helper function to recursively collect all items in a folder (still needed to delete from DB)
     async function collectAllItems(parentId) {
         const allItems = [];
         const [children] = await db.query(
@@ -411,42 +409,18 @@ router.delete('/trash/item/:id', async (req, res) => {
             itemsToDelete.push(...nestedItems);
         }
 
-        // Get Telegram settings once
-        const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
-        const token = settings.length > 0 && settings[0].telegramBotToken ? settings[0].telegramBotToken : null;
-        const bot = token ? new TelegramBot(token) : null;
-
-        let deletedCount = 0;
-        const totalCount = itemsToDelete.length;
-
-        // Delete files from Telegram first (with rate limiting)
-        for (const itemToDelete of itemsToDelete) {
-            if (itemToDelete.type === 'file' && itemToDelete.file_meta && bot) {
-                try {
-                    const meta = JSON.parse(itemToDelete.file_meta);
-                    await bot.deleteMessage(meta.chat_id, meta.message_id);
-                    deletedCount++;
-                    console.log(`Deleted file ${itemToDelete.id} from Telegram (${deletedCount}/${totalCount})`);
-                    // Rate limiting: wait 1 second between Telegram deletions
-                    await sleep(1000);
-                } catch (tgError) {
-                    console.error(`Telegram Deletion Error for item ${itemToDelete.id}:`, tgError.response ? tgError.response.body : tgError.message);
-                }
-            }
-        }
-
-        // Delete all items from database
+        // Delete all items from database ONLY (Keep on Telegram)
         const idsToDelete = itemsToDelete.map(i => i.id);
         await db.query('DELETE FROM cloud_items WHERE id IN (?)', [idsToDelete]);
 
         res.status(200).json({
-            message: 'Item permanently deleted.',
+            message: 'Item deleted from database.',
             deletedCount: itemsToDelete.length
         });
 
     } catch (error) {
         console.error(`DB Deletion Error for item ${itemId}:`, error);
-        res.status(500).json({ message: 'Server error during final deletion.' });
+        res.status(500).json({ message: 'Server error during deletion.' });
     }
 });
 

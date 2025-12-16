@@ -4,7 +4,7 @@
 
 #global-notifications-container {
     position: fixed;
-    top: 20px;
+    bottom: 20px; /* Geändert von top auf bottom */
     right: 20px;
     z-index: 10000;
     display: flex;
@@ -187,8 +187,9 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
     #global-notifications-container {
-        top: 10px;
+        bottom: 10px; /* Geändert von top auf bottom */
         right: 10px;
+        top: auto;   /* Sicherstellen, dass top nicht greift */
         left: auto;
         max-width: calc(100vw - 40px);
     }

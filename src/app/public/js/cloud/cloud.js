@@ -321,7 +321,8 @@ function setupEventListeners() {
                     deletedCount++;
                     console.log(`Deleted ${deletedCount}/${total}`);
                     window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
-                    await sleep(1000); // Wait 1 second
+                    // Reduced delay for database-only deletion
+                    await sleep(100); 
                 } catch (error) {
                     console.error(`Failed to delete item ${item.id}:`, error);
                     showToast(`Error deleting ${item.name}.`, 'error');
@@ -355,7 +356,8 @@ function setupEventListeners() {
                             await api.permanentlyDeleteItem(id);
                             deletedCount++;
                             window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
-                            await sleep(1000);
+                            // Reduced delay for database-only deletion
+                            await sleep(100); 
                         } catch (error) {
                             console.error(`Failed to delete item ${id}:`, error);
                         }
@@ -383,7 +385,7 @@ function setupEventListeners() {
                     try {
                         await api.permanentlyDeleteItem(state.itemToDelete.id);
                         window.NotificationManager.updateProgress(progressToast, 1, 1, 'Deletion complete');
-                        await sleep(500);
+                        await sleep(100);
                         window.NotificationManager.closeNotification(progressToast);
                         window.NotificationManager.showNotification('success', 'Item Deleted', `Successfully deleted ${state.itemToDelete.name}.`);
                     } catch (error) {

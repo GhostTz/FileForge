@@ -2,16 +2,11 @@
     // --- ELEMENTS ---
     const urlInput = document.getElementById('url-input');
     const downloadBtn = document.getElementById('start-download-btn');
-    const formatSelector = document.getElementById('format-selector');
-    const mp3QualitySelector = document.getElementById('mp3-quality-selector');
-    const mp4QualitySelector = document.getElementById('mp4-quality-selector');
-    const statusCard = document.getElementById('status-card');
-    const progressBar = document.getElementById('progress-bar-fill');
-    const progressText = document.getElementById('progress-text');
-    const formatModal = document.getElementById('format-required-modal');
-
-    // --- STATE ---
-    let isFormatSelected = false;
+    const pasteBtn = document.getElementById('paste-btn');
+    const statusContainer = document.getElementById('status-container');
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercent = document.getElementById('progress-percentage');
+    const statusMessage = document.getElementById('status-message');
 
     // --- HELPER FUNCTIONS ---
     const isValidUrl = (string) => {
@@ -20,61 +15,79 @@
     };
 
     const validateState = () => {
-        downloadBtn.disabled = !(isValidUrl(urlInput.value) && isFormatSelected);
+        downloadBtn.disabled = !isValidUrl(urlInput.value);
     };
 
     // --- EVENT LISTENERS ---
+    
+    // 1. Input Validation
     urlInput.addEventListener('input', validateState);
 
-    formatSelector.addEventListener('change', (e) => {
-        const selectedFormat = e.target.value;
-        isFormatSelected = true;
-
-        mp3QualitySelector.style.display = 'none';
-        mp4QualitySelector.style.display = 'none';
-
-        if (selectedFormat === 'mp3') {
-            mp3QualitySelector.style.display = 'block';
-        } else if (selectedFormat === 'mp4') {
-            mp4QualitySelector.style.display = 'block';
+    // 2. Paste Functionality
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                urlInput.value = text;
+                urlInput.focus();
+                validateState();
+                
+                // Visual Feedback for Paste
+                const originalIcon = pasteBtn.innerHTML;
+                pasteBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                setTimeout(() => pasteBtn.innerHTML = originalIcon, 1000);
+            }
+        } catch (err) {
+            console.error('Failed to read clipboard contents: ', err);
+            // Fallback: Just focus input so user can CTRL+V
+            urlInput.focus();
         }
-
-        validateState();
     });
 
-    // --- DOWNLOAD SIMULATION ---
+    // 3. Download Simulation
     downloadBtn.addEventListener('click', () => {
-        // Final check before proceeding
-        if (!isFormatSelected) {
-            if (formatModal) formatModal.classList.add('visible');
-            return;
-        }
-
-        statusCard.style.display = 'block';
+        // UI Reset
+        statusContainer.classList.remove('hidden');
         downloadBtn.disabled = true;
         urlInput.disabled = true;
+        pasteBtn.disabled = true;
+        progressBar.style.width = '0%';
+        progressPercent.textContent = '0%';
+        statusMessage.textContent = 'Connecting to server...';
 
         let percentage = 0;
-        progressBar.style.width = '0%';
-        progressText.textContent = 'Starting...';
-
         const interval = setInterval(() => {
-            percentage += Math.floor(Math.random() * 5) + 1;
+            // Non-linear progress simulation
+            const increment = Math.random() * 15;
+            percentage += increment;
+            
             if (percentage > 100) percentage = 100;
 
+            // Update UI
             progressBar.style.width = `${percentage}%`;
-            progressText.textContent = `Processing ${percentage}%`;
+            progressPercent.textContent = `${Math.floor(percentage)}%`;
+
+            // Dynamic status messages
+            if (percentage < 30) statusMessage.textContent = 'Analyzing link...';
+            else if (percentage < 60) statusMessage.textContent = 'Converting media...';
+            else if (percentage < 90) statusMessage.textContent = 'Finalizing download...';
 
             if (percentage >= 100) {
                 clearInterval(interval);
-                progressText.textContent = 'Success!';
+                statusMessage.textContent = 'Download ready! Starting...';
+                statusMessage.style.color = '#4ade80'; // Success green
+                
                 setTimeout(() => {
-                    statusCard.style.display = 'none';
+                    // Reset Form
+                    statusContainer.classList.add('hidden');
                     urlInput.disabled = false;
-                    validateState(); // Re-validate to set button state correctly
+                    pasteBtn.disabled = false;
+                    urlInput.value = '';
+                    statusMessage.style.color = 'var(--text-muted)';
+                    validateState();
                 }, 3000);
             }
-        }, 300);
+        }, 200);
     });
 
 })();

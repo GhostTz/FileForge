@@ -29,15 +29,13 @@
                 <input type="number" id="age" placeholder="Your age">
             </div>
             
-            <!-- UI Customization Button & Hidden Input -->
+            <!-- UI Customization Button -->
             <div class="input-group">
                 <label>Interface & Appearance</label>
                 <button type="button" id="open-ui-modal-btn" class="secondary-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
                     UI Customization
                 </button>
-                <!-- Hidden input to store the value for the save logic -->
-                <input type="hidden" id="colormode" value="dark">
             </div>
 
             <div class="input-group">
@@ -85,7 +83,8 @@
         </div>
         
         <div class="modal-actions">
-            <button class="modal-ok-btn close-ui-modal-btn">Done</button>
+            <!-- WICHTIG: Eigene ID für den Done Button -->
+            <button id="ui-modal-done-btn" class="modal-ok-btn">Done</button>
         </div>
     </div>
 </div>

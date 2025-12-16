@@ -7,7 +7,7 @@ router.get('/info', async (req, res) => {
         try {
             // Fetch theme setting along with basic info
             const [settings] = await db.query('SELECT colormode FROM settings WHERE username = ?', [req.user.username]);
-            const colormode = settings.length > 0 ? settings[0].colormode : 'dark';
+            const colormode = (settings.length > 0 && settings[0].colormode) ? settings[0].colormode : 'dark';
             
             res.json({ 
                 username: req.user.username,
@@ -31,7 +31,7 @@ router.get('/settings', async (req, res) => {
         if (settings.length > 0) {
             res.json(settings[0]);
         } else {
-            res.status(404).json({ message: 'Settings not found.' });
+            res.json({ colormode: 'dark' });
         }
     } catch (error) {
         console.error('Error fetching settings:', error);
@@ -44,12 +44,48 @@ router.post('/settings', async (req, res) => {
         const username = req.user.username;
         const { fullName, email, age, telegramBotToken, telegramChannelId, colormode } = req.body;
 
+        console.log(`[Settings] Saving for user ${username}. Data received:`, { colormode, age });
+
+        // 1. Aktuelle Daten holen
+        const [existing] = await db.query('SELECT * FROM settings WHERE username = ?', [username]);
+        const current = existing[0] || {};
+
+        // 2. Werte validieren und vorbereiten
+        
+        // Strings: Wenn undefined (nicht gesendet), behalte alten Wert. Wenn gesendet, nimm neuen Wert.
+        const newFullName = fullName !== undefined ? fullName : current.fullName;
+        const newEmail = email !== undefined ? email : current.email;
+        const newBotToken = telegramBotToken !== undefined ? telegramBotToken : current.telegramBotToken;
+        const newChannelId = telegramChannelId !== undefined ? telegramChannelId : current.telegramChannelId;
+        
+        // Age (Integer): Muss speziell behandelt werden!
+        // Wenn undefined -> alter Wert.
+        // Wenn leerer String '' -> NULL.
+        // Sonst -> Parsen als Zahl.
+        let newAge = current.age;
+        if (age !== undefined) {
+            if (age === '' || age === null) {
+                newAge = null;
+            } else {
+                newAge = parseInt(age, 10);
+                if (isNaN(newAge)) newAge = null; // Sicherheits-Fallback für ungültige Zahlen
+            }
+        }
+
+        // Colormode
+        let validColorMode = colormode;
+        if (!validColorMode) validColorMode = current.colormode || 'dark';
+        if (validColorMode !== 'white' && validColorMode !== 'dark') validColorMode = 'dark';
+
+        // 3. Update durchführen
         await db.query(
             'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ?, colormode = ? WHERE username = ?',
-            [fullName || null, email || null, age || null, telegramBotToken || null, telegramChannelId || null, colormode || 'dark', username]
+            [newFullName, newEmail, newAge, newBotToken, newChannelId, validColorMode, username]
         );
 
-        res.status(200).json({ message: 'Settings saved successfully.' });
+        console.log(`[Settings] Successfully updated. Colormode: ${validColorMode}, Age: ${newAge}`);
+        res.status(200).json({ message: 'Settings saved successfully.', colormode: validColorMode });
+
     } catch (error) {
         console.error('Error saving settings:', error);
         res.status(500).json({ message: 'Server error while saving settings.' });
@@ -59,15 +95,10 @@ router.post('/settings', async (req, res) => {
 router.delete('/delete', async (req, res) => {
     try {
         const username = req.user.username;
-        if (!username) {
-            return res.status(401).json({ message: 'Authentication error.' });
-        }
-
+        if (!username) return res.status(401).json({ message: 'Authentication error.' });
         await db.query('DELETE FROM users WHERE username = ?', [username]);
-
         res.clearCookie('token');
         res.status(200).json({ message: 'Account successfully deleted.' });
-
     } catch (error) {
         console.error('Error deleting account:', error);
         res.status(500).json({ message: 'Server error during account deletion.' });

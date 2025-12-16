@@ -1,4 +1,3 @@
-
 /* =========================================
    GLOBAL CONTAINER & LAYOUT
    ========================================= */
@@ -205,9 +204,13 @@
 
 .main-action-btn:disabled {
     background: var(--active-bg);
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-muted);
     cursor: not-allowed;
     box-shadow: none;
+}
+
+.main-action-btn.full-width {
+    width: 100%;
 }
 
 /* =========================================
@@ -230,9 +233,9 @@
 
 .progress-track {
     width: 100%;
-    height: 4px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: 3px;
     margin: 10px 0;
     overflow: hidden;
 }
@@ -250,42 +253,28 @@
     text-align: center;
 }
 
-.features-pill {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.pill-item {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.05);
-    padding: 5px 12px;
-    border-radius: 15px;
-}
-
-.divider { display: none; }
-
 /* =========================================
-   MODAL (Format Selection)
+   MODAL (Format Selection) - REWORKED
    ========================================= */
+
+.hidden {
+    display: none !important;
+}
 
 #format-modal {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 12000; /* Extremely high to cover navbar */
+    z-index: 12000;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.3s ease, visibility 0.3s;
 }
 
 #format-modal:not(.hidden) {
@@ -297,46 +286,171 @@
 .modal-content {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    padding: 25px;
+    padding: 25px 30px;
     border-radius: 20px;
     width: 90%;
-    max-width: 400px;
+    max-width: 420px;
     transform: scale(0.9);
-    transition: transform 0.2s;
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2), height 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    text-align: center;
 }
 
 #format-modal:not(.hidden) .modal-content {
     transform: scale(1);
 }
 
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.modal-header h3 {
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.modal-content > div > p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+.close-btn:hover {
+    color: var(--text-color);
+}
+
 .format-options {
-    display: grid;
-    gap: 10px;
-    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 25px 0;
+}
+
+.format-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .format-card {
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: 15px;
     border: 1px solid var(--card-border);
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    background: var(--background-main);
-    transition: all 0.2s;
+    background: var(--active-bg);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.format-option:hover .format-card {
+    border-color: var(--text-muted);
 }
 
 .format-option input:checked + .format-card {
     border-color: var(--primary-color);
-    background: rgba(160, 32, 240, 0.1);
+    background: var(--primary-glow);
+    box-shadow: 0 0 15px var(--primary-glow);
 }
 
-.fmt-icon { margin-right: 15px; font-size: 1.5rem; }
-.fmt-info { flex: 1; display: flex; flex-direction: column; }
-.fmt-name { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
-.fmt-detail { font-size: 0.75rem; color: var(--text-muted); }
-.fmt-check { width: 18px; height: 18px; border: 2px solid var(--text-muted); border-radius: 50%; }
-.format-option input:checked + .format-card .fmt-check { background: var(--primary-color); border-color: var(--primary-color); }
+.fmt-icon {
+    margin-right: 15px;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--text-muted);
+}
+.format-option input:checked + .format-card .fmt-icon {
+    color: var(--primary-color);
+}
+
+
+.fmt-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.fmt-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.fmt-detail {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.fmt-check {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--text-muted);
+    border-radius: 50%;
+    margin-left: 15px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fmt-check::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+}
+
+.format-option input:checked + .format-card .fmt-check {
+    border-color: var(--primary-color);
+}
+
+.format-option input:checked + .format-card .fmt-check::after {
+    transform: scale(1);
+}
+
+/* === MODAL PROGRESS VIEW === */
+#progress-view p {
+    color: var(--text-muted);
+    min-height: 22px;
+    margin: 20px 0;
+}
+#modal-progress-track {
+    margin-bottom: 25px;
+}
+#final-file-info {
+    background: var(--active-bg);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    color: var(--text-color);
+}
 
 /* =========================================
    ANIMATIONS
@@ -345,6 +459,11 @@
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes progressIndeterminate {
@@ -357,45 +476,31 @@
    ========================================= */
 
 @media (max-width: 992px) {
-    /* 
-       FORCE NAVBAR OVERLAY:
-       Dies zwingt die Navbar dazu, fixiert am unteren Bildschirmrand zu kleben,
-       unabhängig vom Scrollstatus.
-    */
     body .app-sidebar {
         position: fixed !important;
         bottom: 10px !important;
         left: 10px !important;
         right: 10px !important;
         width: calc(100% - 20px) !important;
-        z-index: 10000 !important; /* Über allem anderen */
+        z-index: 10000 !important;
         display: flex !important;
-        transform: none !important; /* Verhindert Layout-Verschiebungen durch Animationen */
-        background: rgba(26, 22, 34, 0.95) !important; /* Etwas undurchsichtiger für Lesbarkeit */
+        transform: none !important;
+        background: rgba(26, 22, 34, 0.95) !important;
         backdrop-filter: blur(20px) !important;
     }
 
     .downloader-container {
-        /* Zurück zum Flex-Center, sieht besser aus */
         display: flex;
         justify-content: center;
-        
-        /* 
-           EXTREM WICHTIG:
-           Padding unten, damit man den untersten Teil der Karte sehen kann,
-           auch wenn die Navbar "darüber" schwebt.
-        */
         padding-bottom: 100px !important; 
-        
         min-height: 100vh;
-        z-index: 1; /* Content muss UNTER der Navbar liegen */
+        z-index: 1;
     }
 
     .content-wrapper {
         width: 100%;
         max-width: 100%;
         padding: 25px;
-        /* Wir entfernen den aggressiven Schatten auf Mobile für Performance */
         box-shadow: none; 
         border: 1px solid var(--card-border);
         margin-bottom: 0;
@@ -406,13 +511,8 @@
     }
 
     .main-action-btn {
-        height: 60px; /* Größerer Button für Touch */
+        height: 60px;
     }
-    
-    /* 
-       Falls Format Modal offen ist, muss es NOCH höher sein als die Navbar 
-       (siehe z-index oben bei #format-modal: 12000)
-    */
 }
 
 /* =========================================
@@ -442,7 +542,18 @@ body.light-theme .main-action-btn {
     color: #fff;
 }
 
-body.light-theme .pill-item {
-    background: rgba(0,0,0,0.05);
-    color: #666;
+body.light-theme .modal-content {
+    background: #fdfdff;
+}
+
+body.light-theme .format-card {
+    background: #f5f5f5;
+}
+
+body.light-theme .format-option input:checked + .format-card {
+    background: rgba(138, 43, 226, 0.08);
+}
+
+body.light-theme #final-file-info {
+    background: #f0f0f0;
 }

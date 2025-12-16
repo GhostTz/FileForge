@@ -17,17 +17,14 @@ router.post('/process', async (req, res) => {
 
     if (!url) return res.status(400).json({ message: 'No URL provided' });
 
-    // Eindeutige ID für den Dateinamen generieren (vermeidet Probleme mit Sonderzeichen)
     const fileId = `dl_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     let outputTemplate = '';
     let args = [];
 
-    // Konfiguration basierend auf Auswahl
     if (type === 'mp3') {
-        // Audio: MP3, 128k
         outputTemplate = path.join(TEMP_DIR, `${fileId}.%(ext)s`);
         args = [
-            '-x', // Extract audio
+            '-x',
             '--audio-format', 'mp3',
             '--audio-quality', '128K',
             '--no-playlist',
@@ -35,7 +32,6 @@ router.post('/process', async (req, res) => {
             url
         ];
     } else {
-        // Video: MP4, max 1080p
         outputTemplate = path.join(TEMP_DIR, `${fileId}.%(ext)s`);
         args = [
             '-f', 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
@@ -49,23 +45,23 @@ router.post('/process', async (req, res) => {
     console.log(`[Download] Starting: ${type} for ${url}`);
 
     const process = spawn('yt-dlp', args);
+    let errorOutput = ''; // Variable zum Sammeln von Fehlermeldungen
 
     process.stdout.on('data', (data) => {
-        // Optional: Hier könnte man den Fortschritt parsen
         console.log(`[yt-dlp]: ${data}`);
     });
 
     process.stderr.on('data', (data) => {
-        console.error(`[yt-dlp error]: ${data}`);
+        const errorData = data.toString();
+        console.error(`[yt-dlp error]: ${errorData}`);
+        errorOutput += errorData; // Fehler-Output sammeln
     });
 
     process.on('close', (code) => {
         if (code === 0) {
-            // Erfolg! Dateinamen ermitteln
             const ext = type === 'mp3' ? 'mp3' : 'mp4';
             const filename = `${fileId}.${ext}`;
             
-            // Prüfen ob Datei wirklich da ist
             if (fs.existsSync(path.join(TEMP_DIR, filename))) {
                 res.json({ 
                     success: true, 
@@ -76,7 +72,13 @@ router.post('/process', async (req, res) => {
                 res.status(500).json({ message: 'Download finished but file not found.' });
             }
         } else {
-            res.status(500).json({ message: 'Download process failed.', code });
+            // NEU: Fehleranalyse
+            if (errorOutput.includes('Sign in to confirm your age')) {
+                res.status(403).json({ message: 'This video is age-restricted and cannot be downloaded.' });
+            } else {
+                // Generische Fehlermeldung für alle anderen Probleme
+                res.status(500).json({ message: 'The download process failed. The link may be invalid or private.' });
+            }
         }
     });
 });

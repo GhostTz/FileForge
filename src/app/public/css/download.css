@@ -1,201 +1,206 @@
-/* --- Global Container --- */
+
+/* =========================================
+   GLOBAL CONTAINER & LAYOUT
+   ========================================= */
+
 .downloader-container {
     width: 100%;
-    min-height: calc(100vh - 100px); /* Abzüglich Header/Nav */
+    position: relative;
+    box-sizing: border-box;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    position: relative;
-    overflow: hidden; /* Wichtig: Verhindert Scrollbalken durch Glow-Effekte */
-    padding: 20px;
-    box-sizing: border-box;
+    min-height: 100vh; /* Volle Höhe */
+    padding: 40px 20px;
+    overflow-x: hidden;
+    z-index: 1; 
 }
 
-/* --- Content Wrapper --- */
+/* =========================================
+   THE CARD (Content Wrapper)
+   ========================================= */
+
 .content-wrapper {
     width: 100%;
-    max-width: 750px;
+    max-width: 550px;
     position: relative;
-    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
-    animation: slideUpFade 0.6s ease-out;
+    
+    /* Modernes Glass-Design */
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 40px;
+    
+    /* Schatten für Tiefe */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    
+    /* Animation beim Laden */
+    animation: fadeInUp 0.5s ease-out forwards;
 }
 
-/* --- Decorative Glows --- */
+/* =========================================
+   BACKGROUND EFFECTS (Glow)
+   ========================================= */
+
 .glow-effect {
     position: absolute;
-    width: 40vw; /* Responsive Größe */
-    height: 40vw;
-    max-width: 400px;
-    max-height: 400px;
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.12;
-    z-index: 1;
+    filter: blur(80px);
+    opacity: 0.15;
+    z-index: -1;
     pointer-events: none;
 }
 
 .glow-effect.top-left {
-    top: -10%;
-    left: -10%;
+    top: -50px;
+    left: -50px;
     background: var(--primary-color);
 }
 
 .glow-effect.bottom-right {
-    bottom: -10%;
-    right: -10%;
+    bottom: -50px;
+    right: -50px;
     background: #4facfe;
 }
 
-/* --- Header Section --- */
+/* =========================================
+   TYPOGRAPHY & ICONS
+   ========================================= */
+
 .header-section {
     text-align: center;
     width: 100%;
-    padding: 0 10px;
 }
 
 .icon-wrapper {
-    width: 70px;
-    height: 70px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px auto;
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--card-border);
-    border-radius: 24px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px auto;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px var(--primary-glow);
 }
 
 .icon-wrapper svg {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     color: var(--primary-color);
-    filter: drop-shadow(0 0 10px var(--primary-glow));
 }
 
 .header-section h1 {
-    font-size: 2.8rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 12px;
-    background: linear-gradient(to right, #fff, #b4b4b4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1.2;
+    margin-bottom: 10px;
+    color: var(--text-color);
 }
 
 .header-section p {
     color: var(--text-muted);
-    font-size: 1.15rem;
-    max-width: 500px;
-    margin: 0 auto;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
-/* --- Input Area (Desktop Default) --- */
+/* =========================================
+   INPUTS & BUTTONS
+   ========================================= */
+
 .input-area {
     width: 100%;
     display: flex;
+    flex-direction: column;
     gap: 15px;
-    position: relative;
-    /* Desktop: Alles in einer Reihe */
-    flex-direction: row; 
 }
 
 .input-wrapper {
-    flex-grow: 1;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 18px;
     display: flex;
     align-items: center;
-    padding: 6px 8px 6px 20px; /* Rechts weniger Padding für den Button */
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    backdrop-filter: blur(10px);
+    background: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 5px 15px;
+    height: 60px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .input-wrapper:focus-within {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--primary-glow); /* Glow Ring */
-    transform: translateY(-2px);
-    background: rgba(26, 22, 34, 0.95);
+    box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
 .link-icon {
     color: var(--text-muted);
-    margin-right: 12px;
+    margin-right: 15px;
     display: flex;
-    align-items: center;
-    flex-shrink: 0;
 }
 
 #url-input {
-    flex-grow: 1;
+    flex: 1;
     background: transparent;
     border: none;
     color: var(--text-color);
-    font-size: 1.1rem;
-    padding: 14px 0;
+    font-size: 1rem;
     outline: none;
-    min-width: 0; /* Verhindert Flexbox-Overflow */
+    width: 100%;
 }
 
-/* Paste Button within Input */
 .icon-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid transparent;
+    background: transparent;
+    border: 1px solid var(--card-border);
     color: var(--text-muted);
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
     margin-left: 10px;
-    flex-shrink: 0;
 }
 
 .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--active-bg);
     color: var(--text-color);
-    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Download Button */
 .main-action-btn {
-    padding: 0 40px;
+    width: 100%;
+    height: 55px;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 18px;
+    border-radius: 12px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 4px 20px var(--primary-glow);
-    white-space: nowrap;
-    height: 60px; /* Fixe Höhe passend zum Input */
-    flex-shrink: 0;
+    gap: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .main-action-btn:hover:not(:disabled) {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 30px var(--primary-glow);
-    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--primary-glow);
 }
 
 .main-action-btn:active:not(:disabled) {
-    transform: translateY(-1px);
+    transform: scale(0.98);
 }
 
 .main-action-btn:disabled {
@@ -203,292 +208,241 @@
     color: rgba(255, 255, 255, 0.3);
     cursor: not-allowed;
     box-shadow: none;
-    border: 1px solid var(--card-border);
 }
 
-/* --- Status / Progress --- */
+/* =========================================
+   STATUS & EXTRAS
+   ========================================= */
+
 .status-container {
     width: 100%;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 18px;
-    padding: 25px;
-    animation: fadeIn 0.4s ease;
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    display: none; 
 }
 
-.status-container.hidden {
-    display: none;
-}
-
-.status-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--text-color);
+.status-container:not(.hidden) {
+    display: block;
+    animation: fadeIn 0.3s;
 }
 
 .progress-track {
     width: 100%;
-    height: 10px;
-    background: rgba(0,0,0,0.3);
-    border-radius: 10px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 10px 0;
     overflow: hidden;
-    margin-bottom: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
 }
 
-.progress-fill {
+.progress-fill.indeterminate {
+    width: 100%;
     height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--primary-color), #4facfe);
-    border-radius: 10px;
-    transition: width 0.2s linear;
-    box-shadow: 0 0 15px var(--primary-glow);
-    position: relative;
-}
-
-/* Schimmer-Effekt auf dem Progress Bar */
-.progress-fill::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 1.5s infinite;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    animation: progressIndeterminate 1.5s infinite linear;
 }
 
 .status-message {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     text-align: center;
-    font-weight: 500;
 }
 
-/* --- Feature Pills (Footer) --- */
 .features-pill {
     display: flex;
-    align-items: center;
-    gap: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--card-border);
-    padding: 10px 20px;
-    border-radius: 50px;
-    backdrop-filter: blur(5px);
-    flex-wrap: wrap; /* Umbruch erlauben */
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
 }
 
 .pill-item {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    font-weight: 500;
-    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 15px;
 }
 
-.divider {
-    width: 4px;
-    height: 4px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
+.divider { display: none; }
+
+/* =========================================
+   MODAL (Format Selection)
+   ========================================= */
+
+#format-modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 12000; /* Extremely high to cover navbar */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s;
 }
 
-/* --- Animations --- */
-@keyframes slideUpFade {
-    from { opacity: 0; transform: translateY(40px); }
+#format-modal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 25px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    transform: scale(0.9);
+    transition: transform 0.2s;
+}
+
+#format-modal:not(.hidden) .modal-content {
+    transform: scale(1);
+}
+
+.format-options {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.format-card {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--background-main);
+    transition: all 0.2s;
+}
+
+.format-option input:checked + .format-card {
+    border-color: var(--primary-color);
+    background: rgba(160, 32, 240, 0.1);
+}
+
+.fmt-icon { margin-right: 15px; font-size: 1.5rem; }
+.fmt-info { flex: 1; display: flex; flex-direction: column; }
+.fmt-name { font-weight: 600; font-size: 0.95rem; color: var(--text-color); }
+.fmt-detail { font-size: 0.75rem; color: var(--text-muted); }
+.fmt-check { width: 18px; height: 18px; border: 2px solid var(--text-muted); border-radius: 50%; }
+.format-option input:checked + .format-card .fmt-check { background: var(--primary-color); border-color: var(--primary-color); }
+
+/* =========================================
+   ANIMATIONS
+   ========================================= */
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.98); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes shimmer {
+@keyframes progressIndeterminate {
+    0% { transform: translateX(-100%); }
     100% { transform: translateX(100%); }
 }
 
 /* =========================================
-   RESPONSIVE DESIGN (Mobile & Tablet)
+   RESPONSIVE DESIGN & NAVBAR FIX
    ========================================= */
 
 @media (max-width: 992px) {
-    .header-section h1 { font-size: 2.2rem; }
-}
+    /* 
+       FORCE NAVBAR OVERLAY:
+       Dies zwingt die Navbar dazu, fixiert am unteren Bildschirmrand zu kleben,
+       unabhängig vom Scrollstatus.
+    */
+    body .app-sidebar {
+        position: fixed !important;
+        bottom: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: calc(100% - 20px) !important;
+        z-index: 10000 !important; /* Über allem anderen */
+        display: flex !important;
+        transform: none !important; /* Verhindert Layout-Verschiebungen durch Animationen */
+        background: rgba(26, 22, 34, 0.95) !important; /* Etwas undurchsichtiger für Lesbarkeit */
+        backdrop-filter: blur(20px) !important;
+    }
 
-@media (max-width: 768px) {
     .downloader-container {
-        padding: 15px;
-        align-items: flex-start; /* Inhalt nach oben schieben */
-        padding-top: 40px;
+        /* Zurück zum Flex-Center, sieht besser aus */
+        display: flex;
+        justify-content: center;
+        
+        /* 
+           EXTREM WICHTIG:
+           Padding unten, damit man den untersten Teil der Karte sehen kann,
+           auch wenn die Navbar "darüber" schwebt.
+        */
+        padding-bottom: 100px !important; 
+        
+        min-height: 100vh;
+        z-index: 1; /* Content muss UNTER der Navbar liegen */
     }
 
     .content-wrapper {
-        gap: 25px;
+        width: 100%;
+        max-width: 100%;
+        padding: 25px;
+        /* Wir entfernen den aggressiven Schatten auf Mobile für Performance */
+        box-shadow: none; 
+        border: 1px solid var(--card-border);
+        margin-bottom: 0;
     }
 
     .header-section h1 {
-        font-size: 1.8rem; /* Kleinerer Text */
+        font-size: 1.8rem;
     }
 
-    .header-section p {
-        font-size: 1rem;
-    }
-
-    /* Das ist der wichtigste Teil für Mobile! */
-    .input-area {
-        flex-direction: column; /* Untereinander */
-        gap: 12px;
-    }
-
-    .input-wrapper {
-        width: 100%;
-        height: 56px;
-        padding: 0 15px;
-    }
-
-    #url-input {
-        font-size: 1rem;
-    }
-
-    /* Button volle Breite und größer */
     .main-action-btn {
-        width: 100%;
-        height: 56px;
-        margin-top: 5px;
-        font-size: 1.05rem;
-    }
-
-    .icon-wrapper {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 15px;
-    }
-
-    .icon-wrapper svg {
-        width: 30px;
-        height: 30px;
-    }
-
-    .features-pill {
-        padding: 8px 15px;
-        gap: 10px;
-        border-radius: 12px; /* Weniger rund auf Mobile spart Platz */
-        width: 100%;
+        height: 60px; /* Größerer Button für Touch */
     }
     
-    .pill-item {
-        font-size: 0.85rem;
-    }
-}
-
-/* Very Small Screens */
-@media (max-width: 380px) {
-    .header-section h1 { font-size: 1.5rem; }
-    .features-pill { display: none; } /* Verstecken wenn zu wenig Platz */
+    /* 
+       Falls Format Modal offen ist, muss es NOCH höher sein als die Navbar 
+       (siehe z-index oben bei #format-modal: 12000)
+    */
 }
 
 /* =========================================
-   LIGHT THEME OVERRIDES
+   LIGHT THEME SUPPORT
    ========================================= */
 
-body.light-theme .header-section h1 {
-    /* Dunklerer Gradient für Text auf weißem Hintergrund */
-    background: linear-gradient(to right, #1a1a1a, #555);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+body.light-theme .content-wrapper {
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
-body.light-theme .header-section p {
-    color: #666;
-}
-
-/* Icon Container oben */
 body.light-theme .icon-wrapper {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sanfter dunkler Schatten statt Glow */
+    background: #f5f5f5;
 }
 
-/* Input Feld Container */
 body.light-theme .input-wrapper {
-    background: #ffffff;
-    border-color: #e0e0e0;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    background: #f8f9fa;
+    border-color: #e2e2e2;
 }
 
 body.light-theme .input-wrapper:focus-within {
-    background: #ffffff;
-    border-color: var(--primary-color);
-    /* Der Glow Ring muss im Light Mode dezenter sein */
-    box-shadow: 0 0 0 4px var(--primary-glow); 
+    background: #fff;
 }
 
-/* Input Text Farbe */
-body.light-theme #url-input {
-    color: #333;
-}
-
-body.light-theme #url-input::placeholder {
-    color: #999;
-}
-
-/* Paste Button im Input */
-body.light-theme .icon-btn {
-    background: rgba(0, 0, 0, 0.05); /* Dunkle Transparenz statt weiß */
-    color: #666;
-}
-
-body.light-theme .icon-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #000;
-}
-
-/* Feature Pills unten */
-body.light-theme .features-pill {
-    background: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+body.light-theme .main-action-btn {
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.25);
+    color: #fff;
 }
 
 body.light-theme .pill-item {
-    color: #555;
-}
-
-body.light-theme .divider {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-/* Status Container */
-body.light-theme .status-container {
-    background: #ffffff;
-    border-color: #e0e0e0;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-}
-
-body.light-theme .status-header {
-    color: #333;
-}
-
-body.light-theme .progress-track {
-    background: rgba(0, 0, 0, 0.08);
-    border: none;
-}
-
-body.light-theme .status-message {
+    background: rgba(0,0,0,0.05);
     color: #666;
-}
-
-/* Download Button Text */
-body.light-theme .main-action-btn {
-    color: #fff; /* Bleibt weiß, da Button farbig ist */
-    box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3); /* Angepasster Schatten */
-}
-
-/* Glow Effekte im Hintergrund etwas abschwächen im Light Mode */
-body.light-theme .glow-effect {
-    opacity: 0.08;
-    filter: blur(100px);
 }

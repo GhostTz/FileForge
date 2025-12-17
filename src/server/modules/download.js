@@ -45,7 +45,7 @@ router.post('/process', async (req, res) => {
     console.log(`[Download] Starting: ${type} for ${url}`);
 
     const process = spawn('yt-dlp', args);
-    let errorOutput = ''; // Variable zum Sammeln von Fehlermeldungen
+    let errorOutput = '';
 
     process.stdout.on('data', (data) => {
         console.log(`[yt-dlp]: ${data}`);
@@ -54,29 +54,30 @@ router.post('/process', async (req, res) => {
     process.stderr.on('data', (data) => {
         const errorData = data.toString();
         console.error(`[yt-dlp error]: ${errorData}`);
-        errorOutput += errorData; // Fehler-Output sammeln
+        errorOutput += errorData;
     });
 
     process.on('close', (code) => {
         if (code === 0) {
             const ext = type === 'mp3' ? 'mp3' : 'mp4';
             const filename = `${fileId}.${ext}`;
-            
-            if (fs.existsSync(path.join(TEMP_DIR, filename))) {
+            const filePath = path.join(TEMP_DIR, filename);
+
+            if (fs.existsSync(filePath)) {
+                const stats = fs.statSync(filePath);
                 res.json({ 
                     success: true, 
                     downloadUrl: `temp/${filename}`,
-                    filename: filename 
+                    filename: filename,
+                    filesize: stats.size // Dateigröße in Bytes
                 });
             } else {
                 res.status(500).json({ message: 'Download finished but file not found.' });
             }
         } else {
-            // NEU: Fehleranalyse
             if (errorOutput.includes('Sign in to confirm your age')) {
                 res.status(403).json({ message: 'This video is age-restricted and cannot be downloaded.' });
             } else {
-                // Generische Fehlermeldung für alle anderen Probleme
                 res.status(500).json({ message: 'The download process failed. The link may be invalid or private.' });
             }
         }

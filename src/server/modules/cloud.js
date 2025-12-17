@@ -128,7 +128,6 @@ router.get('/download/:id', async (req, res) => {
         const currentFileSize = fileInfo.file_size; 
 
         if (type === 'preview') {
-            // 1. Validate Extension
             const allowedExtensions = [
                 'mp4', 'mp3', 'mov', 'txt', 'png', 'jpg', 'jpeg',
                 'ico', 'pdf', 'gif', 'webp', 'svg', 'webm', 'wav'
@@ -139,13 +138,11 @@ router.get('/download/:id', async (req, res) => {
                 return res.status(403).json({ message: 'Preview not allowed for this file type.' });
             }
 
-            // 2. Validate Size (Max 30MB)
             const MAX_SIZE = 30 * 1024 * 1024;
             if (currentFileSize > MAX_SIZE) {
                 return res.status(403).json({ message: 'File too large for preview (Max 30MB).' });
             }
 
-            // 3. Download to Temp (Existing Logic)
             const tempFilePath = path.join(__dirname, '..', '..', '..', 'temp', item.name);
             const writer = fs.createWriteStream(tempFilePath);
 
@@ -164,7 +161,6 @@ router.get('/download/:id', async (req, res) => {
             });
 
         } else if (type === 'download') {
-            // Streaming Download (No validation, no temp file)
             res.setHeader('Content-Disposition', `attachment; filename="${item.name}"`);
             res.setHeader('Content-Type', 'application/octet-stream');
 
@@ -376,7 +372,6 @@ router.delete('/trash/item/:id', async (req, res) => {
     const owner = req.user.username;
     const itemId = req.params.id;
 
-    // Helper function to recursively collect all items in a folder (still needed to delete from DB)
     async function collectAllItems(parentId) {
         const allItems = [];
         const [children] = await db.query(
@@ -403,13 +398,11 @@ router.delete('/trash/item/:id', async (req, res) => {
 
         let itemsToDelete = [item];
 
-        // If it's a folder, collect all nested items
         if (item.type === 'folder') {
             const nestedItems = await collectAllItems(item.id);
             itemsToDelete.push(...nestedItems);
         }
 
-        // Delete all items from database ONLY (Keep on Telegram)
         const idsToDelete = itemsToDelete.map(i => i.id);
         await db.query('DELETE FROM cloud_items WHERE id IN (?)', [idsToDelete]);
 
@@ -433,7 +426,6 @@ router.post('/download/zip', async (req, res) => {
     }
 
     try {
-        // Get Telegram settings
         const [settings] = await db.query('SELECT telegramBotToken FROM settings WHERE username = ?', [owner]);
         if (settings.length === 0 || !settings[0].telegramBotToken) {
             return res.status(400).json({ message: 'Telegram Bot Token not configured.' });
@@ -441,7 +433,6 @@ router.post('/download/zip', async (req, res) => {
         const token = settings[0].telegramBotToken;
         const bot = new TelegramBot(token);
 
-        // Helper to recursively collect items with paths
         async function collectItemsRecursively(ids, currentPath = '') {
             const items = [];
             if (ids.length === 0) return items;
@@ -449,14 +440,11 @@ router.post('/download/zip', async (req, res) => {
             const [rows] = await db.query('SELECT * FROM cloud_items WHERE id IN (?) AND owner_username = ?', [ids, owner]);
 
             for (const item of rows) {
-                // Use forward slashes for zip paths
                 const itemPath = currentPath ? `${currentPath}/${item.name}` : item.name;
 
                 if (item.type === 'folder') {
-                    // Add the folder itself (for empty folders)
                     items.push({ ...item, zipPath: itemPath, isDir: true });
 
-                    // Get children
                     const [children] = await db.query('SELECT id FROM cloud_items WHERE parent_id = ? AND owner_username = ?', [item.id, owner]);
                     const childIds = children.map(c => c.id);
 
@@ -498,7 +486,7 @@ router.post('/download/zip', async (req, res) => {
                             resolve();
                         }).on('error', (err) => {
                             console.error(`Error downloading file ${item.name} for zip:`, err);
-                            resolve(); // Continue even if one fails
+                            resolve();
                         });
                     });
                 }

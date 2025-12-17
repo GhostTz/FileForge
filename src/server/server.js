@@ -19,8 +19,10 @@ app.use('/script', express.static(path.join(__dirname, '../script')));
 app.use('/app/public', express.static(path.join(__dirname, '../app/public')));
 app.use('/app/public/js', express.static(path.join(__dirname, '../app/public/js')));
 
-// WICHTIG: Der Temp Ordner muss öffentlich sein, damit der Client die Datei laden kann
 app.use('/temp', express.static(path.join(__dirname, '../../temp')));
+
+// *** NEU: Favicon-Anfragen abfangen, um 404-Fehler zu vermeiden ***
+app.get('/favicon.ico', (req, res) => res.status(204).send());
 
 // Routes
 const mainRoutes = require('./modules/main');
@@ -28,14 +30,14 @@ const authRoutes = require('./modules/auth');
 const appRoutes = require('../app/routes/app');
 const userRoutes = require('./modules/user');
 const cloudRoutes = require('./modules/cloud');
-const downloadRoutes = require('./modules/download'); // <--- NEU
+const downloadRoutes = require('./modules/download');
 
 app.use('/', mainRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/app', appRoutes);
 app.use('/api/user', authMiddleware, userRoutes);
 app.use('/api/cloud', authMiddleware, cloudRoutes);
-app.use('/api/downloader', authMiddleware, downloadRoutes); // <--- NEU (Endpunkt)
+app.use('/api/downloader', authMiddleware, downloadRoutes);
 
 const startServer = async () => {
     try {

@@ -28,11 +28,11 @@
         </button>
     </div>
 
-    <!-- Status / Progress Area (jetzt ungenutzt, aber sicherheitshalber belassen) -->
+    <!-- Status / Progress Area (not used, kept for safety) -->
     <div id="status-container" class="status-container hidden"></div>
 </div>
 
-<!-- Format Selection Modal - Komplett überarbeitet -->
+<!-- Format Selection Modal - Final Version -->
 <div id="format-modal" class="modal-overlay hidden">
     <div class="modal-content">
         <div class="modal-header">
@@ -40,7 +40,7 @@
             <button id="close-modal-btn" class="close-btn">&times;</button>
         </div>
 
-        <!-- Ansicht 1: Formatauswahl -->
+        <!-- View 1: Format Selection -->
         <div id="format-selection-view">
             <p>Choose your preferred download quality.</p>
             <div class="format-options">
@@ -75,14 +75,14 @@
             <button id="confirm-download-btn" class="main-action-btn full-width">Start Download</button>
         </div>
 
-        <!-- Ansicht 2: Fortschritt -->
+        <!-- View 2: Progress -->
         <div id="progress-view" class="hidden">
             <p id="modal-status-message">Contacting server, please wait...</p>
             <div class="progress-track" id="modal-progress-track">
                 <div id="modal-progress-bar" class="progress-fill indeterminate"></div>
             </div>
             <div id="final-file-info" class="hidden">
-                 <!-- Hier werden Dateiname etc. angezeigt -->
+                 <!-- File info will be injected here by JS -->
             </div>
             <button id="modal-final-download-btn" class="main-action-btn full-width" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

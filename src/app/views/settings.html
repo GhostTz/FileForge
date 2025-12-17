@@ -38,12 +38,25 @@
                 </button>
             </div>
 
+            <!-- Telegram Bot Token mit Info Icon -->
             <div class="input-group">
-                <label for="telegram-bot-token">Telegram Bot Token</label>
+                <label for="telegram-bot-token">
+                    Telegram Bot Token
+                    <button type="button" class="info-icon-btn" data-info="bot-token" title="How to get a token?">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    </button>
+                </label>
                 <input type="text" id="telegram-bot-token" placeholder="Your Telegram bot token">
             </div>
+
+            <!-- Telegram Channel ID mit Info Icon -->
             <div class="input-group">
-                <label for="telegram-channel-id">Telegram Channel ID</label>
+                <label for="telegram-channel-id">
+                    Telegram Channel ID
+                    <button type="button" class="info-icon-btn" data-info="channel-id" title="How to get the ID?">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    </button>
+                </label>
                 <input type="text" id="telegram-channel-id" placeholder="Your Telegram channel ID">
             </div>
         </form>
@@ -58,9 +71,9 @@
     <div class="modal ui-modal-content">
         <div class="modal-header">
             <h3>UI Customization</h3>
-            <button class="close-modal-btn">&times;</button>
+            <button class="close-modal-btn" data-target="ui-modal">&times;</button>
         </div>
-        <p>Customize the look and feel of FileForge.</p>
+        <p>Customize the look and feel of FileForge. Keep in mind, these settings are saved online and will be applied across all your devices.</p>
         
         <div class="ui-section">
             <h4>Theme</h4>
@@ -83,8 +96,23 @@
         </div>
         
         <div class="modal-actions">
-            <!-- WICHTIG: Eigene ID für den Done Button -->
             <button id="ui-modal-done-btn" class="modal-ok-btn">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Generic Info Tutorial Modal -->
+<div id="info-modal" class="modal-overlay">
+    <div class="modal info-modal-content">
+        <div class="modal-header">
+            <h3 id="info-modal-title">Help</h3>
+            <button class="close-modal-btn" data-target="info-modal">&times;</button>
+        </div>
+        <div id="info-modal-body" class="markdown-body">
+            <!-- Content will be injected by JS -->
+        </div>
+        <div class="modal-actions">
+            <button class="modal-ok-btn" id="info-modal-ok-btn">Got it</button>
         </div>
     </div>
 </div>

@@ -97,11 +97,33 @@
 }
 
 .input-group label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 8px;
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-muted);
+}
+
+/* Info Icon Button Styles */
+.info-icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.info-icon-btn:hover {
+    color: var(--text-color);
+    background-color: var(--active-bg);
+    transform: scale(1.1);
 }
 
 .input-group input {
@@ -183,6 +205,51 @@
 .ui-modal-content {
     max-width: 500px;
     text-align: left;
+}
+
+/* --- Info Modal & Markdown Styles --- */
+.info-modal-content {
+    max-width: 600px;
+    text-align: left;
+}
+
+.markdown-body {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.markdown-body ol {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.markdown-body li {
+    margin-bottom: 10px;
+}
+
+.markdown-body code {
+    background-color: var(--active-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--primary-color);
+    font-family: monospace;
+    font-size: 0.9em;
+    border: 1px solid var(--card-border);
+}
+
+.markdown-body a {
+    color: var(--primary-color);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--primary-color);
+}
+
+.markdown-body a:hover {
+    text-decoration: none;
+    border-bottom-style: solid;
 }
 
 .modal-header {

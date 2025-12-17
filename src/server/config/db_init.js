@@ -17,7 +17,7 @@ const requiredTables = {
             email: 'VARCHAR(255)',
             telegramBotToken: 'VARCHAR(255)',
             telegramChannelId: 'VARCHAR(255)',
-            colormode: "VARCHAR(20) DEFAULT 'dark'" // NEU: Colormode Spalte
+            colormode: "VARCHAR(20) DEFAULT 'dark'"
         },
         foreignKeys: [
             'FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE'
@@ -39,6 +39,20 @@ const requiredTables = {
         foreignKeys: [
             'FOREIGN KEY (owner_username) REFERENCES users(username) ON DELETE CASCADE',
             'FOREIGN KEY (parent_id) REFERENCES cloud_items(id) ON DELETE CASCADE'
+        ]
+    },
+    downloaded_media: {
+        columns: {
+            id: 'INT AUTO_INCREMENT PRIMARY KEY',
+            username: 'VARCHAR(255) NOT NULL',
+            link: 'TEXT NOT NULL',
+            format: 'VARCHAR(10) NOT NULL', // mp3 oder mp4
+            date: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
+            success: 'BOOLEAN NOT NULL',
+            errorcode: 'TEXT NULL'
+        },
+        foreignKeys: [
+            'FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE'
         ]
     }
 };

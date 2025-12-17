@@ -38,11 +38,23 @@ router.delete('/maintenance/db', async (req, res) => {
 router.get('/stats', async (req, res) => {
     try {
         const owner = req.user.username;
-        const [rows] = await db.query(
+        
+        // 1. Count Cloud Items
+        const [cloudRows] = await db.query(
             'SELECT COUNT(*) as count FROM cloud_items WHERE owner_username = ? AND type = "file" AND is_trashed = false',
             [owner]
         );
-        res.json({ fileCount: rows[0].count });
+
+        // 2. Count Downloaded Media (nur erfolgreiche)
+        const [dlRows] = await db.query(
+            'SELECT COUNT(*) as count FROM downloaded_media WHERE username = ? AND success = true',
+            [owner]
+        );
+
+        res.json({ 
+            fileCount: cloudRows[0].count,
+            downloadCount: dlRows[0].count 
+        });
     } catch (error) {
         console.error('Stats Error:', error);
         res.status(500).json({ message: 'Failed to fetch stats.' });

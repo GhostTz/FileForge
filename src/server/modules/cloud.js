@@ -121,7 +121,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-// --- DOWNLOAD (Alte, einfache Logik) ---
+// --- DOWNLOAD (DIRECT FILE ACCESS) ---
 router.get('/download/:id', async (req, res) => {
     const owner = req.user.username;
     const itemId = req.params.id;
@@ -136,7 +136,7 @@ router.get('/download/:id', async (req, res) => {
 
         const [items] = await db.query('SELECT name, file_meta FROM cloud_items WHERE id = ? AND owner_username = ? AND type = "file"', [itemId, owner]);
         if (items.length === 0) {
-            return res.status(404).json({ message: 'File not found.' });
+            return res.status(404).json({ message: 'File not found in database.' });
         }
 
         const item = items[0];
@@ -148,51 +148,80 @@ router.get('/download/:id', async (req, res) => {
         }
         const bot = new TelegramBot(token, botOptions);
 
+        // Dateipfad von der API abrufen
         const fileInfo = await bot.getFile(meta.file_id);
-        
-        // URL Konstruktion (Ohne komplexe Pfad-Bereinigung)
-        let fileUrl;
+        const filePath = fileInfo.file_path; // Absoluter Pfad im Container (/var/lib/...)
+
+        console.log(`[Download] Telegram reported path: ${filePath}`);
+
         if (process.env.TELEGRAM_API_URL) {
-            fileUrl = `${process.env.TELEGRAM_API_URL}/file/bot${token}/${fileInfo.file_path}`;
-        } else {
-            fileUrl = `https://api.telegram.org/file/bot${token}/${fileInfo.file_path}`;
-        }
-
-        console.log(`[Download] Fetching from: ${fileUrl}`);
-
-        const requestModule = fileUrl.startsWith('https') ? https : http;
-
-        if (type === 'preview') {
-            const allowedExtensions = ['mp4', 'mp3', 'mov', 'txt', 'png', 'jpg', 'jpeg', 'ico', 'pdf', 'gif', 'webp', 'svg', 'webm', 'wav'];
-            const fileExt = path.extname(item.name).substring(1).toLowerCase();
-
-            if (!allowedExtensions.includes(fileExt)) return res.status(403).json({ message: 'Preview not allowed.' });
+            // LOKALER MODUS: Wir greifen direkt auf die Datei zu
             
-            const tempFilePath = path.join(TEMP_DIR, item.name);
-            const writer = fs.createWriteStream(tempFilePath);
-            requestModule.get(fileUrl, (response) => {
-                response.pipe(writer);
-                writer.on('finish', () => res.json({ tempPath: `temp/${item.name}` }));
-                writer.on('error', () => res.status(500).json({ message: 'Save error.' }));
-            }).on('error', () => res.status(500).json({ message: 'Download error.' }));
+            if (!fs.existsSync(filePath)) {
+                console.error(`[Download Error] File missing at ${filePath}. Check volumes!`);
+                return res.status(404).json({ 
+                    message: 'File not found on disk.', 
+                    detail: 'Please ensure docker volumes are mounted correctly.' 
+                });
+            }
 
-        } else if (type === 'download') {
-            res.setHeader('Content-Disposition', `attachment; filename="${item.name}"`);
-            res.setHeader('Content-Type', 'application/octet-stream');
+            if (type === 'preview') {
+                const allowedExtensions = ['mp4', 'mp3', 'mov', 'txt', 'png', 'jpg', 'jpeg', 'ico', 'pdf', 'gif', 'webp', 'svg', 'webm', 'wav'];
+                const fileExt = path.extname(item.name).substring(1).toLowerCase();
 
-            requestModule.get(fileUrl, (response) => {
-                response.pipe(res);
-            }).on('error', (err) => {
-                console.error('Streaming error:', err);
-                if (!res.headersSent) res.status(500).json({ message: 'Failed to stream file.' });
-            });
+                if (!allowedExtensions.includes(fileExt)) return res.status(403).json({ message: 'Preview not allowed.' });
+                
+                const tempFilePath = path.join(TEMP_DIR, item.name);
+                
+                fs.copyFile(filePath, tempFilePath, (err) => {
+                    if (err) {
+                        console.error('File copy error:', err);
+                        return res.status(500).json({ message: 'Error preparing preview.' });
+                    }
+                    res.json({ tempPath: `temp/${item.name}` });
+                });
+
+            } else if (type === 'download') {
+                res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(item.name)}"`);
+                res.setHeader('Content-Type', 'application/octet-stream');
+                
+                const stat = fs.statSync(filePath);
+                res.setHeader('Content-Length', stat.size);
+
+                const readStream = fs.createReadStream(filePath);
+                readStream.pipe(res);
+            }
+
         } else {
-            res.status(400).json({ message: 'Invalid download type.' });
+            // PUBLIC MODUS (Altes Verhalten für echte Telegram API)
+            const fileUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
+            const requestModule = https;
+
+            requestModule.get(fileUrl, (response) => {
+                if (response.statusCode !== 200) {
+                    return res.status(502).json({ message: 'Error fetching from Telegram Cloud.' });
+                }
+
+                if (type === 'preview') {
+                    const tempFilePath = path.join(TEMP_DIR, item.name);
+                    const writer = fs.createWriteStream(tempFilePath);
+                    response.pipe(writer);
+                    writer.on('finish', () => res.json({ tempPath: `temp/${item.name}` }));
+                    writer.on('error', () => res.status(500).json({ message: 'Save error.' }));
+                } else {
+                    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(item.name)}"`);
+                    res.setHeader('Content-Type', 'application/octet-stream');
+                    response.pipe(res);
+                }
+            }).on('error', (err) => {
+                console.error('Network error:', err);
+                res.status(500).json({ message: 'Failed to connect to Telegram.' });
+            });
         }
 
     } catch (error) {
         console.error('Download preparation error:', error.message);
-        res.status(500).json({ message: 'Failed to prepare file.' });
+        if (!res.headersSent) res.status(500).json({ message: 'Failed to prepare file download.', error: error.message });
     }
 });
 
@@ -452,22 +481,28 @@ router.post('/download/zip', async (req, res) => {
                 } else {
                     const meta = JSON.parse(item.file_meta);
                     const fileInfo = await bot.getFile(meta.file_id);
-                    
-                    let rawPath = fileInfo.file_path;
-                    let fileUrl;
-                    if (process.env.TELEGRAM_API_URL) {
-                        fileUrl = `${process.env.TELEGRAM_API_URL}/file/bot${token}/${rawPath}`;
-                    } else {
-                        fileUrl = `https://api.telegram.org/file/bot${token}/${rawPath}`;
-                    }
-                    const requestModule = fileUrl.startsWith('https') ? https : http;
+                    const filePath = fileInfo.file_path;
 
-                    await new Promise((resolve, reject) => {
-                        requestModule.get(fileUrl, (response) => {
-                            archive.append(response, { name: item.zipPath });
-                            resolve();
-                        }).on('error', () => resolve());
-                    });
+                    if (process.env.TELEGRAM_API_URL) {
+                        // LOCAL MODE - DIRECT FILE READ
+                        if (fs.existsSync(filePath)) {
+                            archive.append(fs.createReadStream(filePath), { name: item.zipPath });
+                        } else {
+                            console.warn(`File missing for ZIP: ${filePath}`);
+                            archive.append(`Error: File missing from local storage.`, { name: item.zipPath + '.error.txt' });
+                        }
+                    } else {
+                        // PUBLIC MODE - HTTP
+                        const fileUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
+                        await new Promise((resolve, reject) => {
+                            https.get(fileUrl, (response) => {
+                                if (response.statusCode === 200) {
+                                    archive.append(response, { name: item.zipPath });
+                                }
+                                resolve();
+                            }).on('error', () => resolve());
+                        });
+                    }
                 }
             } catch (err) { console.error(`Error zip item ${item.name}:`, err); }
         }

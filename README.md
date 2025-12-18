@@ -264,6 +264,32 @@ For users not familiar with CLI commands, here are the most common Docker comman
 | `504 Gateway Time-out` | Upload took too long, Nginx closed connection. | Increase `proxy_read_timeout` and `send_timeout` to `3600s`. |
 | `getaddrinfo EAI_AGAIN db` | DB container crashed or isn't ready. | Run `docker compose down -v` and restart. |
 
+### ❗ Critical: Shared Volumes (Local Server)
+
+If downloads or previews fail with a **404 error** or **"File not found"**, you are missing the **Shared Volume configuration**.
+
+Since Docker containers are isolated, the App cannot access files saved by the Telegram Server. You must mount the same host directory to the same path in **both** containers.
+
+**Required `docker-compose.yml` configuration:**
+
+```yaml
+services:
+  telegram-bot-api:
+    image: aiogram/telegram-bot-api:latest
+    environment:
+      - TELEGRAM_LOCAL=true
+    volumes:
+      - ./telegram-data:/var/lib/telegram-bot-api  # <--- REQUIRED HERE
+
+  app:
+    build: .
+    environment:
+      - TELEGRAM_API_URL=http://telegram-bot-api:8081
+    volumes:
+      - ./telegram-data:/var/lib/telegram-bot-api  # <--- REQUIRED HERE TOO (Exact same path!)
+```
+
+
 ---
 
 ## 📜 License

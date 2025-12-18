@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  telegram-bot-api:
+    image: aiogram/telegram-bot-api:latest
+    container_name: telegram-bot-api
+    environment:
+      - TELEGRAM_API_ID=${TELEGRAM_API_ID}
+      - TELEGRAM_API_HASH=${TELEGRAM_API_HASH}
+      - TELEGRAM_STAT=true
+      - TELEGRAM_LOCAL=true   # <--- DAS HIER IST WICHTIG!
+    volumes:
+      - ./telegram-data:/var/lib/telegram-bot-api
+    ports:
+      - "8082:8081"
+    restart: always
+
+  db:
+    image: mariadb:10.6
+    container_name: fileforge-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${password}
+      MYSQL_DATABASE: ${name}
+      MYSQL_USER: ${user}
+      MYSQL_PASSWORD: ${password}
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+
+  app:
+    build: .
+    container_name: fileforge-app
+    ports:
+      - "3010:3010"
+    environment:
+      - PORT=3010
+      - host=db
+      - user=${user}
+      - password=${password}
+      - name=${name}
+      - JWT_SECRET=${JWT_SECRET}
+      - TELEGRAM_API_URL=http://telegram-bot-api:8081
+    depends_on:
+      - db
+      - telegram-bot-api
+    volumes:
+      - ./temp:/usr/src/app/temp
+    restart: always
+
+volumes:
+  db_data:

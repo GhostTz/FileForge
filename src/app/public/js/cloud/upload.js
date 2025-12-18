@@ -1,8 +1,9 @@
 import { DOM } from './constants.js';
 import { state } from './state.js';
 
-// 50 MB Limit (Telegram Bot API restriction)
-const MAX_FILE_SIZE = 50 * 1024 * 1024; 
+// 2GB Limit (Local Telegram Server restriction)
+// 2000 MB * 1024 * 1024
+const MAX_FILE_SIZE = 2000 * 1024 * 1024; 
 
 function formatTime(seconds) {
     if (seconds < 60) return `${Math.round(seconds)}s remaining`;
@@ -174,12 +175,12 @@ async function handleFiles(files, showToast) {
                 window.NotificationManager.showNotification(
                     'error', 
                     'File too large', 
-                    `"${file.name}" exceeds the 50MB limit.`
+                    `"${file.name}" exceeds the 2GB limit.`
                 );
             });
         } else {
             // Fallback if notification system isn't ready
-            alert(`${invalidFiles.length} file(s) skipped because they exceed 50MB.`);
+            alert(`${invalidFiles.length} file(s) skipped because they exceed 2GB.`);
         }
     }
 

@@ -15,7 +15,7 @@
 
 /* Light Theme Overrides */
 body.light-theme {
-    --primary-color: #8A2BE2; /* Etwas dunkleres Lila für besseren Kontrast auf Weiß */
+    --primary-color: #8A2BE2;
     --primary-glow: rgba(138, 43, 226, 0.3);
     --background-main: #F4F6F8;
     --background-sidebar: rgba(255, 255, 255, 0.85);
@@ -58,8 +58,6 @@ body {
     transition: width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
     z-index: 100;
 }
-
-/* Rest of the CSS remains largely the same, utilizing variables */
 
 .logo {
     display: flex;
@@ -105,7 +103,7 @@ body {
 }
 
 .nav-links a.active {
-    color: white; /* Keep white text on active primary color background */
+    color: white;
     font-weight: 600;
 }
 
@@ -160,7 +158,20 @@ body {
     justify-content: center;
     font-weight: 600;
     flex-shrink: 0;
-    color: white; /* Ensure initial is readable in light mode */
+    color: white;
+}
+
+.profile-settings-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    transform: translateY(-1px);
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.profile-section>a:hover .profile-settings-icon {
+    opacity: 1;
+    transform: translateY(-1px) rotate(60deg);
 }
 
 .profile-menu {
@@ -168,7 +179,6 @@ body {
     opacity: 0;
     position: absolute;
     bottom: 85px;
-    /* Position for Desktop View */
     right: 0;
     width: 100%;
     background: var(--active-bg);
@@ -209,16 +219,18 @@ body {
     cursor: pointer;
 }
 
+/* WICHTIG: Padding auf 0 gesetzt für den Container */
 .main-container {
     flex-grow: 1;
     margin-left: 260px;
-    padding: 40px;
+    padding: 0; /* Padding entfernt für Full-Width Apps */
     transition: margin-left 0.3s ease;
 }
 
 #page-content {
     animation: fadeIn 0.5s ease-in-out;
     transition: opacity 0.3s ease-out;
+    height: 100%; /* Stellt sicher, dass Content volle Höhe nutzen kann */
 }
 
 #page-content.fade-out {
@@ -290,7 +302,6 @@ body {
     box-shadow: 0 0 20px var(--primary-glow);
 }
 
-
 .warning-icon {
     width: 60px;
     height: 60px;
@@ -323,7 +334,6 @@ body {
     top: 41.5px;
 }
 
-/* Danger Zone Options Styles */
 .danger-options {
     text-align: left;
     margin-bottom: 25px;
@@ -418,29 +428,48 @@ body {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes pulse-danger {
-    0% {
-        box-shadow: 0 0 0 0 var(--danger-glow);
-    }
-
-    70% {
-        box-shadow: 0 0 0 15px rgba(255, 92, 92, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 92, 92, 0);
-    }
+    0% { box-shadow: 0 0 0 0 var(--danger-glow); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 92, 92, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 92, 92, 0); }
 }
 
+/* Navbar Icon Animations */
+@keyframes nav-fly-cloud {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(2px, 2px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes nav-spin-convert {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes nav-bounce-download {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(5px); }
+}
+
+@keyframes nav-pulse-start {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.anim-fly-cloud { animation: nav-fly-cloud 1s ease-in-out; }
+.anim-spin-convert { animation: nav-spin-convert 0.8s ease-in-out; }
+.anim-bounce-download { animation: nav-bounce-download 0.6s ease-in-out; }
+.anim-pulse-start { animation: nav-pulse-start 0.4s ease-in-out; }
+
+/* Mobile View Styles */
 @media (max-width: 992px) {
     body {
         padding-bottom: 80px;
@@ -448,7 +477,7 @@ body {
 
     .main-container {
         margin-left: 0;
-        padding: 20px;
+        padding: 0; /* Padding auch auf Mobile entfernt */
     }
 
     .app-sidebar {
@@ -465,9 +494,15 @@ body {
         align-items: center;
         background: rgba(26, 22, 34, 0.7);
         z-index: 1100;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     }
 
-    /* Light Theme override for mobile sidebar */
+    .app-sidebar.nav-hidden {
+        transform: translateY(150%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
     body.light-theme .app-sidebar {
         background: rgba(255, 255, 255, 0.85);
     }
@@ -513,11 +548,11 @@ body {
     }
 
     .nav-links a.active {
-        color: var(--text-color); /* Light theme might need adjustment here, but text-color handles it mostly */
+        color: var(--text-color);
     }
 
     body.light-theme .nav-links a.active {
-        color: var(--primary-color); /* On mobile light theme, text color is better than white if no bg */
+        color: var(--primary-color);
     }
 
     .nav-links span {
@@ -529,10 +564,9 @@ body {
         width: 80px;
         border-radius: 16px;
     }
-    
-    /* Ensure indicator on mobile light theme is subtle or uses primary */
+
     body.light-theme #nav-active-indicator {
-        background-color: rgba(138, 43, 226, 0.15); /* Softer on light */
+        background-color: rgba(138, 43, 226, 0.15);
         box-shadow: none;
     }
 
@@ -555,7 +589,6 @@ body {
     #profile-menu {
         width: 220px;
         bottom: 85px;
-        /* Position above the mobile nav bar */
         right: 10px;
         left: auto;
     }

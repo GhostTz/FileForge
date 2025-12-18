@@ -1,4 +1,10 @@
+/* Padding direkt auf den Inhalt geben, da Container nun keines mehr hat */
+.main-header, .start-page-grid {
+    padding: 40px;
+}
+
 .main-header {
+    padding-bottom: 0; /* Header-Abstand nur oben und seitlich */
     margin-bottom: 30px;
 }
 
@@ -10,6 +16,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
+    padding-top: 0; /* Abstand oben kommt vom Header */
 }
 
 .stat-card-large, .stat-card-small {
@@ -152,7 +159,10 @@
 }
 
 @media (max-width: 768px) {
-    .start-page-grid { grid-template-columns: 1fr; }
+    .main-header, .start-page-grid { padding: 20px; }
+    .main-header { padding-bottom: 0; }
+    .start-page-grid { padding-top: 0; grid-template-columns: 1fr; }
+    
     .main-header h1 { font-size: 1.8rem; }
     .stat-value { font-size: 2rem; }
     .large-card-header { flex-direction: column; align-items: flex-start; gap: 10px; }

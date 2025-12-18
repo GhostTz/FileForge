@@ -1,24 +1,29 @@
 (() => {
-    // --- Elements ---
-    const form = document.getElementById('settings-form');
-    const saveBtn = document.getElementById('save-settings-btn');
-    const pfpPreview = document.getElementById('pfp-preview');
+    // --- State & Initial Data ---
+    let initialSettings = {};
     
-    // UI Modal Elements
-    const openUiBtn = document.getElementById('open-ui-modal-btn');
-    const uiModal = document.getElementById('ui-modal');
-    const doneUiBtn = document.getElementById('ui-modal-done-btn');
-    const themeRadios = document.querySelectorAll('input[name="theme-radio"]');
+    // --- DOM Elements ---
+    const sidebar = document.querySelector('.app-sidebar');
 
-    // Info Modal Elements
-    const infoModal = document.getElementById('info-modal');
-    const infoModalTitle = document.getElementById('info-modal-title');
-    const infoModalBody = document.getElementById('info-modal-body');
-    const infoOkBtn = document.getElementById('info-modal-ok-btn');
-    
-    // Generic Modal Close Buttons
-    const closeButtons = document.querySelectorAll('.close-modal-btn');
+    // Buttons to open drawers
+    const btnPersonal = document.getElementById('btn-open-personal');
+    const btnCloud = document.getElementById('btn-open-cloud');
+    const btnUi = document.getElementById('btn-open-ui');
 
+    // Drawers (Modals)
+    const modalPersonal = document.getElementById('modal-personal');
+    const modalCloud = document.getElementById('modal-cloud');
+    const modalUi = document.getElementById('modal-ui');
+
+    // Close Buttons
+    const closeButtons = document.querySelectorAll('.close-drawer-btn, .close-modal-btn');
+
+    // Save Buttons inside drawers
+    const savePersonalBtn = document.getElementById('save-personal-btn');
+    const saveCloudBtn = document.getElementById('save-cloud-btn');
+    const saveUiBtn = document.getElementById('save-ui-btn');
+
+    // Inputs
     const inputs = {
         fullName: document.getElementById('full-name'),
         email: document.getElementById('email'),
@@ -26,10 +31,20 @@
         telegramBotToken: document.getElementById('telegram-bot-token'),
         telegramChannelId: document.getElementById('telegram-channel-id')
     };
-    
-    let initialSettings = {};
 
-    // --- Content Data ---
+    // PFP
+    const pfpPreview = document.getElementById('pfp-preview');
+
+    // Theme Logic
+    const themeRadios = document.querySelectorAll('input[name="theme-radio"]');
+
+    // Info Modal
+    const infoModal = document.getElementById('info-modal');
+    const infoModalTitle = document.getElementById('info-modal-title');
+    const infoModalBody = document.getElementById('info-modal-body');
+    const infoOkBtn = document.getElementById('info-modal-ok-btn');
+
+    // --- Content Data (RESTORED ORIGINAL TEXT) ---
     const TUTORIALS = {
         'bot-token': {
             title: 'How to get a Bot Token',
@@ -71,6 +86,17 @@
 
     // --- Helper Functions ---
 
+    const openDrawer = (modal) => {
+        modal.classList.add('visible');
+        if (sidebar) sidebar.classList.add('nav-hidden');
+    };
+
+    const closeDrawer = (modal) => {
+        modal.classList.remove('visible');
+        if (sidebar) sidebar.classList.remove('nav-hidden');
+        loadSettings(false); 
+    };
+
     const applyTheme = (mode) => {
         if (mode === 'white') {
             document.body.classList.add('light-theme');
@@ -95,13 +121,44 @@
         };
     };
 
-    const saveSettings = async (specificData = null) => {
-        const dataToSend = specificData || collectData();
+    // --- Change Detection Logic ---
+    const checkForChanges = () => {
+        const personalChanged = 
+            inputs.fullName.value !== (initialSettings.fullName || '') ||
+            inputs.email.value !== (initialSettings.email || '') ||
+            inputs.age.value != (initialSettings.age || '');
+        
+        savePersonalBtn.disabled = !personalChanged;
 
+        const cloudChanged = 
+            inputs.telegramBotToken.value !== (initialSettings.telegramBotToken || '') ||
+            inputs.telegramChannelId.value !== (initialSettings.telegramChannelId || '');
+        
+        saveCloudBtn.disabled = !cloudChanged;
+
+        const currentTheme = getSelectedTheme();
+        const savedTheme = initialSettings.colormode || 'dark';
+        saveUiBtn.disabled = (currentTheme === savedTheme);
+    };
+
+    Object.values(inputs).forEach(input => {
+        input.addEventListener('input', checkForChanges);
+    });
+
+    themeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+            checkForChanges();
+        });
+    });
+
+    const saveSettings = async (btnElement) => {
+        const dataToSend = collectData();
+        const originalText = btnElement.textContent;
+        
         try {
-            const originalText = saveBtn.textContent;
-            saveBtn.textContent = 'Saving...';
-            saveBtn.disabled = true;
+            btnElement.textContent = 'Saving...';
+            btnElement.disabled = true;
 
             const response = await fetch('api/user/settings', {
                 method: 'POST',
@@ -111,59 +168,50 @@
 
             if (response.ok) {
                 initialSettings = await (await fetch('api/user/settings')).json();
-                saveBtn.textContent = 'Saved!';
+                
+                btnElement.textContent = 'Saved!';
                 setTimeout(() => {
-                    saveBtn.textContent = originalText;
-                    checkForChanges();
-                }, 1500);
+                    btnElement.textContent = originalText;
+                    checkForChanges(); 
+                }, 1000);
             } else {
-                console.error('Failed to save settings');
-                saveBtn.textContent = 'Error';
+                throw new Error('Save failed');
             }
         } catch (error) {
             console.error('Error saving settings:', error);
-            saveBtn.textContent = 'Error';
+            btnElement.textContent = 'Error';
+            setTimeout(() => {
+                btnElement.textContent = originalText;
+                checkForChanges();
+            }, 2000);
         }
-    };
-
-    const checkForChanges = () => {
-        let hasChanged = false;
-        for (const key in inputs) {
-            const val1 = initialSettings[key] || '';
-            const val2 = inputs[key].value || '';
-            if (val1 != val2) {
-                hasChanged = true;
-                break;
-            }
-        }
-        
-        saveBtn.disabled = !hasChanged;
-        saveBtn.classList.toggle('active', hasChanged);
     };
 
     // --- Initialization ---
 
-    const loadSettings = async () => {
+    const loadSettings = async (fetchFromServer = true) => {
         try {
-            const response = await fetch('api/user/settings');
-            if (response.ok) {
-                const settings = await response.json();
-                initialSettings = settings;
-
-                inputs.fullName.value = settings.fullName || '';
-                inputs.email.value = settings.email || '';
-                inputs.age.value = settings.age || '';
-                inputs.telegramBotToken.value = settings.telegramBotToken || '';
-                inputs.telegramChannelId.value = settings.telegramChannelId || '';
-
-                const currentTheme = settings.colormode || 'dark';
-                themeRadios.forEach(radio => {
-                    radio.checked = (radio.value === currentTheme);
-                });
-                
-                applyTheme(currentTheme);
-                checkForChanges();
+            if (fetchFromServer) {
+                const response = await fetch('api/user/settings');
+                if (response.ok) {
+                    initialSettings = await response.json();
+                }
             }
+
+            inputs.fullName.value = initialSettings.fullName || '';
+            inputs.email.value = initialSettings.email || '';
+            inputs.age.value = initialSettings.age || '';
+            inputs.telegramBotToken.value = initialSettings.telegramBotToken || '';
+            inputs.telegramChannelId.value = initialSettings.telegramChannelId || '';
+
+            const currentTheme = initialSettings.colormode || 'dark';
+            themeRadios.forEach(radio => {
+                radio.checked = (radio.value === currentTheme);
+            });
+            
+            applyTheme(currentTheme);
+            checkForChanges();
+
         } catch (error) {
             console.error('Failed to load settings:', error);
         }
@@ -171,29 +219,42 @@
 
     // --- Event Listeners ---
 
-    form.addEventListener('input', checkForChanges);
-    saveBtn.addEventListener('click', () => saveSettings());
-
-    // UI Modal
-    openUiBtn.addEventListener('click', () => {
-        const currentTheme = initialSettings.colormode || 'dark';
-        themeRadios.forEach(radio => radio.checked = (radio.value === currentTheme));
-        uiModal.classList.add('visible');
+    btnPersonal.addEventListener('click', () => openDrawer(modalPersonal));
+    btnCloud.addEventListener('click', () => openDrawer(modalCloud));
+    btnUi.addEventListener('click', () => {
+        loadSettings(false); 
+        openDrawer(modalUi);
     });
 
-    themeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            applyTheme(e.target.value);
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            const modal = document.getElementById(targetId);
+            if (modal) {
+                closeDrawer(modal);
+                if (targetId === 'modal-ui') {
+                    applyTheme(initialSettings.colormode || 'dark');
+                }
+            }
         });
     });
 
-    doneUiBtn.addEventListener('click', async () => {
-        const allData = collectData();
-        await saveSettings(allData);
-        uiModal.classList.remove('visible');
+    window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('slide-modal-overlay')) {
+            closeDrawer(e.target);
+            if (e.target.id === 'modal-ui') {
+                applyTheme(initialSettings.colormode || 'dark');
+            }
+        }
+        if (e.target.classList.contains('modal-overlay')) {
+            e.target.classList.remove('visible'); // For info modal
+        }
     });
 
-    // Info Icons Logic
+    savePersonalBtn.addEventListener('click', () => saveSettings(savePersonalBtn));
+    saveCloudBtn.addEventListener('click', () => saveSettings(saveCloudBtn));
+    saveUiBtn.addEventListener('click', () => saveSettings(saveUiBtn));
+
     document.querySelectorAll('.info-icon-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const type = btn.dataset.info;
@@ -208,31 +269,6 @@
 
     infoOkBtn.addEventListener('click', () => {
         infoModal.classList.remove('visible');
-    });
-
-    // Global Close Logic
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.dataset.target;
-            const modal = document.getElementById(targetId);
-            if (modal) {
-                modal.classList.remove('visible');
-                // Revert theme if UI modal closed without saving
-                if (targetId === 'ui-modal') {
-                    applyTheme(initialSettings.colormode || 'dark');
-                }
-            }
-        });
-    });
-
-    // Click outside to close
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal-overlay')) {
-            e.target.classList.remove('visible');
-            if (e.target.id === 'ui-modal') {
-                applyTheme(initialSettings.colormode || 'dark');
-            }
-        }
     });
 
     const mainProfileIcon = document.querySelector('.profile-section .profile-icon');

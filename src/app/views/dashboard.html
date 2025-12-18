@@ -35,7 +35,7 @@
             <div class="warning-icon"></div>
             <h3>Danger Zone</h3>
             <p>Please select an action. <br><strong>Warning: These actions are irreversible.</strong></p>
-            
+
             <div class="danger-options">
                 <label class="danger-option">
                     <input type="radio" name="danger-action" value="clear-db">
@@ -161,6 +161,31 @@
                 navLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
+
+                        // Icon Animation Logic
+                        const svgs = link.querySelectorAll('svg');
+                        const page = link.dataset.page;
+                        let animClass = '';
+
+                        if (page === 'cloud') animClass = 'anim-fly-cloud';
+                        else if (page === 'convert') animClass = 'anim-spin-convert';
+                        else if (page === 'download') animClass = 'anim-bounce-download';
+                        else if (page === 'start') animClass = 'anim-pulse-start';
+
+                        if (animClass) {
+                            svgs.forEach(svg => {
+                                svg.classList.remove(animClass);
+                                void svg.offsetWidth; // Force reflow
+                                svg.classList.add(animClass);
+
+                                // Clean up after animation
+                                svg.addEventListener('animationend', () => {
+                                    svg.classList.remove(animClass);
+                                }, { once: true });
+                            });
+                        }
+
+                        // Navigation Logic
                         const pageName = link.dataset.page;
                         if (pageName && !link.classList.contains('active')) {
                             loadPage(pageName);
@@ -210,7 +235,7 @@
                     });
                 });
 
-                dangerModal.addEventListener('click', (e) => { 
+                dangerModal.addEventListener('click', (e) => {
                     if (e.target === dangerModal) {
                         dangerModal.classList.remove('visible');
                         radioButtons.forEach(r => r.checked = false);
@@ -252,7 +277,7 @@
                             window.NotificationManager.showNotification('success', 'Database Cleared', 'All database entries have been removed.');
                             modal.classList.remove('visible');
                             if (document.querySelector('.nav-link[data-page="cloud"]').classList.contains('active')) {
-                                loadPage('cloud'); 
+                                loadPage('cloud');
                             }
                         } else throw new Error('Failed to clear DB');
 
@@ -282,7 +307,7 @@
                 try {
                     const response = await fetch('api/user/info');
                     const data = await response.json();
-                    
+
                     // APPLY THEME HERE
                     if (data.colormode === 'white') {
                         document.body.classList.add('light-theme');

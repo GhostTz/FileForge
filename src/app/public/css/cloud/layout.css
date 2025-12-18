@@ -1,8 +1,7 @@
 /* General Cloud Drive Styles */
 .cloud-drive-wrapper {
     display: flex;
-    height: calc(100vh - 80px);
-    /* Full viewport height minus dashboard padding */
+    height: 100vh; /* Volle Höhe */
     width: 100%;
     background-color: var(--background-main);
     color: var(--text-color);
@@ -146,8 +145,7 @@
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
     .cloud-drive-wrapper {
-        height: calc(100vh - 140px);
-        /* Adjust for smaller header if needed */
+        height: 100vh; /* Auch auf Mobile Volle Höhe */
         position: relative;
         overflow-x: hidden;
     }

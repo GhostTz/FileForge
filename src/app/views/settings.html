@@ -1,44 +1,89 @@
 <header class="main-header">
     <h1>Settings</h1>
 </header>
-<div class="settings-grid">
-    <div class="settings-card profile-picture-card">
-        <h3>Profile Picture</h3>
-        <div class="pfp-preview-wrapper">
-            <div id="pfp-preview" class="profile-icon-large">T</div>
-            <button class="upload-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                <span>Upload</span>
-            </button>
+
+<!-- Hauptmenü -->
+<div class="settings-menu-container">
+    <button class="settings-menu-item" id="btn-open-personal">
+        <div class="menu-text">
+            <h3>Personal Information</h3>
+            <p>Profile picture, Name, Email, Age</p>
         </div>
-        <button class="remove-pfp-btn">Remove Picture</button>
-    </div>
-    <div class="settings-card personal-info-card">
-        <h3>Personal Information</h3>
-        <form id="settings-form">
-            <div class="input-group">
-                <label for="full-name">Full Name</label>
-                <input type="text" id="full-name" placeholder="Your full name">
-            </div>
-            <div class="input-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="your@email.com">
-            </div>
-            <div class="input-group">
-                <label for="age">Age</label>
-                <input type="number" id="age" placeholder="Your age">
-            </div>
-            
-            <!-- UI Customization Button -->
-            <div class="input-group">
-                <label>Interface & Appearance</label>
-                <button type="button" id="open-ui-modal-btn" class="secondary-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-                    UI Customization
-                </button>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    <button class="settings-menu-item" id="btn-open-cloud">
+        <div class="menu-text">
+            <h3>Cloud Settings</h3>
+            <p>Telegram Bot Token & Channel ID</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    <button class="settings-menu-item" id="btn-open-ui">
+        <div class="menu-text">
+            <h3>Interface & Appearance</h3>
+            <p>Theme, Colors, Visual Preferences</p>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+</div>
+
+<!-- ========================================== -->
+<!-- SLIDE-IN MODALS (DRAWERS) -->
+<!-- ========================================== -->
+
+<!-- 1. Personal Information Modal -->
+<div id="modal-personal" class="slide-modal-overlay">
+    <div class="slide-drawer">
+        <div class="drawer-header">
+            <h2>Personal Information</h2>
+            <button class="close-drawer-btn" data-target="modal-personal">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <div class="settings-section">
+                <h3>Profile Picture</h3>
+                <div class="pfp-preview-wrapper">
+                    <div id="pfp-preview" class="profile-icon-large">T</div>
+                    <button class="upload-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    </button>
+                </div>
+                <button class="remove-pfp-btn">Remove Picture</button>
             </div>
 
-            <!-- Telegram Bot Token mit Info Icon -->
+            <div class="settings-section">
+                <h3>Details</h3>
+                <div class="input-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" placeholder="Your full name">
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" placeholder="Your age">
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button id="save-personal-btn" class="save-btn full-width" disabled>Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Cloud Settings Modal -->
+<div id="modal-cloud" class="slide-modal-overlay">
+    <div class="slide-drawer">
+        <div class="drawer-header">
+            <h2>Cloud Settings</h2>
+            <button class="close-drawer-btn" data-target="modal-cloud">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <p class="drawer-description">Configure your Telegram connection to enable cloud storage features.</p>
+            
             <div class="input-group">
                 <label for="telegram-bot-token">
                     Telegram Bot Token
@@ -49,7 +94,6 @@
                 <input type="text" id="telegram-bot-token" placeholder="Your Telegram bot token">
             </div>
 
-            <!-- Telegram Channel ID mit Info Icon -->
             <div class="input-group">
                 <label for="telegram-channel-id">
                     Telegram Channel ID
@@ -59,44 +103,45 @@
                 </label>
                 <input type="text" id="telegram-channel-id" placeholder="Your Telegram channel ID">
             </div>
-        </form>
+        </div>
+        <div class="drawer-footer">
+            <button id="save-cloud-btn" class="save-btn full-width" disabled>Save Settings</button>
+        </div>
     </div>
 </div>
-<div class="save-button-container">
-    <button id="save-settings-btn" class="save-btn" disabled>Save Changes</button>
-</div>
 
-<!-- UI Customization Modal -->
-<div id="ui-modal" class="modal-overlay">
-    <div class="modal ui-modal-content">
-        <div class="modal-header">
-            <h3>UI Customization</h3>
-            <button class="close-modal-btn" data-target="ui-modal">&times;</button>
+<!-- 3. Interface & Appearance Modal -->
+<div id="modal-ui" class="slide-modal-overlay">
+    <div class="slide-drawer">
+        <div class="drawer-header">
+            <h2>Interface</h2>
+            <button class="close-drawer-btn" data-target="modal-ui">&times;</button>
         </div>
-        <p>Customize the look and feel of FileForge. Keep in mind, these settings are saved online and will be applied across all your devices.</p>
-        
-        <div class="ui-section">
-            <h4>Theme</h4>
-            <div class="theme-selector">
-                <label class="theme-option">
-                    <input type="radio" name="theme-radio" value="dark">
-                    <div class="theme-card dark">
-                        <div class="theme-preview"></div>
-                        <span>Dark Mode</span>
-                    </div>
-                </label>
-                <label class="theme-option">
-                    <input type="radio" name="theme-radio" value="white">
-                    <div class="theme-card light">
-                        <div class="theme-preview"></div>
-                        <span>Light Mode</span>
-                    </div>
-                </label>
+        <div class="drawer-content">
+            <p class="drawer-description">Customize the look and feel of FileForge. These settings are saved to your account.</p>
+            
+            <div class="ui-section">
+                <h4>Theme Selection</h4>
+                <div class="theme-selector">
+                    <label class="theme-option">
+                        <input type="radio" name="theme-radio" value="dark">
+                        <div class="theme-card dark">
+                            <div class="theme-preview"></div>
+                            <span>Dark Mode</span>
+                        </div>
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="theme-radio" value="white">
+                        <div class="theme-card light">
+                            <div class="theme-preview"></div>
+                            <span>Light Mode</span>
+                        </div>
+                    </label>
+                </div>
             </div>
         </div>
-        
-        <div class="modal-actions">
-            <button id="ui-modal-done-btn" class="modal-ok-btn">Done</button>
+        <div class="drawer-footer">
+            <button id="save-ui-btn" class="save-btn full-width" disabled>Apply & Save</button>
         </div>
     </div>
 </div>

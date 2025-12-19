@@ -46,9 +46,10 @@ services:
       - telegram-bot-api
     volumes:
       - ./temp:/usr/src/app/temp
-      # WICHTIG: Damit die Node-App die Dateien lesen kann,
-      # muss sie denselben Pfad gemountet haben wie der Telegram-Server:
+      # Gemounteter Pfad für die Telegram-Daten
       - ./telegram-data:/var/lib/telegram-bot-api
+      # NEU: Zugriff auf den Docker-Socket des Hosts
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 
 volumes:

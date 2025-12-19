@@ -22,38 +22,55 @@ function showToast(message, type = 'default') {
     }, 4000);
 }
 
-function showProgressToast(message) {
-    const container = document.getElementById('cloud-toast-container');
-    if (!container) return null;
+// Zentrale Download-Logik mit UI-Lock & No-Bar Notification
+async function executeSecureDownload(itemId, itemName) {
+    if (state.isDownloading) return;
 
-    const toast = document.createElement('div');
-    toast.className = 'cloud-toast progress';
-    toast.innerHTML = `
-        <div class="progress-content">
-            <span class="progress-message">${message}</span>
-            <div class="progress-spinner"></div>
-        </div>
-    `;
-    container.appendChild(toast);
+    state.isDownloading = true;
+    updateUI(); 
 
-    return {
-        update: (newMessage) => {
-            const messageEl = toast.querySelector('.progress-message');
-            if (messageEl) messageEl.textContent = newMessage;
-        },
-        close: () => {
-            toast.remove();
+    let notifId = null;
+    if (window.NotificationManager) {
+        notifId = window.NotificationManager.showLoadingNotification('Downloading File', `Preparing ${itemName}...`);
+    }
+
+    try {
+        const response = await fetch(`api/cloud/download/${itemId}?type=download`);
+        
+        if (!response.ok) throw new Error('Download request failed');
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = itemName;
+        document.body.appendChild(a);
+        a.click();
+        
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        if (notifId) {
+            window.NotificationManager.closeNotification(notifId);
+            window.NotificationManager.showNotification('success', 'Download Started', `${itemName} has been downloaded.`);
         }
-    };
+
+    } catch (error) {
+        console.error("Secure download failed:", error);
+        if (notifId) window.NotificationManager.closeNotification(notifId);
+        showToast("Download failed.", "error");
+    } finally {
+        state.isDownloading = false;
+        updateUI(); 
+    }
 }
 
 async function refreshCurrentView() {
     try {
-        // WICHTIG: Wenn wir suchen, wollen wir den Refresh nicht unterbrechen,
-        // außer der Nutzer hat gerade manuell eine Aktion ausgeführt.
         if (state.isSearching) return;
 
-        console.log('[Cloud] Refreshing current view...');
+        console.log('[Cloud] Refreshing view...');
 
         if (state.currentView === 'myFiles') {
             state.items = await api.fetchItems(state.currentParentId);
@@ -115,16 +132,15 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function handleEmptyTrash() {
     state.isEmptyingTrash = true;
-    console.log('[Cloud] handleEmptyTrash called, isEmptyingTrash set to:', state.isEmptyingTrash);
     modals.openBulkDeleteModal(true);
 }
 
 
 function setupEventListeners() {
-    // SPA REFRESH LISTENER
-    // Dieser Listener fängt jetzt sowohl Rename- als auch Upload-Erfolge ab.
-    document.addEventListener('cloudRefreshRequired', () => {
-        refreshCurrentView();
+    // Custom Event Listeners
+    document.addEventListener('cloudRefreshRequired', refreshCurrentView);
+    document.addEventListener('cloudRequestDownload', (e) => {
+        executeSecureDownload(e.detail.itemId, e.detail.itemName);
     });
 
     // Main navigation
@@ -189,93 +205,76 @@ function setupEventListeners() {
     DOM.navLinks.favorites.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('favorites'); });
     DOM.navLinks.trash.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('trash'); });
 
-    // Toolbar and header actions
+    // Toolbar actions
     DOM.newBtn.addEventListener('click', modals.openCreateFolderModal);
     DOM.emptyTrashBtn.addEventListener('click', handleEmptyTrash);
     DOM.selectionDeleteBtn.addEventListener('click', () => modals.openBulkDeleteModal(state.currentView === 'trash'));
     DOM.selectionMoveBtn.addEventListener('click', modals.openMoveModal);
     DOM.selectionRestoreBtn.addEventListener('click', () => api.restoreItems(Array.from(state.selectedItems)).then(refreshCurrentView));
 
-    // Bulk Download
+    // NEU: Rename Event Handler für die Toolbar
+    if (DOM.selectionRenameBtn) {
+        DOM.selectionRenameBtn.addEventListener('click', () => {
+            const selectedIds = Array.from(state.selectedItems);
+            if (selectedIds.length !== 1) return;
+            const item = state.items.find(i => i.id == selectedIds[0]);
+            if (item) modals.openRenameModal(item.id, item.name, item.type);
+        });
+    }
+
+    // Bulk/Single Download Handler
     const selectionDownloadBtn = document.getElementById('selection-download-btn');
     if (selectionDownloadBtn) {
         selectionDownloadBtn.addEventListener('click', async () => {
             const selectedIds = Array.from(state.selectedItems);
-            if (selectedIds.length === 0) return;
+            if (selectedIds.length === 0 || state.isDownloading) return;
 
             if (selectedIds.length === 1) {
-                // Single file download (if not a folder)
                 const itemId = selectedIds[0];
                 const item = state.items.find(i => i.id == itemId);
-
-                // If it's a file, download directly. If it's a folder, fall through to bulk ZIP download.
                 if (item && item.type !== 'folder') {
-                    try {
-                        // Use streaming download URL directly
-                        const downloadUrl = `api/cloud/download/${itemId}?type=download`;
-                        const a = document.createElement('a');
-                        a.href = downloadUrl;
-                        a.download = item.name; // This might be redundant if Content-Disposition is set, but good fallback
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        clearSelection();
-                        updateUI();
-                        return; // Exit early for single file
-                    } catch (e) { console.error("Download failed", e); showToast("Download failed", "error"); return; }
+                    executeSecureDownload(itemId, item.name);
+                    clearSelection();
+                    return; 
                 }
             }
 
-            // Bulk ZIP download (or single folder)
             {
-                if (!window.NotificationManager) {
-                    console.error('NotificationManager not available');
-                    return;
-                }
-                const notifId = window.NotificationManager.showProgressNotification('Creating ZIP archive');
-                window.NotificationManager.updateProgress(notifId, 0, 100, 'Preparing files...');
-
+                if (!window.NotificationManager) return;
+                state.isDownloading = true;
+                updateUI();
+                const notifId = window.NotificationManager.showLoadingNotification('Creating ZIP archive', 'Compressing files...');
                 try {
-                    // Simulate progress or just wait for response (since it's a stream, we might not get granular progress easily without more complex backend)
-                    // For now, we'll just show indeterminate or "Processing"
-
                     const blob = await api.downloadZip(selectedIds);
-
-                    window.NotificationManager.updateProgress(notifId, 100, 100, 'Download starting...');
-
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `files_archive_${Date.now()}.zip`;
+                    a.download = `archive_${Date.now()}.zip`;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
-
                     window.NotificationManager.closeNotification(notifId);
-                    window.NotificationManager.showNotification('success', 'Download Started', 'Your ZIP archive is ready.');
-
                 } catch (error) {
-                    console.error("Bulk download failed", error);
-                    window.NotificationManager.closeNotification(notifId);
+                    if(notifId) window.NotificationManager.closeNotification(notifId);
                     window.NotificationManager.showNotification('error', 'Download Failed', 'Could not create ZIP archive.');
+                } finally {
+                    state.isDownloading = false;
+                    updateUI();
                 }
             }
             clearSelection();
-            updateUI();
         });
     }
 
-    // Select All Checkbox
+    // Select All
     if (DOM.selectAllCheckbox) {
         DOM.selectAllCheckbox.addEventListener('click', () => {
             const isChecked = DOM.selectAllCheckbox.classList.contains('checked');
             if (isChecked) {
-                // Deselect all
                 clearSelection();
                 DOM.selectAllCheckbox.classList.remove('checked');
             } else {
-                // Select all
                 state.items.forEach(item => state.selectedItems.add(item.id.toString()));
                 DOM.selectAllCheckbox.classList.add('checked');
             }
@@ -283,7 +282,7 @@ function setupEventListeners() {
         });
     }
 
-    // Modal Handlers (default confirm actions)
+    // Modal Confirmation Handlers
     DOM.confirmCreateFolderBtn.onclick = async () => {
         const folderName = DOM.newFolderNameInput.value.trim();
         if (folderName) {
@@ -293,52 +292,24 @@ function setupEventListeners() {
         }
     };
 
-    console.log('[Cloud] Setting up delete button handler...');
-    console.log('[Cloud] confirmDeleteBtn element:', DOM.confirmDeleteBtn);
-
     DOM.confirmDeleteBtn.onclick = async () => {
-        console.log('[Cloud] Delete button clicked!');
-        console.log('[Cloud] isEmptyingTrash:', state.isEmptyingTrash);
-        console.log('[Cloud] currentView:', state.currentView);
-        console.log('[Cloud] selectedItems:', state.selectedItems);
-
         if (state.isEmptyingTrash) {
             modals.closeDeleteModal();
-            const itemsToDelete = [...state.items]; // Get all items currently in trash view
+            const itemsToDelete = [...state.items]; 
             const total = itemsToDelete.length;
-            if (total === 0) {
-                state.isEmptyingTrash = false;
-                return;
-            }
+            if (total === 0) { state.isEmptyingTrash = false; return; }
+            if (!window.NotificationManager) { state.isEmptyingTrash = false; return; }
 
-            // Check if NotificationManager is available
-            if (!window.NotificationManager) {
-                console.error('NotificationManager is not available!');
-                showToast('Error: Notification system not loaded', 'error');
-                state.isEmptyingTrash = false;
-                return;
-            }
-
-            // Show non-blocking progress notification
-            console.log('Starting trash deletion, showing notification...');
             const notifId = window.NotificationManager.showProgressNotification('Emptying Trash');
-            console.log('Notification ID:', notifId);
             let deletedCount = 0;
-
             for (const item of itemsToDelete) {
                 try {
                     await api.permanentlyDeleteItem(item.id);
                     deletedCount++;
-                    console.log(`Deleted ${deletedCount}/${total}`);
                     window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
-                    // Reduced delay for database-only deletion
                     await sleep(100); 
-                } catch (error) {
-                    console.error(`Failed to delete item ${item.id}:`, error);
-                    showToast(`Error deleting ${item.name}.`, 'error');
-                }
+                } catch (error) { console.error(`Delete item ${item.id} failed:`, error); }
             }
-
             window.NotificationManager.closeNotification(notifId);
             window.NotificationManager.showNotification('success', 'Trash Emptied', `Successfully deleted ${deletedCount} items.`);
             state.isEmptyingTrash = false;
@@ -350,60 +321,29 @@ function setupEventListeners() {
         if (state.selectedItems.size > 0) {
             const ids = Array.from(state.selectedItems);
             if (isPermanent) {
-                // Bulk permanent delete with progress notification
                 modals.closeDeleteModal();
-
-                if (!window.NotificationManager) {
-                    console.error('NotificationManager not available');
-                    for (const id of ids) await api.permanentlyDeleteItem(id);
-                } else {
-                    const notifId = window.NotificationManager.showProgressNotification('Deleting Items');
-                    let deletedCount = 0;
-                    const total = ids.length;
-
-                    for (const id of ids) {
-                        try {
-                            await api.permanentlyDeleteItem(id);
-                            deletedCount++;
-                            window.NotificationManager.updateProgress(notifId, deletedCount, total, `Deleting ${deletedCount} of ${total} items...`);
-                            // Reduced delay for database-only deletion
-                            await sleep(100); 
-                        } catch (error) {
-                            console.error(`Failed to delete item ${id}:`, error);
-                        }
-                    }
-
-                    window.NotificationManager.closeNotification(notifId);
-                    window.NotificationManager.showNotification('success', 'Items Deleted', `Successfully deleted ${deletedCount} items.`);
+                const notifId = window.NotificationManager.showProgressNotification('Deleting Items');
+                let deletedCount = 0;
+                for (const id of ids) {
+                    try {
+                        await api.permanentlyDeleteItem(id);
+                        deletedCount++;
+                        window.NotificationManager.updateProgress(notifId, deletedCount, ids.length, `Deleting ${deletedCount} of ${ids.length} items...`);
+                        await sleep(100); 
+                    } catch (error) {}
                 }
+                window.NotificationManager.closeNotification(notifId);
             } else {
                 await api.moveItemsToTrash(ids);
             }
         } else if (state.itemToDelete) {
             if (isPermanent) {
                 modals.closeDeleteModal();
-
-                // Single item permanent delete with progress notification
-                if (!window.NotificationManager) {
-                    console.error('NotificationManager not available');
+                const progressToast = window.NotificationManager.showProgressNotification('Deleting Item');
+                try {
                     await api.permanentlyDeleteItem(state.itemToDelete.id);
-                    showToast('Item permanently deleted.', 'success');
-                } else {
-                    const progressToast = window.NotificationManager.showProgressNotification('Deleting Item');
-                    window.NotificationManager.updateProgress(progressToast, 0, 1, `Deleting ${state.itemToDelete.name}...`);
-
-                    try {
-                        await api.permanentlyDeleteItem(state.itemToDelete.id);
-                        window.NotificationManager.updateProgress(progressToast, 1, 1, 'Deletion complete');
-                        await sleep(100);
-                        window.NotificationManager.closeNotification(progressToast);
-                        window.NotificationManager.showNotification('success', 'Item Deleted', `Successfully deleted ${state.itemToDelete.name}.`);
-                    } catch (error) {
-                        window.NotificationManager.closeNotification(progressToast);
-                        window.NotificationManager.showNotification('error', 'Delete Failed', 'Could not delete item.');
-                        console.error('Delete error:', error);
-                    }
-                }
+                    window.NotificationManager.closeNotification(progressToast);
+                } catch (error) { window.NotificationManager.closeNotification(progressToast); }
                 await refreshCurrentView();
                 return;
             } else {
@@ -414,6 +354,7 @@ function setupEventListeners() {
         await refreshCurrentView();
         modals.closeDeleteModal();
     };
+
     DOM.confirmMoveBtn.onclick = async () => {
         if (state.destinationFolderId !== null && state.selectedItems.size > 0) {
             await api.moveItems(Array.from(state.selectedItems), state.destinationFolderId);
@@ -423,18 +364,16 @@ function setupEventListeners() {
         }
     };
 
-    // Generic modal close buttons
+    // Close logic
     [DOM.cancelCreateFolderBtn, DOM.createFolderModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeCreateFolderModal() }));
     [DOM.cancelDeleteBtn, DOM.confirmDeleteModal].forEach(el => el.addEventListener('click', (e) => {
-        if (e.target === el) {
-            state.isEmptyingTrash = false;
-            modals.closeDeleteModal();
-        }
+        if (e.target === el) { state.isEmptyingTrash = false; modals.closeDeleteModal(); }
     }));
     [DOM.cancelMoveBtn, DOM.moveItemModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeMoveModal() }));
     [DOM.closePreviewBtn, DOM.previewModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeFilePreview() }));
+    [DOM.cancelRenameItemBtn, DOM.renameItemModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeRenameModal() }));
 
-    // Move modal folder tree selection
+    // Move modal tree
     DOM.moveFolderTreeContainer.addEventListener('click', (e) => {
         const target = e.target.closest('.folder-tree-item');
         if (target) {
@@ -445,7 +384,6 @@ function setupEventListeners() {
         }
     });
 
-    // Mobile Sidebar Toggle
     const toggleSidebar = (show) => {
         if (show) {
             DOM.sidebar.classList.add('sidebar-open');
@@ -456,36 +394,14 @@ function setupEventListeners() {
         }
     };
 
-    if (DOM.mobileMenuBtn) {
-        DOM.mobileMenuBtn.addEventListener('click', () => toggleSidebar(true));
-    }
+    if (DOM.mobileMenuBtn) DOM.mobileMenuBtn.addEventListener('click', () => toggleSidebar(true));
+    if (DOM.sidebarOverlay) DOM.sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
 
-    if (DOM.sidebarOverlay) {
-        DOM.sidebarOverlay.addEventListener('click', () => toggleSidebar(false));
-    }
-
-    // Close sidebar when navigating on mobile
     Object.values(DOM.navLinks).forEach(link => {
         link.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                toggleSidebar(false);
-            }
+            if (window.innerWidth <= 768) toggleSidebar(false);
         });
     });
-}
-
-async function checkTelegramSettings() {
-    try {
-        const settings = await api.fetchSettings();
-        if (!settings.telegramBotToken || !settings.telegramChannelId) {
-            const warningContainer = document.getElementById('telegram-warning-container');
-            if (warningContainer) {
-                warningContainer.classList.remove('hidden');
-            }
-        }
-    } catch (error) {
-        console.error("Failed to check Telegram settings:", error);
-    }
 }
 
 function initialize() {
@@ -493,7 +409,11 @@ function initialize() {
     initializeUpload(showToast);
     initializeMarqueeSelection();
     setupSidebarNav('myFiles');
-    checkTelegramSettings();
+    api.fetchSettings().then(settings => {
+        if (!settings.telegramBotToken || !settings.telegramChannelId) {
+            document.getElementById('telegram-warning-container')?.classList.remove('hidden');
+        }
+    });
 }
 
 initialize();

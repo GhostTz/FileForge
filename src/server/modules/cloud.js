@@ -76,7 +76,6 @@ router.post('/upload', upload.single('file'), async (req, res) => {
         }
         const { telegramBotToken, telegramChannelId } = settings[0];
 
-        // Bot Konfiguration
         const botOptions = {};
         if (process.env.TELEGRAM_API_URL) {
             botOptions.baseApiUrl = process.env.TELEGRAM_API_URL;
@@ -89,7 +88,6 @@ router.post('/upload', upload.single('file'), async (req, res) => {
             contentType: file.mimetype
         });
 
-        // Temp Datei löschen
         if (file.path && fs.existsSync(file.path)) fs.unlinkSync(file.path);
 
         const fileSlot = sentMessage.document || sentMessage.audio || sentMessage.video || sentMessage.voice;
@@ -134,12 +132,17 @@ router.get('/download/:id', async (req, res) => {
         }
         const token = settings[0].telegramBotToken;
 
-        const [items] = await db.query('SELECT name, file_meta FROM cloud_items WHERE id = ? AND owner_username = ? AND type = "file"', [itemId, owner]);
+        const [items] = await db.query('SELECT name, file_meta FROM cloud_items WHERE id = ? AND owner_username = ?', [itemId, owner]);
         if (items.length === 0) {
-            return res.status(404).json({ message: 'File not found in database.' });
+            return res.status(404).json({ message: 'Item not found in database.' });
         }
 
         const item = items[0];
+        // Folders have no file_meta
+        if (item.type === 'folder' && type === 'preview') {
+            return res.status(400).json({ message: 'Folders cannot be previewed.' });
+        }
+
         const meta = JSON.parse(item.file_meta);
         
         const botOptions = {};
@@ -148,80 +151,65 @@ router.get('/download/:id', async (req, res) => {
         }
         const bot = new TelegramBot(token, botOptions);
 
-        // Dateipfad von der API abrufen
         const fileInfo = await bot.getFile(meta.file_id);
-        const filePath = fileInfo.file_path; // Absoluter Pfad im Container (/var/lib/...)
-
-        console.log(`[Download] Telegram reported path: ${filePath}`);
+        const filePath = fileInfo.file_path; 
 
         if (process.env.TELEGRAM_API_URL) {
-            // LOKALER MODUS: Wir greifen direkt auf die Datei zu
-            
             if (!fs.existsSync(filePath)) {
-                console.error(`[Download Error] File missing at ${filePath}. Check volumes!`);
-                return res.status(404).json({ 
-                    message: 'File not found on disk.', 
-                    detail: 'Please ensure docker volumes are mounted correctly.' 
-                });
+                return res.status(404).json({ message: 'File not found on disk.' });
             }
 
             if (type === 'preview') {
-                const allowedExtensions = ['mp4', 'mp3', 'mov', 'txt', 'png', 'jpg', 'jpeg', 'ico', 'pdf', 'gif', 'webp', 'svg', 'webm', 'wav'];
-                const fileExt = path.extname(item.name).substring(1).toLowerCase();
-
-                if (!allowedExtensions.includes(fileExt)) return res.status(403).json({ message: 'Preview not allowed.' });
-                
                 const tempFilePath = path.join(TEMP_DIR, item.name);
-                
                 fs.copyFile(filePath, tempFilePath, (err) => {
-                    if (err) {
-                        console.error('File copy error:', err);
-                        return res.status(500).json({ message: 'Error preparing preview.' });
-                    }
+                    if (err) return res.status(500).json({ message: 'Error preparing preview.' });
                     res.json({ tempPath: `temp/${item.name}` });
                 });
-
             } else if (type === 'download') {
                 res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(item.name)}"`);
                 res.setHeader('Content-Type', 'application/octet-stream');
-                
-                const stat = fs.statSync(filePath);
-                res.setHeader('Content-Length', stat.size);
-
-                const readStream = fs.createReadStream(filePath);
-                readStream.pipe(res);
+                fs.createReadStream(filePath).pipe(res);
             }
-
         } else {
-            // PUBLIC MODUS (Altes Verhalten für echte Telegram API)
             const fileUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
-            const requestModule = https;
-
-            requestModule.get(fileUrl, (response) => {
-                if (response.statusCode !== 200) {
-                    return res.status(502).json({ message: 'Error fetching from Telegram Cloud.' });
-                }
-
-                if (type === 'preview') {
-                    const tempFilePath = path.join(TEMP_DIR, item.name);
-                    const writer = fs.createWriteStream(tempFilePath);
+            if (type === 'preview') {
+                const tempFilePath = path.join(TEMP_DIR, item.name);
+                const writer = fs.createWriteStream(tempFilePath);
+                https.get(fileUrl, (response) => {
                     response.pipe(writer);
                     writer.on('finish', () => res.json({ tempPath: `temp/${item.name}` }));
-                    writer.on('error', () => res.status(500).json({ message: 'Save error.' }));
-                } else {
-                    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(item.name)}"`);
-                    res.setHeader('Content-Type', 'application/octet-stream');
-                    response.pipe(res);
-                }
-            }).on('error', (err) => {
-                console.error('Network error:', err);
-                res.status(500).json({ message: 'Failed to connect to Telegram.' });
-            });
+                });
+            } else {
+                res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(item.name)}"`);
+                https.get(fileUrl, (response) => response.pipe(res));
+            }
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to prepare download.' });
+    }
+});
+
+// --- RENAME ITEM ---
+router.patch('/item/:id/rename', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const itemId = req.params.id;
+        const { newName } = req.body;
+
+        if (!newName) return res.status(400).json({ message: 'New name is required.' });
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET name = ? WHERE id = ? AND owner_username = ?',
+            [newName, itemId, owner]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Item not found or unauthorized.' });
         }
 
+        res.status(200).json({ message: 'Item renamed successfully.' });
     } catch (error) {
-        console.error('Download preparation error:', error.message);
-        if (!res.headersSent) res.status(500).json({ message: 'Failed to prepare file download.', error: error.message });
+        res.status(500).json({ message: 'Error renaming item.' });
     }
 });
 
@@ -482,59 +470,23 @@ router.post('/download/zip', async (req, res) => {
                     const meta = JSON.parse(item.file_meta);
                     const fileInfo = await bot.getFile(meta.file_id);
                     const filePath = fileInfo.file_path;
-
-                    if (process.env.TELEGRAM_API_URL) {
-                        // LOCAL MODE - DIRECT FILE READ
-                        if (fs.existsSync(filePath)) {
-                            archive.append(fs.createReadStream(filePath), { name: item.zipPath });
-                        } else {
-                            console.warn(`File missing for ZIP: ${filePath}`);
-                            archive.append(`Error: File missing from local storage.`, { name: item.zipPath + '.error.txt' });
-                        }
+                    if (process.env.TELEGRAM_API_URL && fs.existsSync(filePath)) {
+                        archive.append(fs.createReadStream(filePath), { name: item.zipPath });
                     } else {
-                        // PUBLIC MODE - HTTP
                         const fileUrl = `https://api.telegram.org/file/bot${token}/${filePath}`;
-                        await new Promise((resolve, reject) => {
+                        await new Promise((resolve) => {
                             https.get(fileUrl, (response) => {
-                                if (response.statusCode === 200) {
-                                    archive.append(response, { name: item.zipPath });
-                                }
+                                if (response.statusCode === 200) archive.append(response, { name: item.zipPath });
                                 resolve();
                             }).on('error', () => resolve());
                         });
                     }
                 }
-            } catch (err) { console.error(`Error zip item ${item.name}:`, err); }
+            } catch (err) { console.error(`ZIP error: ${err.message}`); }
         }
         await archive.finalize();
-
     } catch (error) {
         if (!res.headersSent) res.status(500).json({ message: 'Failed to create zip.' });
-    }
-});
-
-// --- RENAME ITEM (NEU) ---
-router.patch('/item/:id/rename', async (req, res) => {
-    try {
-        const owner = req.user.username;
-        const itemId = req.params.id;
-        const { newName } = req.body;
-
-        if (!newName) return res.status(400).json({ message: 'New name is required.' });
-
-        const [result] = await db.query(
-            'UPDATE cloud_items SET name = ? WHERE id = ? AND owner_username = ?',
-            [newName, itemId, owner]
-        );
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: 'Item not found or unauthorized.' });
-        }
-
-        res.status(200).json({ message: 'Item renamed successfully.' });
-    } catch (error) {
-        console.error('Rename Error:', error);
-        res.status(500).json({ message: 'Error renaming item.' });
     }
 });
 

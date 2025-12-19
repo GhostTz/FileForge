@@ -11,6 +11,61 @@ export const openCreateFolderModal = () => {
 };
 export const closeCreateFolderModal = () => DOM.createFolderModal.classList.add('hidden');
 
+// --- Rename Modal ---
+let renameState = {
+    itemId: null,
+    extension: ''
+};
+
+export const openRenameModal = (itemId, fullName) => {
+    renameState.itemId = itemId;
+    
+    // Logik: Dateiendung extrahieren
+    const lastDotIndex = fullName.lastIndexOf('.');
+    let baseName = fullName;
+    renameState.extension = '';
+
+    if (lastDotIndex !== -1 && lastDotIndex > 0) {
+        baseName = fullName.substring(0, lastDotIndex);
+        renameState.extension = fullName.substring(lastDotIndex); // z.B. ".mp4"
+    }
+
+    DOM.renameItemInput.value = baseName;
+    DOM.renameItemModal.classList.remove('hidden');
+    DOM.renameItemInput.focus();
+};
+
+export const closeRenameModal = () => {
+    DOM.renameItemModal.classList.add('hidden');
+    renameState = { itemId: null, extension: '' };
+};
+
+// Confirm Rename Handler
+if (DOM.confirmRenameItemBtn) {
+    DOM.confirmRenameItemBtn.onclick = async () => {
+        const newBaseName = DOM.renameItemInput.value.trim();
+        if (newBaseName && renameState.itemId) {
+            const finalName = newBaseName + renameState.extension;
+            try {
+                await api.renameItem(renameState.itemId, finalName);
+                closeRenameModal();
+                closeFilePreview(); 
+                
+                // SPA Refresh via Event
+                document.dispatchEvent(new CustomEvent('cloudRefreshRequired'));
+                
+            } catch (error) {
+                console.error("Rename failed:", error);
+            }
+        }
+    };
+}
+
+if (DOM.cancelRenameItemBtn) {
+    DOM.cancelRenameItemBtn.onclick = closeRenameModal;
+}
+
+
 // --- Delete Modal ---
 export const openDeleteModal = (itemElement, isPermanent = false) => {
     state.itemToDelete = { id: itemElement.dataset.id, name: itemElement.dataset.name };
@@ -59,6 +114,10 @@ let currentAudio = null;
 let currentVideo = null;
 
 export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
+    // Navbar verstecken (Mobile Fix)
+    const sidebar = document.querySelector('.app-sidebar');
+    if (sidebar) sidebar.classList.add('nav-hidden');
+
     // Stop any currently playing audio or video before loading new preview
     if (currentAudio) {
         currentAudio.pause();
@@ -78,6 +137,13 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
     const prevBtn = document.getElementById('preview-prev-btn');
     const nextBtn = document.getElementById('preview-next-btn');
     const downloadBtn = document.getElementById('preview-download-action-btn');
+    const renameBtn = DOM.previewRenameBtn;
+
+    // Rename Button Setup
+    if (renameBtn) {
+        renameBtn.innerHTML = ICONS.edit;
+        renameBtn.onclick = () => openRenameModal(itemId, itemName);
+    }
 
     if (downloadBtn) {
         downloadBtn.onclick = async () => {
@@ -390,7 +456,7 @@ export const openFilePreview = async (itemId, itemName, fileSize = 0) => {
             DOM.previewContainer.innerHTML = `<pre style="background: #1e1e1e; padding: 15px; border-radius: 8px; overflow: auto; max-height: 70vh; color: #d4d4d4;">${textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
         } else {
             DOM.previewContainer.innerHTML = `<div class="preview-no-preview">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <h3>No preview available for this file type.</h3>
                 <p><a href="${tempPath}" download="${itemName}" class="cloud-modal-btn primary" style="text-decoration: none; display: inline-block; margin-top: 10px;">Download File</a></p>
             </div>`;
@@ -444,6 +510,10 @@ const navigatePreview = (direction) => {
 
 export const closeFilePreview = () => {
     DOM.previewModal.classList.add('hidden');
+
+    // Navbar wieder anzeigen (Mobile Fix)
+    const sidebar = document.querySelector('.app-sidebar');
+    if (sidebar) sidebar.classList.remove('nav-hidden');
 
     if (currentAudio) {
         currentAudio.pause();

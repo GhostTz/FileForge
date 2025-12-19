@@ -513,4 +513,29 @@ router.post('/download/zip', async (req, res) => {
     }
 });
 
+// --- RENAME ITEM (NEU) ---
+router.patch('/item/:id/rename', async (req, res) => {
+    try {
+        const owner = req.user.username;
+        const itemId = req.params.id;
+        const { newName } = req.body;
+
+        if (!newName) return res.status(400).json({ message: 'New name is required.' });
+
+        const [result] = await db.query(
+            'UPDATE cloud_items SET name = ? WHERE id = ? AND owner_username = ?',
+            [newName, itemId, owner]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Item not found or unauthorized.' });
+        }
+
+        res.status(200).json({ message: 'Item renamed successfully.' });
+    } catch (error) {
+        console.error('Rename Error:', error);
+        res.status(500).json({ message: 'Error renaming item.' });
+    }
+});
+
 module.exports = router;

@@ -115,6 +115,11 @@ async function processQueue(showToast) {
                 completed++;
                 totalUploadedBytes += file.size; // Add completed file size to total
 
+                // LIVE REFRESH TRIGGER: 
+                // Wir senden das Event nach jedem erfolgreichen File-Upload, 
+                // damit die Dateien "nacheinander" im Explorer auftauchen.
+                document.dispatchEvent(new CustomEvent('cloudRefreshRequired'));
+
             } catch (error) {
                 failed++;
                 console.error(`Failed to upload ${file.name}:`, error);

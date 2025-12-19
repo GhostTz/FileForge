@@ -29,9 +29,13 @@ export const DOM = {
     get createFolderModal() { return document.getElementById('create-folder-modal'); },
     get confirmDeleteModal() { return document.getElementById('confirm-delete-modal'); },
     get moveItemModal() { return document.getElementById('move-item-modal'); },
+    get renameItemModal() { return document.getElementById('rename-item-modal'); },
     get newFolderNameInput() { return document.getElementById('new-folder-name-input'); },
+    get renameItemInput() { return document.getElementById('rename-item-input'); },
     get confirmCreateFolderBtn() { return document.getElementById('confirm-create-folder'); },
     get cancelCreateFolderBtn() { return document.getElementById('cancel-create-folder'); },
+    get confirmRenameItemBtn() { return document.getElementById('confirm-rename-item'); },
+    get cancelRenameItemBtn() { return document.getElementById('cancel-rename-item'); },
     get confirmDeleteBtn() { return document.getElementById('confirm-delete'); },
     get cancelDeleteBtn() { return document.getElementById('cancel-delete'); },
     get deleteModalText() { return document.getElementById('delete-modal-text'); },
@@ -42,6 +46,7 @@ export const DOM = {
     get previewContainer() { return document.getElementById('preview-container'); },
     get previewFileName() { return document.getElementById('preview-file-name'); },
     get closePreviewBtn() { return document.getElementById('close-preview-btn'); },
+    get previewRenameBtn() { return document.getElementById('preview-rename-action-btn'); },
     get navLinks() {
         return {
             myFiles: document.getElementById('nav-my-files'),
@@ -60,5 +65,6 @@ export const ICONS = {
     favorite: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
     delete: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
     check: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"></path></svg>`,
-    restore: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`
+    restore: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>`,
+    edit: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`
 };

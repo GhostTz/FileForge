@@ -210,6 +210,18 @@
         </div>
     </div>
 
+    <!-- Rename Item Modal (NEU) -->
+    <div id="rename-item-modal" class="cloud-modal-overlay hidden">
+        <div class="cloud-modal-content">
+            <h3>Rename Item</h3>
+            <input type="text" id="rename-item-input" placeholder="New name" autocomplete="off">
+            <div class="cloud-modal-actions">
+                <button id="cancel-rename-item" class="cloud-modal-btn">Cancel</button>
+                <button id="confirm-rename-item" class="cloud-modal-btn primary">Rename</button>
+            </div>
+        </div>
+    </div>
+
     <div id="confirm-delete-modal" class="cloud-modal-overlay hidden">
         <div class="cloud-modal-content">
             <h3>Confirm Deletion</h3>
@@ -238,6 +250,8 @@
             <div class="preview-header">
                 <h3 id="preview-file-name"></h3>
                 <div class="preview-header-actions">
+                    <!-- Rename Button Hinzugefügt -->
+                    <button id="preview-rename-action-btn" class="header-icon-btn" title="Rename"></button>
                     <button id="preview-download-action-btn" class="header-icon-btn" title="Download"><svg
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -49,9 +49,11 @@ function showProgressToast(message) {
 
 async function refreshCurrentView() {
     try {
-        state.isSearching = false;
-        state.currentSearchTerm = '';
-        DOM.searchInput.value = ''; // Clear search input on refresh
+        // WICHTIG: Wenn wir suchen, wollen wir den Refresh nicht unterbrechen,
+        // außer der Nutzer hat gerade manuell eine Aktion ausgeführt.
+        if (state.isSearching) return;
+
+        console.log('[Cloud] Refreshing current view...');
 
         if (state.currentView === 'myFiles') {
             state.items = await api.fetchItems(state.currentParentId);
@@ -102,6 +104,8 @@ function handleSearch(event) {
                 showToast("Search failed to execute.", "error");
             }
         } else if (state.isSearching && searchTerm.length < 2) {
+            state.isSearching = false;
+            state.currentSearchTerm = '';
             refreshCurrentView();
         }
     }, 300);
@@ -117,6 +121,12 @@ async function handleEmptyTrash() {
 
 
 function setupEventListeners() {
+    // SPA REFRESH LISTENER
+    // Dieser Listener fängt jetzt sowohl Rename- als auch Upload-Erfolge ab.
+    document.addEventListener('cloudRefreshRequired', () => {
+        refreshCurrentView();
+    });
+
     // Main navigation
     DOM.explorerUploadBtn.addEventListener('click', switchToUpload);
     DOM.explorerBtn.addEventListener('click', () => {

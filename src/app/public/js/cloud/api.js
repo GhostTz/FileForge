@@ -106,3 +106,13 @@ export async function downloadZip(itemIds) {
     if (!response.ok) throw new Error('Failed to create zip');
     return await response.blob();
 }
+
+// --- RENAME ITEM (NEU) ---
+export async function renameItem(itemId, newName) {
+    const response = await fetch(`api/cloud/item/${itemId}/rename`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newName })
+    });
+    if (!response.ok) throw new Error('Failed to rename item');
+}

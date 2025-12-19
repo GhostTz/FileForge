@@ -62,10 +62,8 @@ async function processQueue(showToast) {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
     while (uploadQueue.length > 0) {
-        // Take the next batch of files
         const { files, parentId } = uploadQueue.shift();
         
-        // Files are already filtered in handleFiles, so we can process them directly
         const fileList = Array.from(files);
 
         if (fileList.length === 0) continue;
@@ -74,12 +72,10 @@ async function processQueue(showToast) {
         let completed = 0;
         let failed = 0;
 
-        // Calculate total batch size for smooth progress
         const totalBatchSize = fileList.reduce((acc, file) => acc + file.size, 0);
         let totalUploadedBytes = 0;
         let currentFileUploadedBytes = 0;
 
-        // Create single notification for all uploads
         let notifId = null;
         if (window.NotificationManager) {
             notifId = window.NotificationManager.showProgressNotification('Uploading Files');
@@ -113,17 +109,13 @@ async function processQueue(showToast) {
                 });
 
                 completed++;
-                totalUploadedBytes += file.size; // Add completed file size to total
+                totalUploadedBytes += file.size;
 
-                // LIVE REFRESH TRIGGER: 
-                // Wir senden das Event nach jedem erfolgreichen File-Upload, 
-                // damit die Dateien "nacheinander" im Explorer auftauchen.
                 document.dispatchEvent(new CustomEvent('cloudRefreshRequired'));
 
             } catch (error) {
                 failed++;
                 console.error(`Failed to upload ${file.name}:`, error);
-                // Even if failed, we count it as "processed" for progress bar continuity
                 totalUploadedBytes += file.size;
 
                 if (notifId && window.NotificationManager) {

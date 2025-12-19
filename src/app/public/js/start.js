@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // If the script is loaded via the dashboard loader, the DOM might already be ready
     fetchStats();
 });
 
-// Also try immediately incase DOMContentLoaded already fired
 if (document.readyState === 'loading') {
-    // Event listener already added above
 } else {
     fetchStats();
 }
@@ -14,7 +11,6 @@ async function fetchStats() {
     const cloudCountEl = document.getElementById('cloud-file-count');
     const downloadCountEl = document.getElementById('total-downloads-count');
 
-    // Wenn beide Elemente nicht existieren, abbrechen
     if (!cloudCountEl && !downloadCountEl) return;
 
     try {
@@ -22,7 +18,6 @@ async function fetchStats() {
         if (response.ok) {
             const data = await response.json();
 
-            // Reusable animation function
             const animateValue = (element, targetValue) => {
                 if (!element) return;
                 

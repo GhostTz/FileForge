@@ -46,29 +46,22 @@ router.post('/settings', async (req, res) => {
 
         console.log(`[Settings] Saving for user ${username}. Data received:`, { colormode, age });
 
-        // 1. Aktuelle Daten holen
         const [existing] = await db.query('SELECT * FROM settings WHERE username = ?', [username]);
         const current = existing[0] || {};
 
-        // 2. Werte validieren und vorbereiten
         
-        // Strings: Wenn undefined (nicht gesendet), behalte alten Wert. Wenn gesendet, nimm neuen Wert.
         const newFullName = fullName !== undefined ? fullName : current.fullName;
         const newEmail = email !== undefined ? email : current.email;
         const newBotToken = telegramBotToken !== undefined ? telegramBotToken : current.telegramBotToken;
         const newChannelId = telegramChannelId !== undefined ? telegramChannelId : current.telegramChannelId;
         
-        // Age (Integer): Muss speziell behandelt werden!
-        // Wenn undefined -> alter Wert.
-        // Wenn leerer String '' -> NULL.
-        // Sonst -> Parsen als Zahl.
         let newAge = current.age;
         if (age !== undefined) {
             if (age === '' || age === null) {
                 newAge = null;
             } else {
                 newAge = parseInt(age, 10);
-                if (isNaN(newAge)) newAge = null; // Sicherheits-Fallback für ungültige Zahlen
+                if (isNaN(newAge)) newAge = null;
             }
         }
 
@@ -77,7 +70,6 @@ router.post('/settings', async (req, res) => {
         if (!validColorMode) validColorMode = current.colormode || 'dark';
         if (validColorMode !== 'white' && validColorMode !== 'dark') validColorMode = 'dark';
 
-        // 3. Update durchführen
         await db.query(
             'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ?, colormode = ? WHERE username = ?',
             [newFullName, newEmail, newAge, newBotToken, newChannelId, validColorMode, username]

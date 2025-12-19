@@ -107,7 +107,6 @@ export async function downloadZip(itemIds) {
     return await response.blob();
 }
 
-// --- RENAME ITEM (NEU) ---
 export async function renameItem(itemId, newName) {
     const response = await fetch(`api/cloud/item/${itemId}/rename`, {
         method: 'PATCH',

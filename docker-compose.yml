@@ -10,7 +10,6 @@ services:
       - TELEGRAM_STAT=true
       - TELEGRAM_LOCAL=true
     volumes:
-      # Hier speichert Telegram die Dateien auf dem Host
       - ./telegram-data:/var/lib/telegram-bot-api
     ports:
       - "8082:8081"
@@ -46,9 +45,7 @@ services:
       - telegram-bot-api
     volumes:
       - ./temp:/usr/src/app/temp
-      # Gemounteter Pfad für die Telegram-Daten
       - ./telegram-data:/var/lib/telegram-bot-api
-      # NEU: Zugriff auf den Docker-Socket des Hosts
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 

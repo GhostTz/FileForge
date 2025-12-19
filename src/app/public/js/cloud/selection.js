@@ -54,22 +54,18 @@ function handleAutoScroll() {
 
     let scrollDelta = 0;
 
-    // Check if mouse is near the top edge
     if (currentMousePosition.y < rect.top + threshold) {
         const distance = rect.top + threshold - currentMousePosition.y;
         scrollDelta = -Math.min(maxScrollSpeed, (distance / threshold) * maxScrollSpeed);
     }
-    // Check if mouse is near the bottom edge
     else if (currentMousePosition.y > rect.bottom - threshold) {
         const distance = currentMousePosition.y - (rect.bottom - threshold);
         scrollDelta = Math.min(maxScrollSpeed, (distance / threshold) * maxScrollSpeed);
     }
 
-    // Scroll the container
     if (scrollDelta !== 0) {
         DOM.mainContent.scrollTop += scrollDelta;
 
-        // Update marquee box position after scroll
         const newRect = DOM.mainContent.getBoundingClientRect();
         const currentX = currentMousePosition.x - newRect.left;
         const currentY = currentMousePosition.y - newRect.top;
@@ -82,10 +78,8 @@ function handleAutoScroll() {
         DOM.marqueeBox.style.left = `${width > 0 ? state.marqueeStart.x : currentX}px`;
         DOM.marqueeBox.style.top = `${height > 0 ? state.marqueeStart.y : currentY}px`;
 
-        // Update selection
         updateSelection();
 
-        // Continue scrolling
         scrollAnimationFrame = requestAnimationFrame(handleAutoScroll);
     } else {
         scrollAnimationFrame = null;

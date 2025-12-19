@@ -12,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve static files
 app.use(express.static(path.join(__dirname, '../views')));
 app.use('/style', express.static(path.join(__dirname, '../views/style')));
 app.use('/script', express.static(path.join(__dirname, '../script')));
@@ -21,10 +20,8 @@ app.use('/app/public/js', express.static(path.join(__dirname, '../app/public/js'
 
 app.use('/temp', express.static(path.join(__dirname, '../../temp')));
 
-// *** NEU: Favicon-Anfragen abfangen, um 404-Fehler zu vermeiden ***
 app.get('/favicon.ico', (req, res) => res.status(204).send());
 
-// Routes
 const mainRoutes = require('./modules/main');
 const authRoutes = require('./modules/auth');
 const appRoutes = require('../app/routes/app');

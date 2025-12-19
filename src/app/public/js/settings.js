@@ -44,7 +44,7 @@
     const infoModalBody = document.getElementById('info-modal-body');
     const infoOkBtn = document.getElementById('info-modal-ok-btn');
 
-    // --- Content Data (RESTORED ORIGINAL TEXT) ---
+    // --- Content Data ---
     const TUTORIALS = {
         'bot-token': {
             title: 'How to get a Bot Token',

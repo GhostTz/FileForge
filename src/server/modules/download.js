@@ -3,19 +3,17 @@ const router = express.Router();
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const db = require('../config/database'); // DB Import hinzugefügt
+const db = require('../config/database'); 
 
-// Pfad zum Temp-Ordner (root/temp)
 const TEMP_DIR = path.resolve(__dirname, '../../../temp');
 
-// Stelle sicher, dass der Temp-Ordner existiert
 if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR, { recursive: true });
 }
 
 router.post('/process', async (req, res) => {
     const { url, type } = req.body;
-    const username = req.user.username; // User aus dem Auth-Token
+    const username = req.user.username; 
 
     if (!url) return res.status(400).json({ message: 'No URL provided' });
 
@@ -68,7 +66,6 @@ router.post('/process', async (req, res) => {
             if (fs.existsSync(filePath)) {
                 const stats = fs.statSync(filePath);
 
-                // Erfolgreicher Download -> DB Eintrag
                 try {
                     await db.query(
                         'INSERT INTO downloaded_media (username, link, format, success, errorcode) VALUES (?, ?, ?, ?, ?)',
@@ -85,7 +82,6 @@ router.post('/process', async (req, res) => {
                     filesize: stats.size // Dateigröße in Bytes
                 });
             } else {
-                // Download angeblich fertig, aber Datei nicht da -> Fehler DB Eintrag
                 const errorMsg = 'Download process finished but file not found.';
                 try {
                     await db.query(
@@ -99,7 +95,6 @@ router.post('/process', async (req, res) => {
                 res.status(500).json({ message: errorMsg });
             }
         } else {
-            // Fehler beim Download Prozess -> Fehler DB Eintrag
             let cleanError = errorOutput;
             if (errorOutput.includes('Sign in to confirm your age')) {
                 cleanError = 'Age restricted content.';

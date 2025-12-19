@@ -8,13 +8,11 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
-// Temp Ordner sicherstellen
 const TEMP_DIR = path.join(__dirname, '..', '..', '..', 'temp');
 if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR, { recursive: true });
 }
 
-// DiskStorage (Wichtig für 2GB Uploads)
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, TEMP_DIR);
@@ -138,7 +136,6 @@ router.get('/download/:id', async (req, res) => {
         }
 
         const item = items[0];
-        // Folders have no file_meta
         if (item.type === 'folder' && type === 'preview') {
             return res.status(400).json({ message: 'Folders cannot be previewed.' });
         }

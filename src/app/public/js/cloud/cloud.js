@@ -22,7 +22,6 @@ function showToast(message, type = 'default') {
     }, 4000);
 }
 
-// Zentrale Download-Logik mit UI-Lock & No-Bar Notification
 async function executeSecureDownload(itemId, itemName) {
     if (state.isDownloading) return;
 
@@ -137,23 +136,19 @@ async function handleEmptyTrash() {
 
 
 function setupEventListeners() {
-    // Custom Event Listeners
     document.addEventListener('cloudRefreshRequired', refreshCurrentView);
     document.addEventListener('cloudRequestDownload', (e) => {
         executeSecureDownload(e.detail.itemId, e.detail.itemName);
     });
 
-    // Main navigation
     DOM.explorerUploadBtn.addEventListener('click', switchToUpload);
     DOM.explorerBtn.addEventListener('click', () => {
         switchToExplorer();
         refreshCurrentView();
     });
 
-    // Search
     DOM.searchInput.addEventListener('input', handleSearch);
 
-    // View toggles
     DOM.gridViewBtn.addEventListener('click', () => {
         DOM.fileGrid.classList.remove('list-view');
         DOM.gridViewBtn.classList.add('active');
@@ -165,7 +160,6 @@ function setupEventListeners() {
         DOM.gridViewBtn.classList.remove('active');
     });
 
-    // Breadcrumbs
     DOM.breadcrumbsContainer.addEventListener('click', (e) => {
         if (state.isSearching) return;
         const target = e.target.closest('a');
@@ -175,7 +169,6 @@ function setupEventListeners() {
         }
     });
 
-    // File Grid Interactions
     DOM.fileGrid.addEventListener('click', (e) => {
         const fileItem = e.target.closest('.file-item');
         if (!fileItem) return;
@@ -205,14 +198,12 @@ function setupEventListeners() {
     DOM.navLinks.favorites.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('favorites'); });
     DOM.navLinks.trash.addEventListener('click', (e) => { e.preventDefault(); setupSidebarNav('trash'); });
 
-    // Toolbar actions
     DOM.newBtn.addEventListener('click', modals.openCreateFolderModal);
     DOM.emptyTrashBtn.addEventListener('click', handleEmptyTrash);
     DOM.selectionDeleteBtn.addEventListener('click', () => modals.openBulkDeleteModal(state.currentView === 'trash'));
     DOM.selectionMoveBtn.addEventListener('click', modals.openMoveModal);
     DOM.selectionRestoreBtn.addEventListener('click', () => api.restoreItems(Array.from(state.selectedItems)).then(refreshCurrentView));
 
-    // NEU: Rename Event Handler für die Toolbar
     if (DOM.selectionRenameBtn) {
         DOM.selectionRenameBtn.addEventListener('click', () => {
             const selectedIds = Array.from(state.selectedItems);
@@ -222,7 +213,6 @@ function setupEventListeners() {
         });
     }
 
-    // Bulk/Single Download Handler
     const selectionDownloadBtn = document.getElementById('selection-download-btn');
     if (selectionDownloadBtn) {
         selectionDownloadBtn.addEventListener('click', async () => {
@@ -267,7 +257,6 @@ function setupEventListeners() {
         });
     }
 
-    // Select All
     if (DOM.selectAllCheckbox) {
         DOM.selectAllCheckbox.addEventListener('click', () => {
             const isChecked = DOM.selectAllCheckbox.classList.contains('checked');
@@ -282,7 +271,6 @@ function setupEventListeners() {
         });
     }
 
-    // Modal Confirmation Handlers
     DOM.confirmCreateFolderBtn.onclick = async () => {
         const folderName = DOM.newFolderNameInput.value.trim();
         if (folderName) {
@@ -364,7 +352,6 @@ function setupEventListeners() {
         }
     };
 
-    // Close logic
     [DOM.cancelCreateFolderBtn, DOM.createFolderModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeCreateFolderModal() }));
     [DOM.cancelDeleteBtn, DOM.confirmDeleteModal].forEach(el => el.addEventListener('click', (e) => {
         if (e.target === el) { state.isEmptyingTrash = false; modals.closeDeleteModal(); }
@@ -373,7 +360,6 @@ function setupEventListeners() {
     [DOM.closePreviewBtn, DOM.previewModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeFilePreview() }));
     [DOM.cancelRenameItemBtn, DOM.renameItemModal].forEach(el => el.addEventListener('click', (e) => { if (e.target === el) modals.closeRenameModal() }));
 
-    // Move modal tree
     DOM.moveFolderTreeContainer.addEventListener('click', (e) => {
         const target = e.target.closest('.folder-tree-item');
         if (target) {

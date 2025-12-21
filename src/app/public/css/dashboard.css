@@ -43,6 +43,11 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* WICHTIGER FIX FÜR MOBILE NAVBAR */
+#dynamic-nav-container {
+    display: contents; /* Sorgt dafür, dass der Container ignoriert wird und die li-Elemente direkt im Flex-Layout landen */
+}
+
 .app-sidebar {
     width: 260px;
     background: var(--background-sidebar);

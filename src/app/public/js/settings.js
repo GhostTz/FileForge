@@ -1,6 +1,7 @@
 (() => {
     // --- State & Initial Data ---
     let initialSettings = {};
+    let currentOrder = [];
     
     // --- DOM Elements ---
     const sidebar = document.querySelector('.app-sidebar');
@@ -9,11 +10,13 @@
     const btnPersonal = document.getElementById('btn-open-personal');
     const btnCloud = document.getElementById('btn-open-cloud');
     const btnUi = document.getElementById('btn-open-ui');
+    const btnLayout = document.getElementById('btn-open-layout');
 
     // Drawers (Modals)
     const modalPersonal = document.getElementById('modal-personal');
     const modalCloud = document.getElementById('modal-cloud');
     const modalUi = document.getElementById('modal-ui');
+    const modalLayout = document.getElementById('modal-layout');
 
     // Close Buttons
     const closeButtons = document.querySelectorAll('.close-drawer-btn, .close-modal-btn');
@@ -22,6 +25,10 @@
     const savePersonalBtn = document.getElementById('save-personal-btn');
     const saveCloudBtn = document.getElementById('save-cloud-btn');
     const saveUiBtn = document.getElementById('save-ui-btn');
+    const saveLayoutBtn = document.getElementById('save-layout-btn');
+
+    // Layout List
+    const layoutList = document.getElementById('layout-sortable-list');
 
     // Inputs
     const inputs = {
@@ -187,6 +194,129 @@
         }
     };
 
+    // --- LAYOUT LOGIC WITH MOBILE SUPPORT ---
+
+    const fetchLayout = async () => {
+        try {
+            const res = await fetch('api/user/layout');
+            const data = await res.json();
+            currentOrder = data.order;
+            renderLayoutList();
+        } catch(e) { console.error(e); }
+    };
+
+    const renderLayoutList = () => {
+        if(!layoutList) return;
+        layoutList.innerHTML = '';
+        currentOrder.forEach((app, index) => {
+            const item = document.createElement('div');
+            item.className = 'layout-item';
+            item.draggable = true; // For Desktop
+            item.dataset.app = app;
+            item.innerHTML = `
+                <div class="layout-handle">☰</div>
+                <div class="layout-name">${app}</div>
+                <div class="priority-badge">${index + 1}</div>
+            `;
+            
+            // Desktop Drag Events
+            item.addEventListener('dragstart', () => item.classList.add('dragging'));
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                updateOrderFromDOM();
+            });
+
+            // Mobile Touch Events
+            item.addEventListener('touchstart', (e) => {
+                item.classList.add('dragging');
+            }, {passive: true});
+
+            item.addEventListener('touchend', () => {
+                item.classList.remove('dragging');
+                updateOrderFromDOM();
+            });
+            
+            layoutList.appendChild(item);
+        });
+    };
+
+    const updateOrderFromDOM = () => {
+        const items = [...layoutList.querySelectorAll('.layout-item')];
+        currentOrder = items.map(item => item.dataset.app);
+        
+        items.forEach((item, idx) => {
+            item.querySelector('.priority-badge').textContent = idx + 1;
+        });
+    };
+
+    // Shared Helper for Drag/Touch Position
+    const getDragAfterElement = (container, y) => {
+        const draggableElements = [...container.querySelectorAll('.layout-item:not(.dragging)')];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    };
+
+    if(layoutList) {
+        // Desktop Dragover
+        layoutList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(layoutList, e.clientY);
+            const draggingItem = document.querySelector('.dragging');
+            if (afterElement == null) {
+                layoutList.appendChild(draggingItem);
+            } else {
+                layoutList.insertBefore(draggingItem, afterElement);
+            }
+        });
+
+        // Mobile Touchmove
+        layoutList.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Stop scrolling while dragging
+            const touch = e.touches[0];
+            const afterElement = getDragAfterElement(layoutList, touch.clientY);
+            const draggingItem = document.querySelector('.dragging');
+            
+            if (draggingItem) {
+                if (afterElement == null) {
+                    layoutList.appendChild(draggingItem);
+                } else {
+                    layoutList.insertBefore(draggingItem, afterElement);
+                }
+            }
+        }, {passive: false});
+    }
+
+    if(saveLayoutBtn) {
+        saveLayoutBtn.addEventListener('click', async () => {
+            updateOrderFromDOM();
+            const originalText = saveLayoutBtn.textContent;
+            try {
+                saveLayoutBtn.textContent = 'Saving...';
+                const res = await fetch('api/user/layout', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ order: currentOrder })
+                });
+                if(res.ok) {
+                    saveLayoutBtn.textContent = 'Saved!';
+                    document.dispatchEvent(new Event('layoutChanged'));
+                    setTimeout(() => saveLayoutBtn.textContent = originalText, 1000);
+                }
+            } catch(e) {
+                saveLayoutBtn.textContent = 'Error';
+                setTimeout(() => saveLayoutBtn.textContent = originalText, 2000);
+            }
+        });
+    }
+
     // --- Initialization ---
 
     const loadSettings = async (fetchFromServer = true) => {
@@ -221,10 +351,19 @@
 
     btnPersonal.addEventListener('click', () => openDrawer(modalPersonal));
     btnCloud.addEventListener('click', () => openDrawer(modalCloud));
+    
     btnUi.addEventListener('click', () => {
         loadSettings(false); 
         openDrawer(modalUi);
     });
+    
+    if(btnLayout) {
+        btnLayout.addEventListener('click', () => {
+            modalUi.classList.remove('visible');
+            fetchLayout();
+            openDrawer(modalLayout);
+        });
+    }
 
     closeButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -232,6 +371,19 @@
             const modal = document.getElementById(targetId);
             if (modal) {
                 closeDrawer(modal);
+
+                // --- NEUE LOGIK FÜR ZURÜCK-BUTTON ---
+                if (targetId === 'modal-layout') {
+                    // Wenn Layout geschlossen wird, Interface-Einstellungen wieder öffnen
+                    const modalUi = document.getElementById('modal-ui');
+                    if (modalUi) {
+                        modalUi.classList.add('visible');
+                        // Sidebar muss versteckt bleiben
+                        const sidebar = document.querySelector('.app-sidebar');
+                        if(sidebar) sidebar.classList.add('nav-hidden');
+                    }
+                }
+
                 if (targetId === 'modal-ui') {
                     applyTheme(initialSettings.colormode || 'dark');
                 }
@@ -247,7 +399,7 @@
             }
         }
         if (e.target.classList.contains('modal-overlay')) {
-            e.target.classList.remove('visible'); // For info modal
+            e.target.classList.remove('visible'); 
         }
     });
 

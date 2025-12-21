@@ -1,4 +1,4 @@
-/* Padding restore for Settings page */
+/* Padding direkt auf den Inhalt geben */
 .main-header, .settings-menu-container {
     padding: 40px;
 }
@@ -15,7 +15,7 @@
     gap: 15px;
     max-width: 800px;
     margin: 0 auto;
-    padding-top: 0; /* Abstand oben kommt vom Header */
+    padding-top: 0; 
     animation: fadeInUp 0.5s ease-out forwards;
 }
 
@@ -62,6 +62,35 @@
     transition: transform 0.2s ease, color 0.2s ease;
 }
 
+/* --- Sub Button in Drawers --- */
+.settings-sub-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: var(--background-main);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-sub-btn:hover {
+    border-color: var(--primary-color);
+    background-color: var(--active-bg);
+}
+
+.settings-sub-btn svg {
+    color: var(--text-muted);
+}
+
+.settings-sub-btn:hover svg {
+    color: var(--primary-color);
+}
+
 /* --- Slide-In Drawers (Modals) --- */
 .slide-modal-overlay {
     position: fixed;
@@ -71,7 +100,7 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(3px);
-    z-index: 2000; /* Drawer liegt auf Ebene 2000 */
+    z-index: 2000; 
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s;
@@ -160,6 +189,26 @@
     margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+/* NEU: UI Section Styling für mehr Abstand */
+.ui-section {
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.ui-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.ui-section h4 {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 .drawer-footer {
@@ -350,11 +399,80 @@
 }
 
 /* ========================================= */
-/* INFO MODAL OVERRIDES (FIX Z-INDEX & STYLE) */
+/* LAYOUT SORTABLE LIST STYLES */
+/* ========================================= */
+.layout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.layout-item {
+    display: flex;
+    align-items: center;
+    background: var(--active-bg);
+    border: 1px solid var(--card-border);
+    padding: 15px;
+    border-radius: 8px;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.layout-item.dragging {
+    opacity: 0.5;
+    border: 2px dashed var(--primary-color);
+}
+
+.layout-item:hover {
+    border-color: var(--text-muted);
+}
+
+.layout-handle {
+    margin-right: 15px;
+    color: var(--text-muted);
+    cursor: grab;
+    font-size: 1.2rem;
+}
+
+.layout-name {
+    flex-grow: 1;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.priority-badge {
+    width: 24px;
+    height: 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Die ersten 3 Items (Mobile Visible) hervorheben */
+.layout-list .layout-item:nth-child(1) .priority-badge,
+.layout-list .layout-item:nth-child(2) .priority-badge,
+.layout-list .layout-item:nth-child(3) .priority-badge {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* ========================================= */
+/* INFO MODAL OVERRIDES */
 /* ========================================= */
 
 #info-modal {
-    z-index: 3000; /* Über dem Drawer (2000) */
+    z-index: 3000;
     background: rgba(0, 0, 0, 0.75);
 }
 
@@ -371,7 +489,6 @@
     padding: 0;
 }
 
-/* FIX FÜR DAS X IM INFO MODAL */
 #info-modal .close-modal-btn {
     background: transparent !important;
     border: none !important;
@@ -420,26 +537,15 @@
     justify-content: flex-end;
 }
 
-/* --- Markdown Styles für Info Content --- */
 .markdown-body {
     font-size: 0.95rem;
     color: var(--text-muted);
     line-height: 1.6;
 }
 
-.markdown-body p {
-    margin-bottom: 15px;
-}
-
-.markdown-body ol {
-    padding-left: 20px;
-    margin-bottom: 20px;
-}
-
-.markdown-body li {
-    margin-bottom: 8px;
-}
-
+.markdown-body p { margin-bottom: 15px; }
+.markdown-body ol { padding-left: 20px; margin-bottom: 20px; }
+.markdown-body li { margin-bottom: 8px; }
 .markdown-body code {
     background: var(--active-bg);
     border: 1px solid var(--card-border);
@@ -456,11 +562,8 @@
     border-bottom: 1px dotted var(--primary-color);
 }
 
-.markdown-body a:hover {
-    border-bottom-style: solid;
-}
+.markdown-body a:hover { border-bottom-style: solid; }
 
-/* Animations */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }

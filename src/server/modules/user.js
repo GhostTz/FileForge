@@ -70,6 +70,11 @@ router.post('/settings', async (req, res) => {
         if (!validColorMode) validColorMode = current.colormode || 'dark';
         if (validColorMode !== 'white' && validColorMode !== 'dark') validColorMode = 'dark';
 
+        // Check if settings entry exists, if not create first
+        if (existing.length === 0) {
+             await db.query('INSERT INTO settings (username) VALUES (?)', [username]);
+        }
+
         await db.query(
             'UPDATE settings SET fullName = ?, email = ?, age = ?, telegramBotToken = ?, telegramChannelId = ?, colormode = ? WHERE username = ?',
             [newFullName, newEmail, newAge, newBotToken, newChannelId, validColorMode, username]
@@ -81,6 +86,47 @@ router.post('/settings', async (req, res) => {
     } catch (error) {
         console.error('Error saving settings:', error);
         res.status(500).json({ message: 'Server error while saving settings.' });
+    }
+});
+
+router.get('/layout', async (req, res) => {
+    try {
+        const username = req.user.username;
+        const [rows] = await db.query('SELECT app_order FROM settings_applayout WHERE username = ?', [username]);
+        
+        if (rows.length > 0 && rows[0].app_order) {
+            try {
+                res.json({ order: JSON.parse(rows[0].app_order) });
+            } catch (e) {
+                res.json({ order: ['download', 'convert', 'cloud'] });
+            }
+        } else {
+            res.json({ order: ['download', 'convert', 'cloud'] });
+        }
+    } catch (error) {
+        console.error('Error fetching layout:', error);
+        res.status(500).json({ message: 'Error fetching layout' });
+    }
+});
+
+router.post('/layout', async (req, res) => {
+    try {
+        const username = req.user.username;
+        const { order } = req.body;
+
+        if (!Array.isArray(order)) return res.status(400).json({ message: 'Invalid data format' });
+
+        const jsonOrder = JSON.stringify(order);
+
+        await db.query(
+            'INSERT INTO settings_applayout (username, app_order) VALUES (?, ?) ON DUPLICATE KEY UPDATE app_order = ?',
+            [username, jsonOrder, jsonOrder]
+        );
+
+        res.json({ message: 'Layout saved' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error saving layout' });
     }
 });
 

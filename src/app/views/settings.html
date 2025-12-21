@@ -19,11 +19,11 @@
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
     </button>
-
+    
     <button class="settings-menu-item" id="btn-open-ui">
         <div class="menu-text">
             <h3>Interface & Appearance</h3>
-            <p>Theme, Colors, Visual Preferences</p>
+            <p>Theme, Colors, Navigation Layout</p>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
     </button>
@@ -139,9 +139,40 @@
                     </label>
                 </div>
             </div>
+
+            <!-- Navigation Layout -->
+            <div class="ui-section">
+                <h4>Navigation</h4>
+                <p class="drawer-description" style="margin-bottom: 10px;">Reorder or hide apps in your sidebar.</p>
+                <button id="btn-open-layout" class="settings-sub-btn">
+                    <span>Customize App Layout</span>
+                    <!-- Icon wurde hier entfernt -->
+                </button>
+            </div>
+
         </div>
         <div class="drawer-footer">
             <button id="save-ui-btn" class="save-btn full-width" disabled>Apply & Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Navigation Layout Modal -->
+<div id="modal-layout" class="slide-modal-overlay">
+    <div class="slide-drawer">
+        <div class="drawer-header">
+            <h2>Navigation Layout</h2>
+            <button class="close-drawer-btn" data-target="modal-layout">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <p class="drawer-description">Drag and drop items to reorder. The top 3 items will appear on the mobile navigation bar.</p>
+            
+            <div id="layout-sortable-list" class="layout-list">
+                <!-- Items werden per JS generiert -->
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button id="save-layout-btn" class="save-btn full-width">Save Layout</button>
         </div>
     </div>
 </div>

@@ -23,6 +23,15 @@ const requiredTables = {
             'FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE'
         ]
     },
+    settings_applayout: {
+        columns: {
+            username: 'VARCHAR(255) NOT NULL PRIMARY KEY',
+            app_order: 'TEXT'
+        },
+        foreignKeys: [
+            'FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE'
+        ]
+    },
     cloud_items: {
         columns: {
             id: 'INT AUTO_INCREMENT PRIMARY KEY',

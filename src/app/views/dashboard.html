@@ -7,7 +7,6 @@
     <base href="/fileforge/">
     <title>Dashboard - FileForge</title>
     <link rel="stylesheet" href="app/public/css/dashboard.css">
-    <!-- ... (rest of stylesheets same as before) ... -->
     <link rel="stylesheet" href="app/public/css/start.css">
     <link rel="stylesheet" href="app/public/css/download.css">
     <link rel="stylesheet" href="app/public/css/convert.css">
@@ -18,6 +17,20 @@
     <link rel="stylesheet" href="app/public/css/settings.css">
     <link rel="stylesheet" href="app/public/css/notifications.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Mobile: Show only first 3 items in the dynamic list */
+        @media (max-width: 992px) {
+            #dynamic-nav-container > li:nth-child(n+4) {
+                display: none;
+            }
+        }
+        /* Desktop: Show up to 8 items */
+        @media (min-width: 993px) {
+            #dynamic-nav-container > li:nth-child(n+9) {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -29,7 +42,7 @@
         <!-- Content will be loaded here -->
     </div>
 
-    <!-- Modals (Danger Zone, etc.) remain here as in previous version -->
+    <!-- Modals (Danger Zone, etc.) -->
     <div id="delete-confirm-modal" class="modal-overlay">
         <div class="modal">
             <div class="warning-icon"></div>
@@ -78,10 +91,28 @@
     <script src="app/public/js/notifications.js"></script>
 
     <script>
+        // APP DEFINITIONS: Das "Wörterbuch" für die dynamische Navigation
+        const APP_DEFINITIONS = {
+            'download': {
+                title: 'Download',
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>`,
+                animClass: 'anim-bounce-download'
+            },
+            'convert': {
+                title: 'Convert',
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>`,
+                animClass: 'anim-spin-convert'
+            },
+            'cloud': {
+                title: 'Cloud',
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>`,
+                animClass: 'anim-fly-cloud'
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const navContainer = document.getElementById('app-sidebar');
             const pageContent = document.getElementById('page-content');
-            let navLinks = [];
             let currentUsername = '';
 
             const pageConfig = {
@@ -117,6 +148,42 @@
                 indicator.style.top = `${linkRect.top - navRect.top}px`;
             };
 
+            // --- LAYOUT LOGIC ---
+            const loadLayout = async () => {
+                try {
+                    const response = await fetch('api/user/layout');
+                    if(response.ok) {
+                        const data = await response.json();
+                        renderDynamicNav(data.order);
+                    } else {
+                        renderDynamicNav(['download', 'convert', 'cloud']); 
+                    }
+                } catch(e) {
+                    renderDynamicNav(['download', 'convert', 'cloud']);
+                }
+            };
+
+            const renderDynamicNav = (order) => {
+                const container = document.getElementById('dynamic-nav-container');
+                if(!container) return;
+                
+                container.innerHTML = ''; // Clean
+
+                order.forEach(appKey => {
+                    const appDef = APP_DEFINITIONS[appKey];
+                    if(appDef) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <a href="#" data-page="${appKey}" class="nav-link" title="${appDef.title}">
+                                ${appDef.icon}
+                                <span>${appDef.title}</span>
+                            </a>
+                        `;
+                        container.appendChild(li);
+                    }
+                });
+            };
+
             const loadPage = async (pageName) => {
                 const config = pageConfig[pageName];
                 if (!config) return loadPage('start');
@@ -144,67 +211,74 @@
                         document.body.appendChild(script);
                     }
 
-                    navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+                    // Update active class manually since links are dynamic
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.toggle('active', link.dataset.page === pageName);
+                    });
+                    
                     setTimeout(() => updateNavIndicator(document.querySelector('.nav-link.active')), 50);
 
                 } catch (error) { console.error('Error loading page:', error); }
             };
 
             const setupNavigation = () => {
-                navLinks = document.querySelectorAll('.nav-link');
-                const profileMenu = document.getElementById('profile-menu');
+                // GLOBALER Event Listener für ALLE Navigation Links
+                // (Sidebar, Startseite, Profilmenü)
+                document.addEventListener('click', (e) => {
+                    const link = e.target.closest('.nav-link');
+                    if(!link) return;
+                    
+                    e.preventDefault();
+                    
+                    // Animations Logic
+                    const page = link.dataset.page;
+                    const svgs = link.querySelectorAll('svg');
+                    let animClass = '';
+                    
+                    if(page === 'start') animClass = 'anim-pulse-start';
+                    else if(APP_DEFINITIONS[page]) animClass = APP_DEFINITIONS[page].animClass;
+
+                    if (animClass) {
+                        svgs.forEach(svg => {
+                            svg.classList.remove(animClass);
+                            void svg.offsetWidth; // Force reflow
+                            svg.classList.add(animClass);
+                            svg.addEventListener('animationend', () => {
+                                svg.classList.remove(animClass);
+                            }, { once: true });
+                        });
+                    }
+
+                    if (page) {
+                        // Lade Seite, wenn Link nicht bereits aktiv ist oder es ein Link auf der Startseite ist
+                        if (!link.classList.contains('active') || link.classList.contains('launcher-item')) {
+                            loadPage(page);
+                        }
+                    }
+                    
+                    const profileMenu = document.getElementById('profile-menu');
+                    if(profileMenu) profileMenu.classList.remove('show');
+                });
+
+                // Profile Buttons
                 const profileBtns = [
                     document.getElementById('profile-btn'),
                     document.getElementById('desktop-profile-btn')
                 ];
 
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-
-                        // Icon Animation Logic
-                        const svgs = link.querySelectorAll('svg');
-                        const page = link.dataset.page;
-                        let animClass = '';
-
-                        if (page === 'cloud') animClass = 'anim-fly-cloud';
-                        else if (page === 'convert') animClass = 'anim-spin-convert';
-                        else if (page === 'download') animClass = 'anim-bounce-download';
-                        else if (page === 'start') animClass = 'anim-pulse-start';
-
-                        if (animClass) {
-                            svgs.forEach(svg => {
-                                svg.classList.remove(animClass);
-                                void svg.offsetWidth; // Force reflow
-                                svg.classList.add(animClass);
-
-                                // Clean up after animation
-                                svg.addEventListener('animationend', () => {
-                                    svg.classList.remove(animClass);
-                                }, { once: true });
-                            });
-                        }
-
-                        // Navigation Logic
-                        const pageName = link.dataset.page;
-                        if (pageName && !link.classList.contains('active')) {
-                            loadPage(pageName);
-                        }
-                        profileMenu.classList.remove('show');
-                    });
-                });
-
                 profileBtns.forEach(btn => {
                     if (btn) btn.addEventListener('click', (e) => {
                         e.preventDefault(); e.stopPropagation();
-                        profileMenu.classList.toggle('show');
+                        const profileMenu = document.getElementById('profile-menu');
+                        if(profileMenu) profileMenu.classList.toggle('show');
                     });
                 });
 
                 document.getElementById('menu-logout-btn')?.addEventListener('click', handleLogout);
                 document.querySelector('.delete-link')?.addEventListener('click', (e) => {
                     e.preventDefault();
-                    profileMenu.classList.remove('show');
+                    const profileMenu = document.getElementById('profile-menu');
+                    if(profileMenu) profileMenu.classList.remove('show');
                     openDangerModal();
                 });
 
@@ -328,10 +402,17 @@
                 .then(response => response.text())
                 .then(async data => {
                     navContainer.innerHTML = data;
+                    
+                    // LOAD LAYOUT FIRST
+                    await loadLayout();
+                    
                     setupNavigation();
                     setupModals();
                     await fetchUserInfo();
                     loadPage('start');
+
+                    // Listen for layout changes
+                    document.addEventListener('layoutChanged', loadLayout);
                 })
                 .catch(error => console.error('Error loading navigation:', error));
         });

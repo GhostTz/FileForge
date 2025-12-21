@@ -46,7 +46,6 @@
             </svg>
             <span>Files Downloaded</span>
         </div>
-        <!-- ID HINZUGEFÜGT UND PLATZHALTER ENTFERNT -->
         <div class="stat-value" id="total-downloads-count">Loading...</div>
     </div>
 
@@ -72,6 +71,33 @@
             <span>Files in Cloud</span>
         </div>
         <div class="stat-value" id="cloud-file-count">Loading...</div>
+    </div>
+
+    <!-- NEU: App Launcher -->
+    <div class="stat-card-large app-launcher-section">
+        <div class="large-card-header">
+            <h3>All Apps</h3>
+        </div>
+        <div class="app-launcher-grid">
+            <a href="#" data-page="download" class="launcher-item nav-link">
+                <div class="launcher-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                </div>
+                <span>Download</span>
+            </a>
+            <a href="#" data-page="convert" class="launcher-item nav-link">
+                <div class="launcher-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
+                </div>
+                <span>Convert</span>
+            </a>
+            <a href="#" data-page="cloud" class="launcher-item nav-link">
+                <div class="launcher-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                </div>
+                <span>Cloud</span>
+            </a>
+        </div>
     </div>
 
     <div class="stat-card-large project-card">

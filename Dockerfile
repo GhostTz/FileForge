@@ -1,15 +1,22 @@
 FROM node:18-alpine
 
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    ffmpeg \
+    curl \
+    yt-dlp
+
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm install
+
+RUN npm install --production
 
 COPY . .
 
-EXPOSE 3010
+RUN mkdir -p temp && chmod 777 temp
 
-# Temp Ordner erstellen
-RUN mkdir -p temp
+EXPOSE 3010
 
 CMD [ "node", "src/server/server.js" ]

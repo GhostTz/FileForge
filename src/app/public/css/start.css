@@ -1,219 +1,302 @@
-/* Padding direkt auf den Inhalt geben, da Container nun keines mehr hat */
-.main-header, .start-page-grid {
-    padding: 40px;
+/* Container Reset */
+.start-container {
+    padding: 30px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeIn 0.4s ease-out;
 }
 
-.main-header {
-    padding-bottom: 0; /* Header-Abstand nur oben und seitlich */
-    margin-bottom: 30px;
-}
-
-.main-header h1 {
-    font-size: 2.2rem;
-}
-
-.start-page-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    padding-top: 0; /* Abstand oben kommt vom Header */
-}
-
-.stat-card-large, .stat-card-small {
-    background-color: var(--card-bg);
-    padding: 25px;
-    border-radius: 16px;
-    border: 1px solid var(--card-border);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.5s ease-out forwards;
-}
-
-.stat-card-large {
-    grid-column: 1 / -1;
-    animation-delay: 0.1s;
-}
-
-.stat-card-small {
-    padding-bottom: 30px;
-}
-
-.stat-card-small:nth-of-type(2) { animation-delay: 0.2s; }
-.stat-card-small:nth-of-type(3) { animation-delay: 0.3s; }
-.stat-card-small:nth-of-type(4) { animation-delay: 0.4s; }
-
-.large-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Header */
+.start-header {
     margin-bottom: 25px;
 }
 
-.large-card-header h3 {
-    font-size: 1.3rem;
-    color: var(--text-muted);
+.start-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-color);
 }
 
-.status-badge {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: rgba(40, 167, 69, 0.1);
-    color: #28a745;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-weight: 500;
-}
-
-.status-indicator {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #28a745;
-}
-
-.status-indicator.pulse {
-    animation: pulse 2s infinite;
-}
-
-.sub-services {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.sub-service-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--background-main);
-    padding: 15px;
-    border-radius: 10px;
-}
-
-.service-info h4 { font-size: 1rem; font-weight: 500; }
-.service-info p { font-size: 0.9rem; color: var(--text-muted); }
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-    margin-bottom: 15px;
-}
-
-.card-header svg { width: 20px; height: 20px; }
-.stat-value { font-size: 2.5rem; font-weight: 600; color: var(--text-color); }
-
-.project-card {
-    animation-delay: 0.5s;
-}
-
-.project-card-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.project-info h3 { font-size: 1.2rem; font-weight: 600; }
-.open-source-badge {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
+.start-header p {
     color: var(--text-muted);
     font-size: 0.9rem;
+    margin-top: 4px;
 }
-.open-source-badge svg { color: var(--primary-color); width: 16px; height: 16px; }
 
-.project-links { display: flex; gap: 15px; }
-.project-link-btn {
-    padding: 10px 18px;
-    background: var(--active-bg);
+/* Bento Grid System */
+.bento-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 Spalten Desktop */
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+}
+
+/* Karten Basis-Style */
+.bento-card {
+    background-color: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--text-muted);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.bento-card:hover {
+    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+}
+
+/* --- 1. Stats Cards --- */
+.stat-card {
+    grid-column: span 1;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon-bg {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(160, 32, 240, 0.1);
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.stat-icon-bg.cloud {
+    background: rgba(79, 172, 254, 0.1);
+    color: #4facfe;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Verhindert Text-Umbruch Probleme */
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
     font-weight: 500;
-    transition: all 0.2s ease;
+    white-space: nowrap;
 }
-.project-link-btn:hover {
-    background: var(--card-bg);
+
+.stat-number {
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--text-color);
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-.project-link-btn svg { width: 18px; height: 18px; }
-
-/* NEU: App Launcher CSS */
-.app-launcher-section {
-    grid-column: 1 / -1; 
+    line-height: 1.2;
 }
 
-.app-launcher-grid {
+/* --- 2. Launcher Card --- */
+.launcher-card {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+.launcher-card h3, .status-card h3 {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.launcher-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin-top: 15px;
+    height: 100%;
 }
 
-.launcher-item {
+.launch-btn {
+    background: var(--active-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--active-bg);
-    padding: 15px;
-    border-radius: 12px;
     text-decoration: none;
     color: var(--text-color);
-    border: 1px solid var(--card-border);
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    padding: 15px;
+    gap: 10px;
+    text-align: center;
 }
 
-.launcher-item:hover {
-    transform: translateY(-3px);
-    border-color: var(--primary-color);
+.launch-btn:hover {
     background: var(--card-bg);
+    border-color: var(--primary-color);
+    transform: scale(1.02);
 }
 
-.launcher-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 8px;
-    color: var(--primary-color);
+.launch-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 2px;
+    color: var(--text-muted);
+    transition: color 0.2s;
 }
 
-.launcher-icon svg {
-    width: 100%;
-    height: 100%;
+.launch-btn:hover .launch-icon { color: var(--primary-color); }
+.launch-btn span { font-size: 0.85rem; font-weight: 500; }
+
+/* --- 3. Status Card --- */
+.status-card {
+    grid-column: 3 / 4;
+    grid-row: 1 / 3;
 }
 
-.launcher-item span {
-    font-size: 0.9rem;
+.status-list {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    padding: 8px 12px;
+    background: var(--active-bg);
+    border-radius: 8px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+}
+
+.overall-status {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #28a745;
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
-@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+/* --- 4. Footer Card --- */
+.footer-card {
+    grid-column: 1 / -1;
+    padding: 10px 25px;
+    background: transparent;
+    border: none;
 }
 
-@media (max-width: 768px) {
-    .main-header, .start-page-grid { padding: 20px; }
-    .main-header { padding-bottom: 0; }
-    .start-page-grid { padding-top: 0; grid-template-columns: 1fr; }
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.github-mini-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: var(--active-bg);
+    transition: all 0.2s;
+}
+
+.github-mini-btn:hover {
+    color: var(--text-color);
+    background: var(--card-bg);
+}
+
+/* --- RESPONSIVE DESIGN FIXES --- */
+
+/* Tablet (bis 992px) */
+@media (max-width: 992px) {
+    .bento-grid {
+        grid-template-columns: 1fr 1fr; /* 2 Spalten */
+    }
     
-    .main-header h1 { font-size: 1.8rem; }
-    .stat-value { font-size: 2rem; }
-    .large-card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-    .project-card-content { justify-content: center; text-align: center; }
+    .status-card {
+        grid-column: span 2; /* Volle Breite */
+        grid-row: auto;
+        flex-direction: column;
+    }
+    
+    .status-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .status-item { flex: 1; justify-content: center; }
+}
+
+/* Mobile (bis 768px) - Hier passiert der Fix! */
+@media (max-width: 768px) {
+    .start-container {
+        padding: 20px;
+        /* WICHTIG: Platz für Bottom-Nav lassen! */
+        padding-bottom: 100px;
+    }
+
+    .bento-grid {
+        /* Kein Grid mehr, sondern alles sauber untereinander */
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Alle Karten nehmen volle Breite */
+    .stat-card, .launcher-card, .status-card, .footer-card {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Quick Actions reparieren */
+    .launcher-grid {
+        /* Buttons passen sich an, mindestens 100px breit. 
+           Führt zu 2 oder 3 Buttons pro Zeile, je nach Handybreite. */
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    .launch-btn {
+        padding: 15px 10px; /* Etwas weniger Padding an den Seiten */
+    }
+
+    /* Status Liste auf Mobile untereinander */
+    .status-list {
+        flex-direction: column;
+    }
+    
+    .status-item {
+        justify-content: flex-start;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

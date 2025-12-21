@@ -1,141 +1,90 @@
-<header class="main-header">
-    <h1>Start</h1>
-</header>
+<div class="start-container">
+    <header class="start-header">
+        <div class="welcome-text">
+            <h1>Dashboard</h1>
+            <p>Overview & Quick Actions</p>
+        </div>
+    </header>
 
-<section class="start-page-grid">
-    <div class="stat-card-large server-status">
-        <div class="large-card-header">
+    <div class="bento-grid">
+        <!-- 1. Stats Row (2 nebeneinander) -->
+        <div class="bento-card stat-card">
+            <div class="stat-icon-bg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Total Downloads</span>
+                <span class="stat-number" id="total-downloads-count">...</span>
+            </div>
+        </div>
+
+        <div class="bento-card stat-card">
+            <div class="stat-icon-bg cloud">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+            </div>
+            <div class="stat-info">
+                <span class="stat-label">Cloud Files</span>
+                <span class="stat-number" id="cloud-file-count">...</span>
+            </div>
+        </div>
+
+        <!-- 2. App Launcher (Große Box) -->
+        <div class="bento-card launcher-card">
+            <h3>Quick Actions</h3>
+            <div class="launcher-grid">
+                <a href="#" data-page="download" class="launch-btn nav-link">
+                    <div class="launch-icon download">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <span>Download</span>
+                </a>
+                <a href="#" data-page="convert" class="launch-btn nav-link">
+                    <div class="launch-icon convert">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    </div>
+                    <span>Convert</span>
+                </a>
+                <a href="#" data-page="cloud" class="launch-btn nav-link">
+                    <div class="launch-icon cloud">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                    </div>
+                    <span>Cloud Drive</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 3. System Status (Hochkant Box) -->
+        <div class="bento-card status-card">
             <h3>System Status</h3>
-            <div class="status-badge">
-                <span class="status-indicator pulse"></span>
-                All Systems Operational
-            </div>
-        </div>
-        <div class="sub-services">
-            <div class="sub-service-item">
-                <span class="status-indicator"></span>
-                <div class="service-info">
-                    <h4>Downloading Service</h4>
-                    <p>Operational</p>
+            <div class="status-list">
+                <div class="status-item">
+                    <span class="dot online"></span>
+                    <span>Downloader</span>
+                </div>
+                <div class="status-item">
+                    <span class="dot online"></span>
+                    <span>Converter</span>
+                </div>
+                <div class="status-item">
+                    <span class="dot online"></span>
+                    <span>Telegram API</span>
                 </div>
             </div>
-            <div class="sub-service-item">
-                <span class="status-indicator"></span>
-                <div class="service-info">
-                    <h4>Converting Engine</h4>
-                    <p>Operational</p>
-                </div>
-            </div>
-            <div class="sub-service-item">
-                <span class="status-indicator"></span>
-                <div class="service-info">
-                    <h4>Cloud Platform</h4>
-                    <p>Operational</p>
-                </div>
+            <div class="overall-status">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>All Systems Operational</span>
             </div>
         </div>
-    </div>
 
-    <div class="stat-card-small">
-        <div class="card-header">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="7 10 12 15 17 10" />
-                <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span>Files Downloaded</span>
-        </div>
-        <div class="stat-value" id="total-downloads-count">Loading...</div>
-    </div>
-
-    <div class="stat-card-small">
-        <div class="card-header">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="23 4 23 10 17 10" />
-                <polyline points="1 20 1 14 7 14" />
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-            <span>Files Converted</span>
-        </div>
-        <div class="stat-value">PLATZHALTER</div>
-    </div>
-
-    <div class="stat-card-small">
-        <div class="card-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-            </svg>
-            <span>Files in Cloud</span>
-        </div>
-        <div class="stat-value" id="cloud-file-count">Loading...</div>
-    </div>
-
-    <!-- NEU: App Launcher -->
-    <div class="stat-card-large app-launcher-section">
-        <div class="large-card-header">
-            <h3>All Apps</h3>
-        </div>
-        <div class="app-launcher-grid">
-            <a href="#" data-page="download" class="launcher-item nav-link">
-                <div class="launcher-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                </div>
-                <span>Download</span>
-            </a>
-            <a href="#" data-page="convert" class="launcher-item nav-link">
-                <div class="launcher-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" /></svg>
-                </div>
-                <span>Convert</span>
-            </a>
-            <a href="#" data-page="cloud" class="launcher-item nav-link">
-                <div class="launcher-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
-                </div>
-                <span>Cloud</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="stat-card-large project-card">
-        <div class="project-card-content">
-            <div class="project-info">
-                <h3>Project by GhostTz</h3>
-                <div class="open-source-badge">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="currentColor" class="feather feather-heart">
-                        <path
-                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                        </path>
-                    </svg>
-                    <span>Proudly Open Source</span>
-                </div>
-            </div>
-            <div class="project-links">
-                <a href="https://github.com/GhostTz/FileForge" target="_blank" rel="noopener noreferrer"
-                    class="project-link-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
-                    </svg>
-                    <span>View Project</span>
-                </a>
-                <a href="https://github.com/GhostTz" target="_blank" rel="noopener noreferrer" class="project-link-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <line x1="18" y1="8" x2="23" y2="13"></line>
-                        <line x1="23" y1="8" x2="18" y2="13"></line>
-                    </svg>
-                    <span>Follow on GitHub</span>
+        <!-- 4. Footer / Project Link (Breite Box unten) -->
+        <div class="bento-card footer-card">
+            <div class="footer-content">
+                <span>FileForge v1.0 &bull; Open Source Project</span>
+                <a href="https://github.com/GhostTz/FileForge" target="_blank" class="github-mini-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    GitHub
                 </a>
             </div>
         </div>
     </div>
-</section>
+</div>

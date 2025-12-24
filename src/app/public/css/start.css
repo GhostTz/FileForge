@@ -226,16 +226,14 @@
     background: var(--card-bg);
 }
 
-/* --- RESPONSIVE DESIGN FIXES --- */
 
-/* Tablet (bis 992px) */
 @media (max-width: 992px) {
     .bento-grid {
-        grid-template-columns: 1fr 1fr; /* 2 Spalten */
+        grid-template-columns: 1fr 1fr; 
     }
     
     .status-card {
-        grid-column: span 2; /* Volle Breite */
+        grid-column: span 2; 
         grid-row: auto;
         flex-direction: column;
     }
@@ -248,39 +246,32 @@
     .status-item { flex: 1; justify-content: center; }
 }
 
-/* Mobile (bis 768px) - Hier passiert der Fix! */
 @media (max-width: 768px) {
     .start-container {
         padding: 20px;
-        /* WICHTIG: Platz für Bottom-Nav lassen! */
         padding-bottom: 100px;
     }
 
     .bento-grid {
-        /* Kein Grid mehr, sondern alles sauber untereinander */
-        display: flex;
+         display: flex;
         flex-direction: column;
         gap: 15px;
     }
 
-    /* Alle Karten nehmen volle Breite */
     .stat-card, .launcher-card, .status-card, .footer-card {
         width: 100%;
         margin: 0;
     }
 
-    /* Quick Actions reparieren */
     .launcher-grid {
-        /* Buttons passen sich an, mindestens 100px breit. 
-           Führt zu 2 oder 3 Buttons pro Zeile, je nach Handybreite. */
+
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
 
     .launch-btn {
-        padding: 15px 10px; /* Etwas weniger Padding an den Seiten */
+        padding: 15px 10px; 
     }
 
-    /* Status Liste auf Mobile untereinander */
     .status-list {
         flex-direction: column;
     }

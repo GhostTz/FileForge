@@ -3,7 +3,7 @@
 # 📂 FileForge
 ### The Limitless File Management Platform
 
-![FileForge Dashboard](https://via.placeholder.com/1000x300?text=FileForge+Dashboard)
+![FileForge Dashboard](https://raw.githubusercontent.com/GhostTz/FileForge/refs/heads/main/banner.png)
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
@@ -55,20 +55,20 @@ graph LR
 
 ---
 
-## 🛠 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following:
 
-*   🐧 **Linux Server** (Ubuntu/Debian recommended)
-*   🐳 **Docker & Docker Compose** (v2+)
-*   🌐 **Nginx** (installed on host as Reverse Proxy)
-*   🔒 **Domain Name** with SSL (Let's Encrypt)
+*    **Linux Server** (Ubuntu/Debian recommended)
+*    **Docker & Docker Compose** (v2+)
+*    **Nginx** (installed on host as Reverse Proxy)
+*    **Domain Name** with SSL (Let's Encrypt)
 
 ---
 
 ## ⚙️ Setup Guide
 
-### 1. 🔑 Get Telegram Credentials
+### 1. Get Telegram Credentials
 
 You need specific credentials to run the local Telegram server.
 
@@ -93,7 +93,7 @@ You need specific credentials to run the local Telegram server.
 
 </details>
 
-### 2. 📥 Installation
+### 2. Installation
 
 Clone the repository to your server:
 
@@ -102,7 +102,7 @@ git clone https://github.com/GhostTz/FileForge.git
 cd FileForge
 ```
 
-### 3. 📝 Configuration (.env)
+### 3. Configuration (.env)
 
 Create a `.env` file in the root directory:
 
@@ -134,7 +134,7 @@ TELEGRAM_API_HASH=abcdef1234567890abcdef
 TELEGRAM_API_URL=http://telegram-bot-api:8081
 ```
 
-### 4. 🐳 Docker Compose
+### 4.Docker Compose
 
 Start the application (App, Database, and Telegram Server):
 
@@ -142,7 +142,7 @@ Start the application (App, Database, and Telegram Server):
 docker compose up -d --build
 ```
 
-### 5. 🌐 Nginx Configuration (Crucial!)
+### 5. Nginx Configuration (Crucial!)
 
 To allow **2 GB uploads**, you must configure Nginx to allow large bodies and long timeouts.
 
@@ -180,7 +180,7 @@ sudo service nginx reload
 
 ---
 
-## 🏃‍♂️ Usage
+## Usage
 
 1.  Open your domain in the browser.
 2.  Register a new account.
@@ -237,7 +237,7 @@ For users not familiar with CLI commands, here are the most common Docker comman
     ```bash
     docker compose down
     ```
-*   **Stop all & DELETE Database data** (⚠️ Caution!):
+*   **Stop all & DELETE Database data** (Caution!):
     ```bash
     docker compose down -v
     ```
@@ -256,7 +256,7 @@ For users not familiar with CLI commands, here are the most common Docker comman
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 | Error | Cause | Fix |
 | :--- | :--- | :--- |
@@ -264,7 +264,7 @@ For users not familiar with CLI commands, here are the most common Docker comman
 | `504 Gateway Time-out` | Upload took too long, Nginx closed connection. | Increase `proxy_read_timeout` and `send_timeout` to `3600s`. |
 | `getaddrinfo EAI_AGAIN db` | DB container crashed or isn't ready. | Run `docker compose down -v` and restart. |
 
-### ❗ Critical: Shared Volumes (Local Server)
+### Shared Volumes (Local Server)
 
 If downloads or previews fail with a **404 error** or **"File not found"**, you are missing the **Shared Volume configuration**.
 
@@ -292,7 +292,7 @@ services:
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the **GPL-3.0 License**. You are free to use, modify, and distribute it, provided you keep the source open.
 
